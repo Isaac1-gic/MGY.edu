@@ -35,52 +35,48 @@
 		async function create_update_account(){
 			const formBt = document.getElementById('sgnBt')
 			const form = document.getElementById('form')
-				formBt.addEventListener("submit",async (e) =>{
-					e.preventDefault;
-					form.disabled = true;
+			function handleLoginFailure() {
+			    alert('Failed to create account!');
+			    formBt.disabled = false;
+				formBt.innerText = "Login";
+			}
+				
 					formBt.disabled = true;
 					try{
-						const done = await registerStudent(userData.userInfo['username'], userData.userInfo['Password'])
-						if(done == 'success'){
-							form.Clear()
-							delete userData.userInfo['Password']
-							switchPage('homePage')
-							form.hidden = true;
-							const userNow = userAuth.currentUser; 
+						await createUserWithEmailAndPassword(userAuth,userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','')+'@mgy.com', userData.userInfo['Password'])
+						delete userData.userInfo['Password']
+						switchPage('homePage')
+						const userNow = userAuth.currentUser; 
 
-							if (userNow) {
-								userkey = userNow.uid;
-								path = ref(database,`users/${userkey}`)
-								set(path,userData)
-								await saveData('userData',userData)
-							}
+						if (userNow) {
+							userkey = userNow.uid;
+							path = ref(database,`users/${userkey}`)
+							await set(path,userData)
+							await saveData('userData',userData)
+							alert("Success! Welcome to MGY.");
 						}else {
-							userData = {
-										userInfo:{'Country code': '265'},
-										freinds: 'initialized',
-										messageBox: 'initialized'	   
-										};
-							alert('Failed to create account!')
+							handleLoginFailure()
 						}
 					} catch (e){
-						alert('Failed to create account!')
+						if (error.code === 'auth/email-already-in-use') {
+						    alert("That username is already taken!");
+							return
+					    }
+						handleLoginFailure()
 					}
-				})
 		}
 
 		async function login() {
 			const logInFm = document.getElementById("loginForm");
 			const loginBtn = document.getElementById("login-btn");
-			console.log('Runing')
 				loginBtn.disabled = true;
 				loginBtn.innerText = "Checking...";
 				const currentU = document.getElementById("usernameS").value;
 				const currentP = document.getElementById("passwordS").value;
 				try {
 					
-					
-					const resp = await loginStudent(currentU,currentP)
-					if (resp == 'success') {
+					loginBtn.innerText = "Checking...";
+					await signInWithEmailAndPassword(userAuth,currentU.replaceAll(' ','')+'@mgy.com',currentP)
 						const userNow = userAuth.currentUser; 
 	
 						if (userNow) {
@@ -91,8 +87,9 @@
 			                
 			                await saveData('userData', userData);
 			                switchPage('homePage');
+							alert("Success! Welcome to MGY.");
 			            }
-			        } else {
+			        else {
 			            handleLoginFailure();
 			        }
 			    } catch (err) {
@@ -101,15 +98,9 @@
 			    }
 			
 			function handleLoginFailure() {
-			    alert('Failed to Login!');
+			    alert("Wrong username or password.");
 			    loginBtn.disabled = false;
 				loginBtn.innerText = "Login";
-				userData = {
-					userInfo:{'Country code': '265'},
-					freinds: 'initialized',
-					messageBox: 'initialized'
-				};
-			}
 			
 		}
 		async function switchPage(pageId,id){
@@ -117,12 +108,13 @@
 				pg.hidden = true
 			})
 			
-			
-			if(!userData["userInfo"]['username'] && pageId != "signPage"){
+			if(id == 'newAcnt'){
+				document.getElementById(pageId).hidden = false
+				edit('new')
+				return
+			}
+			else if (!userData["userInfo"]['username'] && pageId != "signPage"){
 				switchPage("signPage")
-				//await login()
-				//edit('new')
-				//await create_update_account()
 				return
 			}
 			const page = document.getElementById(pageId)
