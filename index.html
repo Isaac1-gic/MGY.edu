@@ -7,7 +7,7 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-	<link rel="manifest" href="pages/manifest.json">
+	<link rel="manifest" href="/pages/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malawian Genius Youths | Scie Gs</title>
     <style>
@@ -584,7 +584,7 @@
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app); 
         const database = getDatabase(app);
-		const auth = getAuth();
+		const auth = getAuth(app);
 		const DOMAIN = "@tracker.com"; // Your internal "fake" domain
 		
 		// 1. Sign Up a New Student
@@ -626,6 +626,8 @@
 		window.loginStudent = loginStudent;
 		window.registerStudent = registerStudent;
 		window.onChildChanged = onChildChanged;
+		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 
 		
       
