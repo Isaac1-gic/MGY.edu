@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Social Connect</title>
+    <style>
+        /* --- OFFLINE-READY CSS (NO FRAMEWORKS) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: #f0f2f5; color: #1c1e21; }
+
+        /* Layout */
+        .container { max-width: 1024px; margin: 0 auto; background: white; }
+        
+        /* Header & Cover */
+        .profile-header { position: relative; }
+        .cover-area {
+            height: 350px;
+            background: linear-gradient(to bottom, #ddd, #bbb);
+            position: relative;
+            overflow: hidden;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .cover-img { width: 100%; height: 100%; object-fit: cover; }
+        .hidden { display: none; }
+
+        .btn-edit-cover {
+            position: absolute; bottom: 15px; right: 15px;
+            background: white; padding: 8px 12px; border-radius: 6px;
+            font-weight: 600; cursor: pointer; border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex; align-items: center; gap: 5px;
+        }
+
+        /* Profile Pic Positioning */
+        .profile-pic-box {
+            position: absolute; bottom: -30px; left: 30px;
+            width: 168px; height: 168px;
+        }
+        .profile-img {
+            width: 100%; height: 100%;
+            border: 4px solid white; border-radius: 50%;
+            background: #eee; object-fit: cover;
+        }
+        .small_profile_img {
+            height: 20%; width: 20%;
+			border: 4px solid white; border-radius: 50%;
+            background: #eee; object-fit: cover;
+        }
+        .btn-edit-profile {
+            position: absolute; bottom: 10px; right: 10px;
+            background: #e4e6eb; padding: 8px; border-radius: 50%;
+            cursor: pointer; border: 2px solid white;
+        }
+
+        /* Info & Nav */
+        .info-section { padding: 45px 30px 10px 30px; }
+        .user-name { font-size: 30px; margin-bottom: 5px; }
+        .nav-tabs { display: flex; border-top: 1px solid #ddd; margin-top: 20px; }
+        .nav-item { padding: 15px; color: #65676b; text-decoration: none; font-weight: 600; }
+        .nav-item.active { color: #1877f2; border-bottom: 3px solid #1877f2; }
+
+        /* Main Grid (Responsive) */
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 20px; max-width: 1024px; margin: 0 auto; }
+        @media (min-width: 768px) {
+            .main-grid { grid-template-columns: 2fr 3fr; }
+        }
+
+        .card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .post-box { display: flex; gap: 10px; align-items: center; }
+        .input-mock { flex: 1; background: #f0f2f5; padding: 10px; border-radius: 20px; color: #65676b; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="profile-header">
+            <div class="cover-area">
+                <img id="cover-img-preview" class="cover-img hidden">
+                <input type="file" id="cover-input" accept="image/*" hidden>
+                <label for="cover-input" class="btn-edit-cover">📷 Edit Cover</label>
+            </div>
+
+            <div class="profile-pic-box">
+                <img id="profile-img-preview" src="icon1-512.png" class="profile-img">
+                <input type="file" id="profile-input" accept="image/*" hidden>
+                <label for="profile-input" class="btn-edit-profile">📷</label>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h1 class="user-name" id="user">John Doe</h1>
+            <p style="color: #65676b; font-weight: 600;" id="friends">0 Friends</p>
+            <div class="nav-tabs">
+                <a href="#" class="nav-item active">Posts</a>
+                <a href="#" class="nav-item">About</a>
+                <a href="#" class="nav-item">Friends</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <div class="sidebar">
+            <div class="card">
+                <h3>Intro</h3>
+                <p style="text-align: left; margin: 15px 0;" id="bio">Today is your tommorow history. If you are genius enough, make your femous history today.</p>
+            </div>
+        </div>
+        <div class="feed">
+            <div class="card">
+                <div class="post-box">
+                    <img src="icon1-512.png" class="small_profile_img" id="pro-img" style="border-radius: 50%">
+                    <div class="input-mock">What's up G?</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let profileImg;
+		let img;
+        let userData = {
+    "userInfo": 
+        {
+            "userId": "8c692e66-339b-4c9c-0718-034fc3cd1906",
+            "username": "Khoma Nick",
+            "fMEdate": [
+                1770595200000,
+                1773557970865,
+                1785592000000
+            ],
+            "approved": true,
+            "userLinkedId": "Jamkaxqxw5",
+            "hours_session": 2,
+            "number_subjects_day": 3,
+            "linkID": "Jamkaxqxw5",
+            "network": [
+                "Kimldotsa7"
+            ]
+        }
+};
+        /**
+         * HANDLER FOR IMAGE UPLOADS
+         * @param {string} inputId - The ID of the hidden file input
+         * @param {string} previewId - The ID of the img element to update
+         */
+        function profileUpdater(user){
+            const name = document.getElementById('user')
+            const friends = document.getElementById('friends')
+            const bio = document.getElementById('bio')
+            document.getElementById('pro-img').src = profileImg
+            
+            name.textContent = userData["userInfo"]['username']
+            friends.textContent = userData["userInfo"]['freinds'].length + " Friends"
+            bio.textContent = userData["userInfo"]['bio']
+        }
+        async function setupImageUpload(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            let preview;
+            
+
+            if (previewId){
+                preview = document.getElementById(previewId);
+                try{
+                    preview.src = userData["userInfo"][previewId]
+                    if (inputId == 'profile-input') profileImg = userData["userInfo"][previewId]
+                    preview.classList.remove('hidden')
+                }catch (e){
+                    //console.error(e)
+                }
+            }
+            
+            input.addEventListener('change', async function() {
+                const file = this.files[0];
+
+                if (file) {
+                    // 1. Basic Validation (Size check example)
+                    if (file.size > 1024 * 1024) {
+                        alert("File is too large (max 1MB)");
+                        return;
+                    }
+
+	                    await fileReader(file)
+                        userData["userInfo"][previewId] = img
+                        await saveData('userData', userData)
+                        // Make sure the image is visible (especially for cover photo)
+                        if (previewId) {
+                            
+                            preview.src = img;
+                            preview.classList.remove('hidden');
+                        }
+                }
+            });
+            
+        }
+		async function fileReader(file){
+			 // 2. Read the file
+            const reader = new FileReader();
+                    
+            reader.onload = async function(e) {
+                // Update the src of our preview image
+                img = e.target.result
+            };
+			reader.readAsDataURL(file);
+			return img
+		}
+    
+        function initDB() {
+			  return new Promise((resolve, reject) => {
+				const openReq = indexedDB.open('StudyTrackerDB', 2);
+				openReq.onupgradeneeded = e => {
+				  db = e.target.result;
+				  if (!db.objectStoreNames.contains('Data')) db.createObjectStore('Data');
+				};
+				openReq.onsuccess = e => {
+				  db = e.target.result;
+				 
+				  resolve(db);
+				};
+				openReq.onerror = e => reject(e);
+			  });
+			}
+
+			
+			function loadData(KEY, onloadFlag) {
+			  return new Promise((resolve, reject) => {
+				if (!db) return reject(new Error('DB not initialized'));
+				const tx = db.transaction('Data', 'readonly');
+				const store = tx.objectStore('Data');
+				const req = store.get(KEY);
+				req.onsuccess = e => {
+				  const val = (e.target.result === undefined) ? null : e.target.result;
+				  if (onloadFlag === 'onload') {
+					
+					userData = val;
+					try { updateDisplay();
+							switchTab('track') } catch (err) {}
+				  }
+				  resolve(val);
+				};
+				req.onerror = e => reject(e.target.error || e);
+			  });
+			}
+
+			
+			function saveData(KEY, dataToSave) {
+			  return new Promise((resolve, reject) => {
+				if (!db) return reject(new Error('DB not initialized'));
+				const tx = db.transaction('Data', 'readwrite');
+				const store = tx.objectStore('Data');
+				const req = store.put(dataToSave, KEY);
+				req.onsuccess = () => resolve();
+				req.onerror = e => reject(e.target.error || e);
+			  });
+			}
+
+        	
+        setTimeout(async function (){
+            try {
+				
+
+                await initDB();
+				
+                // Load User Data
+                await loadData('userData', 'onload');
+				// Initialize listeners for both profile and cover photo inputs
+                setupImageUpload('profile-input', 'profile-img-preview');
+                setupImageUpload('cover-input', 'cover-img-preview');
+                profileUpdater(userData)
+	
+            } catch (e) {
+            }
+        },1000);
+        
+        
+        
+    </script>
+</body>
+</html>

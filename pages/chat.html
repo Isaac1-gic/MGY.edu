@@ -1,0 +1,395 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<!-- Group -->
+        <div id="group" class="tab-content active" >
+			<div id="headerR-chat">
+			<header>
+                <h1>MGY Room</h1>
+			</header>
+            
+            </div>
+            <div id="chatsList" class="chat-container">
+                <!-- chats will appear here -->
+            </div>
+            
+            
+           
+            <div id="prompt-container-chat" class="chat-body">
+			  <div class="fixed-card">
+				<div class="card" role="group" aria-label="chat input card">
+
+				  <!-- Left side actions -->
+				  <div class="actions-left" style="position:relative;">
+					<div style="position:relative;">
+					  <button id="mode-button" title="Select mode">
+						<!-- same inline svg as your original -->
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
+						  <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"></path>
+						</svg>
+					  </button>
+
+					  <div id="mode-dropdown" aria-hidden="true">
+						<div class="title">Select Mode</div>
+						<div style="padding:6px 4px; cursor:pointer;" data-mode="Question">Question</div>
+						<div style="padding:6px 4px; cursor:pointer;" data-mode="Quiz">Quiz</div>
+					  </div>
+					</div>
+				  </div>
+
+				  <!-- Textarea (Main Input Area) -->
+				  <div class="input-wrap">
+					<textarea
+					  id="textprompt-chat"
+					  class="textprompt"
+					  placeholder="Write your message"
+					  rows="1"
+					  aria-label="Chat input"></textarea>
+				  </div>
+
+				  <!-- Right side actions -->
+				  <div class="actions-right">
+					<div style="display: none;"><span id="current-mode-chat">Chat</span></div>
+                    <div id="loading-chat" class="loading-Net" style="display: none;"></div>
+					<button id="send-button-chat" class="send-button" disabled title="Send">
+					  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="transform:rotate(90deg)">
+						<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.599 60.599 0 0 0 18.442-8.31.75.75 0 0 0 0-1.374 60.599 60.599 0 0 0-18.442-8.31Z"/>
+					  </svg>
+					</button>
+				  </div>
+
+				</div>
+			  </div>
+			</div>                          
+           
+        </div>
+
+	<script>
+		let db = null;
+        let scrolled;
+        const today = new Date().toISOString().split('T')[0];
+        let requestURL = 'https://script.google.com/macros/s/AKfycbxp11rUqcpJotJ9ne1xJmeGS1ClWhWCYyyhwkNcyp7RGyZkpo284PM6WsEg7XWjg6AL/exec';
+        const todaycheck = new Date().toISOString().split('T')[0];
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');           
+        let userData = {"userInfo": {}};
+        let mgy = {chats: [],AIchats: [],IDs: {}};
+        let pathLink = mgy.chats;
+        let timeStamp = Date.now();
+		let SPACE_TIME = 30000;
+		
+		async function promptSwitch(kind = String) {
+                const textarea = document.getElementById('textprompt-'+kind);
+                
+                const sendButton = document.getElementById('send-button-'+kind);
+                let newMode;
+                const modeButton = document.getElementById('mode-button');
+                const modeDropdown = document.getElementById('mode-dropdown');
+                const currentModeDisplay = document.getElementById('current-mode-'+kind);
+                const HEADER_REMOVE = document.getElementById('headerR-'+kind);
+                loading = document.getElementById('loading-'+kind);
+                
+                 // Toggle dropdown
+				modeButton.addEventListener('click', (e) => {
+				  e.stopPropagation();
+				  
+				  modeDropdown.style.display = 'block' 
+				});
+				 // Select mode
+				modeDropdown.querySelectorAll('[data-mode]').forEach(el => {
+				  el.addEventListener('click', () => {
+					
+					const m = el.getAttribute('data-mode');
+					currentModeDisplay.textContent = m;
+					modeDropdown.style.display = 'none';
+				  });
+				});
+
+				// Close dropdown on outside click
+				//document.getElementById("prompt-container-ai").addEventListener('click', () => modeDropdown.style.display = 'none');
+			
+                
+                // --- 1. Textarea Auto-Resize and Send Button Toggle ---
+
+                // Function to resize the textarea height dynamically
+                const resizeTextarea = () => {
+                    // Reset height to collapse the scrollbar before calculation
+                    textarea.style.height = 'auto';
+                    
+                    // Set the new height, clamped to a max height (15rem)
+                    const newHeight = Math.min(textarea.scrollHeight, 15 * 16); // 15rem * 16px/rem
+                    textarea.style.height = newHeight+"px";
+
+                    // Enable/Disable Send button based on content
+                    let isEmpty = textarea.value.trim().length === 0;
+                    
+                    if(currentModeDisplay.textContent === 'Quiz'){
+						isEmpty = false;
+						
+					}
+                    sendButton.disabled = isEmpty;
+
+                    // Change button color based on state
+                    if (isEmpty) {
+                        sendButton.classList.remove('bg-[#8ab4f8]', 'text-white');
+                        sendButton.classList.add('bg-[#343436]', 'text-[#7e7e7e]', 'opacity-50');
+                    } else {
+                        sendButton.classList.remove('bg-[#343436]', 'text-[#7e7e7e]', 'opacity-50');
+                        sendButton.classList.add('bg-[#8ab4f8]', 'text-white');
+                    }
+                };
+
+                // Attach event listener for input and change
+                textarea.addEventListener('input', resizeTextarea);
+
+                // --- 2. Mode Dropdown Interaction ---
+
+                // Toggle dropdown visibility
+                modeButton.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent the document listener from immediately closing it
+                    const isVisible = modeDropdown.classList.toggle('opacity-0');
+                    modeDropdown.classList.toggle('pointer-events-none');
+                });
+
+                // Handle mode selection from dropdown
+                modeDropdown.addEventListener('click',  (e) => {
+                    const modeElement = e.target;
+                    if (modeElement.dataset.mode) {
+                        newMode = modeElement.dataset.mode;
+                        
+                        // 1. Update the display label
+                        currentModeDisplay.textContent = newMode;
+                        
+                        // 2. Hide the dropdown
+                        modeDropdown.classList.add('opacity-0', 'pointer-events-none');
+                        
+        
+                    }
+                });
+
+                // Close dropdown when clicking anywhere else
+                document.addEventListener('click', () => {
+                    modeDropdown.classList.add('opacity-0', 'pointer-events-none');
+                });
+
+
+                // --- 3. Action Handlers (Example) ---
+
+                sendButton.addEventListener('click', async () => {
+                    const promptText = textarea.value.trim();
+                    const currentMode = currentModeDisplay.textContent;
+					const space_T = Date.now()
+                    if (space_T - SPACE_TIME > 2000 && (promptText || currentMode === 'Quiz')) {
+						SPACE_TIME = space_T;
+                        textarea.value = '';
+                        loading.classList.add('rotate');
+                        loading.style.display = 'block';
+                        
+                        try {
+                            if (currentMode === 'Quiz') {
+                                await quizMaker('submit');
+                            } else if (currentMode === 'Question' || currentMode === 'Chat') {
+                                await chatPrompt(promptText, kind);
+                            }
+                        } finally {
+                            loading.classList.remove('rotate');
+                            loading.style.display = 'none';
+                            textarea.value = '';
+                            textarea.style.height = 'auto';
+                            HEADER_REMOVE.style.display = 'none';
+                        }
+                       
+                        resizeTextarea(); 
+                    }
+                });
+
+                
+                textarea.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault(); 
+                        sendButton.click(); 
+                    }
+                });
+
+                // Initial resize/check on load
+                resizeTextarea();
+            
+
+                
+            }
+		
+		async function startChatPolling(){
+		    const hour = new Date().getHours();
+		    const day = new Date().getDay();
+		    const isWeekend = (day === 6 || day === 0);
+		    const isHappyHour = (hour >= 17 && hour < 20);
+			const chatD = await loadData('group_chats');
+			mgy = chatD ? chatD: pathLink
+			if (chatD) chatbox()
+		    // If it's NOT the weekend AND NOT happy hour, stop.
+		    if (isWeekend || isHappyHour || true){
+			const chatPath = ref(database,'group_chats')
+			onChildAdded(chatPath, (snapshot) =>{
+				const message = snapshot.val();
+				chatSave(message,mgy.chats,'chats');
+				chatbox()
+			})
+			}
+		}
+		
+		function stopChatPolling(){
+		   
+			const chatPath = ref(database,'group_chats')
+			off(chatPath)
+		}
+
+           
+
+		async function chatSave(prompt, type, AI) {
+		    if (AI !== 'chats') {
+		        const sender = AI ? 'GIC AI' : userData.userInfo.username;
+		        if(!type.includes(prompt)){
+		                type.push({
+		                chatId: Date.now(),
+		                senderId: sender,
+		                prompt: prompt 
+		            });
+		        }
+		    } else {
+				
+		        
+		           if(!mgy.IDs[prompt.chatId] ) {
+					    type.push(prompt);
+						mgy.IDs[prompt.chatId] = 1;
+						await saveData('group_chats', mgy)
+		          }
+		           
+		       
+		    }
+		}
+
+		async function chatPrompt(text, kind) {
+		    const hour = new Date().getHours();
+		    const day = new Date().getDay();
+		    if (kind === "ai") {
+		        pathLink = mgy.AIchats;
+		        chatSave(text, pathLink, false); 
+		        try {
+		            const answear = await HTTPSrequest('askQuestion', { question: text }, kind);
+		            if (answear && answear[0]) {
+		                chatSave(answear[1], pathLink, true); 
+		                AIchatbox();
+		            }
+		        } catch (error) {
+		            showMessage("Failed to send. Please try again.",'error');
+		        }
+		    } else {
+		        try {
+					
+		            const isWeekend = (day === 6 || day === 0);
+				    const isHappyHour = (hour >= 17 && hour < 20);
+		
+				    // If it's NOT the weekend AND NOT happy hour, stop.
+				    if (isWeekend || isHappyHour || true){
+			            const messageData = {
+			                chatId: Date.now(),
+			                senderId: userData.userInfo.username,
+			                prompt: text,
+			                timeStamp: typeof timeStamp !== 'undefined' ? timeStamp : Date.now()
+			            };
+			            const chatPath = ref(database,'group_chats')
+						await push(chatPath,messageData)
+					}
+		        } catch (error) {
+					console.error("Firebase error:", error);
+		            alert("Failed to send. Please try again.");
+		        }
+		    }
+		}
+		function scrollToBottom(divElement){
+				if(!scrolled){
+					scrolled = true;
+					divElement.scrollTop = divElement.scrollHeight;
+				}
+			}
+
+		function chatbox() {
+		    const hour = new Date().getHours();
+		    const day = new Date().getDay();
+		    const chatContainer = document.getElementById('chatsList');
+		    chatContainer.innerHTML = '';
+		
+		    const isWeekend = (day === 6 || day === 0);
+		    const isHappyHour = (hour >= 17 && hour < 20);
+		
+		    // If it's NOT the weekend AND NOT happy hour, stop.
+		    if (isWeekend || isHappyHour || true){
+		        const recentChatsSorted = [mgy.chats].sort((a, b) => new Date(b.chatId) - new Date(a.chatId)).slice(0, 25);
+		        
+		        let i = 0;
+		        mgy.chats.forEach(chat => {
+		            const sessionDiv = document.createElement('div');
+					const img = document.createElement("img");
+					img.className = "small_profile_img"
+		            const time = new Date(parseInt(chat.chatId)).toLocaleTimeString();
+		            const me = (chat.senderId === userData.userInfo.username);
+		            if (!me) {
+		                sessionDiv.className = 'message chat-card';
+		                messager = chat.senderId;
+		            } else {
+		                sessionDiv.className = 'message mychat-card';
+		                messager = 'You';
+						img.src = userData["userInfo"]['profile-img-preview']
+		            }
+		
+		            // SAFE DOM CREATION (No innerHTML for user content to prevent XSS)
+		            const header = document.createElement('h4')
+					header.textContent = messager+ '  ' +time;
+		            const devsec = document.createElement('div')
+					devsec.stlye = "display: flex; gap: 1, height: 1px"
+		            const p = document.createElement('a');
+		            p.textContent = chat.prompt; 
+		            
+					devsec.appendChild(img)
+					devsec.appendChild(header);
+					sessionDiv.appendChild(devsec)
+		            const urlReg = /https?:\/\/\S*\w/
+		            try{
+						const matchUrl = chat.prompt.match(urlReg)[0].trim();
+						if(matchUrl){
+							p.href = matchUrl;
+						}
+					}
+					catch(e){console.log(e)}
+		            sessionDiv.appendChild(p);
+		            chatContainer.appendChild(sessionDiv);
+		            
+		            
+		            i++;
+		        });
+		        scrollToBottom(chatContainer);
+		    }
+		
+		    if (mgy.chats.length > 100) {
+		        mgy.chats.shift(); 
+		    }
+		}
+
+
+		           
+		let loading           
+		const stBt = document.getElementById('send-button-ai');   
+		document.getElementById('prompt-container-chat').addEventListener('click',function(){
+		loading = document.getElementById('loading-chat');
+		promptSwitch('chat')});
+
+	
+		await startChatPolling()
+		console.log('RUNING')
+	</script>
+</body>
+</html>
