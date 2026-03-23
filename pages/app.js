@@ -101,6 +101,7 @@
 			    alert("Wrong username or password.");
 			    loginBtn.disabled = false;
 				loginBtn.innerText = "Login";
+			}
 			
 		}
 		async function switchPage(pageId,id){
