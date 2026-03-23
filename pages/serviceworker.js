@@ -7,7 +7,7 @@ const OFFLINE_URLS = [
   'index.html',
   'pages/app.js',
   'pages/style.css',
-  'pages/site.webmanifest',
+  'pages/manifest.json',
   'img/mwflag.png',
   'img/mgy.jpg',
   'img/apple-touch-icon.png',
