@@ -7,7 +7,7 @@
 	<link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
 	<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-	<link rel="manifest" href="/pages/manifest.json">
+	<link rel="manifest" href="pages/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malawian Genius Youths | Scie Gs</title>
     <style>
@@ -396,7 +396,7 @@
 	        </div>
 	    </div>
 		<section class="login-container active" id="editProfile" hidden >
-			<form id="loginForm" class="login-form" method="post">
+			<form id="loginForm" class="login-form" method="post" onsubmit=" setTimeout(async function(e){await create_update_account()},10); return false;">
 		        <div class="form-group" id="e-home" name="input">
 		            <h3>First name</h3>
 		            <input  class="input-mock" type="text" placeholder="Malawian" required onchange="updateProfile('First name',value)">
@@ -536,7 +536,7 @@
                     <button type="submit" id="login-btn" class="login-btn">Login</button>
                 </form>
                 <div class="divider"></div>
-                <button class="login-btn" id="creaA">Create Account</button>
+                <button class="login-btn" onclick="switchPage('profilePage','newAcnt'); console.log('RUNNIng')" id="creaA">Create Account</button>
             </div>
         </div>
 		
@@ -585,33 +585,6 @@
         const analytics = getAnalytics(app); 
         const database = getDatabase(app);
 		const auth = getAuth(app);
-		const DOMAIN = "@tracker.com"; // Your internal "fake" domain
-		
-		// 1. Sign Up a New Student
-		async function registerStudent(username, password) {
-		  const fakeEmail = username + username.endsWith('.com') ? '':DOMAIN;
-		  try {
-		    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-		    console.log("Account created for:", username);
-			return 'success'
-		  } catch (error) {
-		    if (error.code === 'auth/email-already-in-use') {
-		      alert("That username is already taken!");
-		    }
-		  }
-		}
-		
-		// 2. Log In
-		async function loginStudent(username, password) {
-		  const fakeEmail = username + username.endsWith('.com') ? '':DOMAIN;
-		  try {
-		    await signInWithEmailAndPassword(auth, fakeEmail, password);
-		    alert("Success! Welcome to MGY.");
-			return 'success'
-		  } catch (error) {
-		    alert("Wrong username or password.");
-		  }
-		}
 
         window.database = database;
         window.ref = ref;
@@ -623,11 +596,9 @@
 		window.userAuth = auth;
 		window.remove = remove;
 		window.onValue = onValue;
-		window.loginStudent = loginStudent;
-		window.registerStudent = registerStudent;
-		window.onChildChanged = onChildChanged;
-		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+		window.onChildChanged = onChildChanged;
 
 		
       
