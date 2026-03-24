@@ -24,7 +24,6 @@ const EXTERNAL_HOSTS = [
   'fonts.googleapis.com',
   'fonts.gstatic.com'
 ];
-
 // --- 1. INSTALL: Force caching of all critical files ---
 self.addEventListener('install', event => {
   event.waitUntil(
