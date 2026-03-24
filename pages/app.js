@@ -171,7 +171,7 @@
 					manageChat(chatKey)
 					alert('Hello! '+userData.userInfo.username)
 					return;
-				} catch (error) {}
+				} catch (error) {console.warn(error)}
 			}
 			switchPage('chatPage')
 			manageChat()
@@ -187,7 +187,7 @@
 				const user = snapshot.val()
 				users[userKey] = user
 				return user
-			} catch (error) {}
+			} catch (error) {console.warn(error)}
 		}
 		async function profileUpdater(user,get=false){
 			if(get){
@@ -270,7 +270,7 @@
 							preview.src = imgUrl;
 							preview.hidden = false
 						}
-					} catch (error) {}
+					} catch (error) {console.warn(error)}
 				}
 			});
 		}
@@ -463,7 +463,7 @@
 					chatbox('mgyforum')
 					
 				})
-			} catch (error) {}
+			} catch (error) {console.warn(error)}
 			if (userData['messageBox'] =='initialized') return
 			const key_value = Object.entries(userData.messageBox)
 			for (let i = 0;i<key_value.length;i++){
@@ -533,7 +533,7 @@
 		                chatSave(answear[1], pathLink, true); 
 		                AIchatbox();
 		            }
-		        } catch (error) {
+		        } catch (error) {console.warn(error)
 		            showMessage("Failed to send. Please try again.",'error');
 		        }
 		    } else {
@@ -560,7 +560,7 @@
 								firstMsg = false;
 								manageChat()
 							}
-						} catch (error) {}
+						} catch (error) {console.warn(error)}
 					}
 		        } catch (error) {
 					console.error("Firebase error:", error);
@@ -586,7 +586,7 @@
 				try{
 					let chatPath = ref(database,refpath+msg[0][0])
 					await remove(chatPath)
-				} catch (error) {}
+				} catch (error) {console.warn(error)}
 			}  
 		    for (let i=0; i < msg.length; i++){
 				const chat = msg[i][1]
@@ -617,7 +617,7 @@
 					try{
 						let chatPath = ref(database,`${refpath}${msg[i][0]}`)
 						await remove(chatPath)
-					} catch (error) {}
+					} catch (error) {console.warn(error)}
 				}
 		    }
 		
@@ -685,7 +685,7 @@
 					return value
 				}
 			} catch (error) {
-		
+		console.warn(error)
 			}
 			imgP['img-'+userKey] = 'img/mwflag.png'
 			return 'img/mwflag.png'	
@@ -770,7 +770,9 @@ window.addEventListener('load',async(e) =>{
 				maybeShowInstall();
 			}
 		const mypath = ref(database,`users/${userkey}/userInfo`)
-		
+		const userNow = userAuth.currentUser; 
+
+		userkey = userNow.uid;
 		onChildChanged(mypath, async (snapshot) =>{
 			userData.userInfo[snapshot.key] = snapshot.val();
 			console.log('Update')
@@ -784,7 +786,7 @@ window.addEventListener('load',async(e) =>{
 			setTimeout(()=>{manageChat},1000*10)
 		})
 	} catch (error) {
-		
+		console.warn(error)
 	}
 })
 
@@ -861,7 +863,7 @@ async function uploadToCloudinary(file, studentId,type) {
                     await reg.periodicSync.register('reminder-sync',{minInterval: 15 * 60 * 1000});
                     
                 }catch(e){
-                    
+                   console.warn(e) 
                 }
             }
             return reg;
