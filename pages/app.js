@@ -29,16 +29,17 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 
-window.addEventListener('load',async(e) =>{
+setTimeout(async(e) =>{
 	try {
 		
 		if (!isStandalone()) {
 				maybeShowInstall();
 			}
+		console.log(userkey,'old')
+		userkey = userAuth.currentUser.uid;
+		console.log(userkey,'old')
 		const mypath = ref(database,`users/${userkey}/userInfo`)
-		const userNow = userAuth.currentUser; 
-
-		if(userNow) userkey = userNow.uid;
+		
 		onChildChanged(mypath, async (snapshot) =>{
 			userData.userInfo[snapshot.key] = snapshot.val();
 			console.log('Update')
@@ -54,7 +55,7 @@ window.addEventListener('load',async(e) =>{
 	} catch (error) {
 		console.warn(error)
 	}
-})
+},10000)
 
 
         
@@ -299,9 +300,10 @@ window.addEventListener('load',async(e) =>{
 					try {
 						
 						
-						const imgUrl = uploadToCloudinary(file, userkey,previewI)
-						let user_ref = ref(database,`users/${userkey}/userInfo/${previewI}`)
+						const imgUrl = await uploadToCloudinary(file, userkey,previewId)
+						let user_ref = ref(database,`users/${userkey}/userInfo/${previewId}`)
 						set(user_ref,imgUrl);
+						console.log(imgUrl)
 						userData["userInfo"][previewId] = imgUrl;
 						await saveData('userData', userData)
 						// Make sure the image is visible (especially for cover photo)
@@ -860,41 +862,3 @@ async function uploadToCloudinary(file, studentId,type) {
 	    console.error("Cloudinary Error:", error);
 	  }
 }
-
-
-	
-/**function doPost(e) {
-  const data = JSON.parse(e.postData.contents);
-  const studentId = data.studentId;
-  const base64Image = data.image; // The image sent from your PWA
-  
-  const timestamp = Math.floor(Date.now() / 1000);
-  
-  // 1. Create the signature string (Must be in alphabetical order)
-  // We include 'overwrite=true' and 'public_id'
-  const signatureString = `overwrite=true&public_id=${studentId}&timestamp=${timestamp}${API_SECRET}`;
-  
-  // 2. Hash it using SHA-1 (Required by Cloudinary)
-  const signature = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1, signatureString)
-    .map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
-
-  const payload = {
-    file: base64Image,
-    api_key: API_KEY,
-    timestamp: timestamp,
-    public_id: studentId,
-    signature: signature,
-    overwrite: true,
-    invalidate: true // Clears the cache so the new image shows up immediately
-  };
-
-  const options = {
-    method: "post",
-    payload: payload
-  };
-
-  const response = UrlFetchApp.fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, options);
-  
-  return ContentService.createTextOutput(response.getContentText())
-    .setMimeType(ContentService.MimeType.JSON);
-}**/
