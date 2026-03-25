@@ -15,7 +15,11 @@ const OFFLINE_URLS = [
   'img/favicon-16x16.png',
   'img/android-chrome-192x192.png',
   'img/android-chrome-512x512.png',
-  'favicon.icon',
+  'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js',
+  'https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js',
+  'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js',
+  'favicon.ico',
   'img/mgyG.jpg'
 ];
 
