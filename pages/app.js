@@ -8,6 +8,7 @@
 		let profileImg;
 		let img;
 		let userkey;
+		let chatPath;
 		let firstMsg = false;
         let userData = {userInfo:{'Country code': '265'},
 						freinds: 'initialized',
@@ -492,10 +493,10 @@ window.addEventListener('load',async(e) =>{
 				return;
 			}
 			try{
-				let chatPath = ref(database,'group_chats')
+				chatPath = ref(database,'group_chats')
 				onValue(chatPath, async (snapshot) =>{
-					const chat = Object.entries(snapshot.val());
-					const lastMsg = chat[chat.length - 1][1]
+					chat = Object.entries(snapshot.val());
+					lastMsg = chat[chat.length - 1][1]
 					mgy['mgyforum'] = chat
 					createChatlist('MGY Forum',lastMsg.prompt,'img/mgy.jpg','mgyforum')
 					chatbox('mgyforum')
@@ -511,9 +512,9 @@ window.addEventListener('load',async(e) =>{
 					chatPath = ref(database,`messages/${key}`)
 					onValue(chatPath, async (snapshot) =>{
 						try{
-							const chat = Object.entries(snapshot.val());
+							chat = Object.entries(snapshot.val());
 						
-							const lastMsg = chat[chat.length - 1][1]
+							lastMsg = chat[chat.length - 1][1]
 							mgy[key] = chat
 							const proImg = lastMsg['imgUrl'] || 'img/mwflag.png'	//await getPhoto(lastMsg.userkey)
 							createChatlist(value,lastMsg.prompt,proImg,key)
@@ -592,7 +593,7 @@ window.addEventListener('load',async(e) =>{
 			            };
 						chatref = activeKey == 'mgyforum' ? 'group_chats':'messages/'+activeKey
 			            try{
-							const chatPath = ref(database,chatref)
+							chatPath = ref(database,chatref)
 							await push(chatPath,messageData)
 							if(firstMsg == true){
 								firstMsg = false;
@@ -622,7 +623,7 @@ window.addEventListener('load',async(e) =>{
 		    if (msg.length > 100) {
 				const refpath = activeKey == 'mgy' ? 'group_chats/':`message/${activeKey}/`
 				try{
-					let chatPath = ref(database,refpath+msg[0][0])
+					chatPath = ref(database,refpath+msg[0][0])
 					await remove(chatPath)
 				} catch (error) {console.warn(error)}
 			}  
@@ -653,7 +654,7 @@ window.addEventListener('load',async(e) =>{
 					if(!confirm('This message will be deleted!')) return
 					const refpath = activeKey == 'mgyforum' ? 'group_chats/':`messages/${activeKey}/`
 					try{
-						let chatPath = ref(database,`${refpath}${msg[i][0]}`)
+						chatPath = ref(database,`${refpath}${msg[i][0]}`)
 						await remove(chatPath)
 					} catch (error) {console.warn(error)}
 				}
@@ -862,3 +863,38 @@ async function uploadToCloudinary(file, studentId,type) {
 
 
 	
+/**function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const studentId = data.studentId;
+  const base64Image = data.image; // The image sent from your PWA
+  
+  const timestamp = Math.floor(Date.now() / 1000);
+  
+  // 1. Create the signature string (Must be in alphabetical order)
+  // We include 'overwrite=true' and 'public_id'
+  const signatureString = `overwrite=true&public_id=${studentId}&timestamp=${timestamp}${API_SECRET}`;
+  
+  // 2. Hash it using SHA-1 (Required by Cloudinary)
+  const signature = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_1, signatureString)
+    .map(byte => ('0' + (byte & 0xFF).toString(16)).slice(-2)).join('');
+
+  const payload = {
+    file: base64Image,
+    api_key: API_KEY,
+    timestamp: timestamp,
+    public_id: studentId,
+    signature: signature,
+    overwrite: true,
+    invalidate: true // Clears the cache so the new image shows up immediately
+  };
+
+  const options = {
+    method: "post",
+    payload: payload
+  };
+
+  const response = UrlFetchApp.fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, options);
+  
+  return ContentService.createTextOutput(response.getContentText())
+    .setMimeType(ContentService.MimeType.JSON);
+}**/
