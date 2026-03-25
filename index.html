@@ -395,7 +395,8 @@
 	            </div>
 	        </div>
 	    </div>
-		<section class="login-container active" id="editProfile" hidden >
+		<section  id="editProfile" hidden >
+			<div class="login-container active">
 			<form id="loginForm" class="login-form" method="post" onsubmit=" setTimeout(async function(e){await create_update_account()},10); return false;">
 		        <div class="form-group" id="e-home" name="input">
 		            <h3>First name</h3>
@@ -466,6 +467,7 @@
 		        </div>
 				<button type='submit' id="sgnBt" class="login-btn">SignIn</button>
 			</form>
+			</div>
 	    </section>
 	    <div class="main-grid">
 	        <div class="sidebar" name="show">
@@ -603,8 +605,8 @@
 		
       
         console.log("Firebase initialized and ready!"); 
-		
 	
+		
     </script>
 </body>
 </html>
