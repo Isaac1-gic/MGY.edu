@@ -18,6 +18,8 @@
 		let activeKey = '';
         let timeStamp = Date.now();
 		let SPACE_TIME = 30000;
+		let deferredInstallPrompt = null;
+		let installAsked = false;
         
         function showAlert() {
             alert('Welcome to Web School! Registration is opening soon.');
@@ -114,7 +116,7 @@
 				edit('new')
 				return
 			}
-			else if (!userData["userInfo"]['username'] && pageId != "signPage"){
+			else if (!userkey && pageId != "signPage"){
 				switchPage("signPage")
 				return
 			}
@@ -760,7 +762,7 @@
 	
             } catch (e) {
             }
-        },1000);
+        },9000);
 
 window.addEventListener('load',async(e) =>{
 	try {
