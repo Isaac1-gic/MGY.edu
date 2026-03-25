@@ -51,7 +51,7 @@
 						const userNow = userAuth.currentUser; 
 
 						if (userNow) {
-							userkey = userNow.uid;
+							userkey = userNow['uid'];
 							path = ref(database,`users/${userkey}`)
 							await set(path,userData)
 							await saveData('userData',userData)
@@ -82,7 +82,7 @@
 						const userNow = userAuth.currentUser; 
 	
 						if (userNow) {
-							userkey = userNow.uid;
+							userkey = userNow['uid'];
 							path = ref(database,`users/${userkey}`)
 							const snapshot = await get(path);
 			                const userData = snapshot.val(); 
@@ -774,7 +774,7 @@ window.addEventListener('load',async(e) =>{
 		const mypath = ref(database,`users/${userkey}/userInfo`)
 		const userNow = userAuth.currentUser; 
 
-		userkey = userNow.uid;
+		userkey = userNow['uid'];
 		onChildChanged(mypath, async (snapshot) =>{
 			userData.userInfo[snapshot.key] = snapshot.val();
 			console.log('Update')
