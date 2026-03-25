@@ -1,6 +1,12 @@
 {
     "name": "Malawian Genius Youth",
     "short_name": "MGY",
+    "description": "Lets say connected us schoolmates because together we grow!",
+    "id": "/MGY.edu/",
+    "start_url": "./index.html",
+    "scope": "./",
+    "display": "standalone",
+    "display_override": ["standalone", "minimal-ui", "browser"],
     "icons": [
         {
             "src": "img/android-chrome-192x192.png",
@@ -15,5 +21,13 @@
     ],
     "theme_color": "#f8fafc",
     "background_color": "#f8fafc",
-    "display": "standalone"
+    "background_sync": {"enabled": true},
+
+    "lang": "en",
+    "dir": "ltr",
+
+    "categories": [
+      "education",
+      "productivity"
+  ]
 }
