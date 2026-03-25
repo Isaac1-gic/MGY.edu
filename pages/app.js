@@ -51,7 +51,7 @@
 						const userNow = userAuth.currentUser; 
 
 						if (userNow) {
-							userkey = userNow['uid'];
+							userkey = userNow.uid;
 							path = ref(database,`users/${userkey}`)
 							await set(path,userData)
 							await saveData('userData',userData)
@@ -82,7 +82,7 @@
 						const userNow = userAuth.currentUser; 
 	
 						if (userNow) {
-							userkey = userNow['uid'];
+							userkey = userNow.uid;
 							path = ref(database,`users/${userkey}`)
 							const snapshot = await get(path);
 			                const userData = snapshot.val(); 
@@ -767,14 +767,12 @@
 window.addEventListener('load',async(e) =>{
 	try {
 		
-		await registerServiceWorker()
 		if (!isStandalone()) {
 				maybeShowInstall();
 			}
 		const mypath = ref(database,`users/${userkey}/userInfo`)
 		const userNow = userAuth.currentUser; 
-
-		userkey = userNow['uid'];
+		if(userNow) userkey = userNow.uid;
 		onChildChanged(mypath, async (snapshot) =>{
 			userData.userInfo[snapshot.key] = snapshot.val();
 			console.log('Update')
@@ -856,24 +854,7 @@ async function uploadToCloudinary(file, studentId,type) {
 }
 
 
-	async function registerServiceWorker() {
-        if ('serviceWorker' in navigator){
-            const reg = await navigator.serviceWorker.register('serviceworker.js', {scope: './'});
-           
-            if('periodicSync' in reg){
-                try{
-                    await reg.periodicSync.register('reminder-sync',{minInterval: 15 * 60 * 1000});
-                    
-                }catch(e){
-                   console.warn(e) 
-                }
-            }
-            return reg;
-        }
-        else{
-            
-        }
-    }
+	
 
 
 /**        // Import the functions needed from the SDKs
