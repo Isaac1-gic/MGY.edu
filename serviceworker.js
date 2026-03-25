@@ -19,7 +19,6 @@ const OFFLINE_URLS = [
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js',
-  'favicon.ico',
   'img/mgyG.jpg'
 ];
 
