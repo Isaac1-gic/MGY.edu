@@ -162,7 +162,7 @@ window.addEventListener('load',async(e) =>{
 				manageChat()
 			}else if (pageId == "profilePage"){
 				if(id){
-					profileUpdater(id,true)
+					profileUpdater(await getUser(id),true)
 					return
 				}
 				setupImageUpload('profile-input', 'profile-img-preview');
