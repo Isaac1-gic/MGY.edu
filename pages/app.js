@@ -29,33 +29,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 
-setTimeout(async(e) =>{
-	try {
-		
-		if (!isStandalone()) {
-				maybeShowInstall();
-			}
-		console.log(userkey,'old')
-		userkey = userAuth.currentUser.uid;
-		console.log(userkey,'old')
-		const mypath = ref(database,`users/${userkey}/userInfo`)
-		
-		onChildChanged(mypath, async (snapshot) =>{
-			userData.userInfo[snapshot.key] = snapshot.val();
-			console.log('Update')
-			await saveData('userData',userData)
-		})
-		const msgpath = ref(database,`users/${userkey}/messageBox`)
-		onChildAdded(msgpath, async (snapshot) =>{
-			userData.messageBox[snapshot.key] = snapshot.val();
-			await saveData('userData',userData)
-			console.log('Recevied')
-			setTimeout(()=>{manageChat},1000*10)
-		})
-	} catch (error) {
-		console.warn(error)
-	}
-},10000)
 
 
         
@@ -164,7 +137,7 @@ setTimeout(async(e) =>{
 				manageChat()
 			}else if (pageId == "profilePage"){
 				if(id){
-					profileUpdater(await getUser(id),true)
+					profileUpdater(id,true)
 					return
 				}
 				setupImageUpload('profile-input', 'profile-img-preview');
@@ -193,8 +166,9 @@ setTimeout(async(e) =>{
 			}
 		}
 
-		async function message(user){
-			if(userkey == user.userkey){
+		async function message(user,id){
+			console.log(userkey , user)
+			if(userkey == id){
 				alert('Oooh! Why you wanna message yourself?');
 				return;
 			} 
@@ -229,13 +203,11 @@ setTimeout(async(e) =>{
 				return user
 			} catch (error) {console.warn(error)}
 		}
-		async function profileUpdater(user,get=false){
+		async function profileUpdater(userId,get=false){
 			if(get){
 				const msg = document.getElementById("message")
 				msg.hidden = false
-				msg.onclick = () =>{
-					message(user)
-				}
+				
 				document.getElementById("edit").hidden = true
 				document.getElementsByName('lebel').forEach(lebel =>{
 					lebel.hidden = true
@@ -243,17 +215,20 @@ setTimeout(async(e) =>{
 				document.getElementsByName('input').forEach(lebel =>{
 					lebel.hidden = true
 				})
-				user = user == userkey ? userData:await getUser(user)
+				user = userId == userkey ? userData:await getUser(userId)
+				msg.onclick = () =>{
+					message(user,userId)
+				}
 			}
 			document.getElementById('user').textContent = user["userInfo"]['username']
 			document.getElementById('friends').textContent = user['freinds']== 'initialized' ? '0' + " Friends" : user['freinds'].length + " Friends"
 			document.getElementById('bio').textContent = user["userInfo"]['Bio']
 			if(user["userInfo"]['profile-img-preview']){
 				document.getElementById('pro-img').src = user["userInfo"]['profile-img-preview']
-				document.getElementById('profile-img-preview').src = user["userInfo"]['profile-img-preview']
+				document.getElementById('profile-img-preview').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'],'M')
 			}
 			if(user["userInfo"]['cover-img-preview']){
-				document.getElementById('cover-img-preview').src = user["userInfo"]['cover-img-preview']
+				document.getElementById('cover-img-preview').src = getOptimizedImageUrl(user["userInfo"]['cover-img-preview'],'L')
 			}
 			document.getElementById('email').textContent = user["userInfo"]['Email']
 			document.getElementById('phone-number').textContent = user["userInfo"]['Country code'] + user["userInfo"]['Phone number']
@@ -289,7 +264,7 @@ setTimeout(async(e) =>{
 				
 			}
 			input.addEventListener('change', async function() {
-				const file = this.files[0];
+				const file = input.files[0];
 				
 				if (file) {
 					// 1. Basic Validation (Size check example)
@@ -300,17 +275,20 @@ setTimeout(async(e) =>{
 					try {
 						
 						
-						const imgUrl = await uploadToCloudinary(file, userkey,previewId)
-						let user_ref = ref(database,`users/${userkey}/userInfo/${previewId}`)
-						set(user_ref,imgUrl);
-						console.log(imgUrl)
-						userData["userInfo"][previewId] = imgUrl;
-						await saveData('userData', userData)
-						// Make sure the image is visible (especially for cover photo)
-						if (previewId) {
-							preview.src = imgUrl;
-							preview.hidden = false
+						imgUrl = await uploadToCloudinary(file, userkey,previewId)
+						if (imgUrl) {
+							let user_ref = ref(database,`users/${userkey}/userInfo/${previewId}`)
+							set(user_ref,imgUrl);
+							console.log(imgUrl)
+							userData["userInfo"][previewId] = imgUrl;
+							await saveData('userData', userData)
+							// Make sure the image is visible (especially for cover photo)
+							if (previewId) {
+								preview.src = getOptimizedImageUrl(imgUrl);
+								preview.hidden = false
+							}
 						}
+						
 					} catch (error) {console.warn(error)}
 				}
 			});
@@ -518,7 +496,7 @@ setTimeout(async(e) =>{
 						
 							lastMsg = chat[chat.length - 1][1]
 							mgy[key] = chat
-							const proImg = lastMsg['imgUrl'] || 'img/mwflag.png'	//await getPhoto(lastMsg.userkey)
+							const proImg = getOptimizedImageUrl(lastMsg['imgUrl'])
 							createChatlist(value,lastMsg.prompt,proImg,key)
 							chatbox(key)
 						}catch (e){
@@ -647,11 +625,11 @@ setTimeout(async(e) =>{
 			if (!me) {
 		        sessionDiv.className = 'message chat-card';
 		        messager = chat.senderId;
-				img.src = chat['imgUrl'] || 'img/mwflag.png'	//await getPhoto(chat['userkey'])
+				img.src = getOptimizedImageUrl(chat['imgUrl'],'S')
 		    } else {
 		        sessionDiv.className = 'message mychat-card';
 		        messager = 'You';
-				img.src = userData["userInfo"]['profile-img-preview'] || 'img/mwflag.png'
+				img.src = getOptimizedImageUrl(userData["userInfo"]['profile-img-preview'],'S')
 				sessionDiv.ondblclick = async () =>{
 					if(!confirm('This message will be deleted!')) return
 					const refpath = activeKey == 'mgyforum' ? 'group_chats/':`messages/${activeKey}/`
@@ -805,7 +783,35 @@ setTimeout(async(e) =>{
             }
         },1000);
         
-
+window.onload = async function(){
+	setTimeout(async(e) =>{
+		try {
+			
+			if (!isStandalone()) {
+					maybeShowInstall();
+				}
+			console.log(userkey,'old')
+			userkey = userAuth.currentUser.uid;
+			console.log(userkey,'old')
+			const mypath = ref(database,`users/${userkey}/userInfo`)
+			
+			onChildChanged(mypath, async (snapshot) =>{
+				userData.userInfo[snapshot.key] = snapshot.val();
+				console.log('Update')
+				await saveData('userData',userData)
+			})
+			const msgpath = ref(database,`users/${userkey}/messageBox`)
+			onChildAdded(msgpath, async (snapshot) =>{
+				userData.messageBox[snapshot.key] = snapshot.val();
+				await saveData('userData',userData)
+				console.log('Recevied')
+				setTimeout(()=>{manageChat},1000*10)
+			})
+		} catch (error) {
+			console.warn(error)
+		}
+	},15000)
+}
 
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches
@@ -835,30 +841,50 @@ async function installApp() {
     document.getElementById('install-banner').style.display = 'none';
 }
 
-async function uploadToCloudinary(file, studentId,type) {
+async function uploadToCloudinary(file, studentId, type) {
     const formData = new FormData();
     const CLOUD_NAME = "dlnnjv1ca"; 
-	const UPLOAD_PRESET = "malawian-genius-youths";
-	  formData.append("file", file);
-	  formData.append("upload_preset", UPLOAD_PRESET);
-	  
-	  formData.append("public_id", studentId + type); 
-	
-	  try {
-	    const response = await fetch(
-	      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-	      { method: "POST", body: formData }
-	    );
-	
-	    const data = await response.json();
-	    
-	    // We add the timestamp (?t=) so the browser doesn't show the old cached version
-	    const studentPhotoUrl = `${data.secure_url}`//?t=${new Date().getTime()}`;
-	    
-	    console.log("Uploaded! Space saved by replacing old file:", studentPhotoUrl);
-	    return studentPhotoUrl;
-	
-	  } catch (error) {
-	    console.error("Cloudinary Error:", error);
-	  }
+    const UPLOAD_PRESET = "malawian-genius-youths";
+    
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("public_id", studentId + type); 
+    
+    console.log("Sending to Cloudinary:", file.name, studentId, type);
+    
+    try {
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+            { method: "POST", body: formData }
+        );
+
+        const data = await response.json();
+        
+        // THE FIX: Check if Cloudinary rejected the upload
+        if (!response.ok) {
+            console.error("Cloudinary refused the upload:", data.error.message);
+            // This alert will tell you exactly what is wrong!
+            alert("Upload failed"); 
+            return null; // Stop execution
+        }
+        
+        const studentPhotoUrl = data.secure_url.slice(62);
+        console.log("Uploaded! URL:", studentPhotoUrl);
+        return studentPhotoUrl;
+
+    } catch (error) {
+        console.error("Network Error:", error);
+        alert("Check your internet connection.");
+        return null;
+    }
+}
+
+function getOptimizedImageUrl(publicId,type) {
+	if(!publicId) return 'img/mgyG.jpg'
+    const CLOUD_NAME = "dlnnjv1ca";
+    let transformations = "c_fill,g_face,f_auto,q_auto";
+	if(type == 'L') transformations += 'w_400,h_400';
+	if(type == 'M') transformations += 'w_200,h_200,r_max';
+	if(type == 's') transformations += 'w_100,h_100,r_max';
+    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
 }
