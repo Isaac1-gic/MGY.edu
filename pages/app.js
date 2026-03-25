@@ -20,6 +20,42 @@
 		let SPACE_TIME = 30000;
 		let deferredInstallPrompt = null;
 		let installAsked = false;
+
+window.addEventListener('beforeinstallprompt', (e) => {    
+	e.preventDefault();            
+    deferredInstallPrompt = e;        
+    maybeShowInstall();                 
+});
+
+
+window.addEventListener('load',async(e) =>{
+	try {
+		
+		if (!isStandalone()) {
+				maybeShowInstall();
+			}
+		const mypath = ref(database,`users/${userkey}/userInfo`)
+		const userNow = userAuth.currentUser; 
+
+		if(userNow) userkey = userNow.uid;
+		onChildChanged(mypath, async (snapshot) =>{
+			userData.userInfo[snapshot.key] = snapshot.val();
+			console.log('Update')
+			await saveData('userData',userData)
+		})
+		const msgpath = ref(database,`users/${userkey}/messageBox`)
+		onChildAdded(msgpath, async (snapshot) =>{
+			userData.messageBox[snapshot.key] = snapshot.val();
+			await saveData('userData',userData)
+			console.log('Recevied')
+			setTimeout(()=>{manageChat},1000*10)
+		})
+	} catch (error) {
+		console.warn(error)
+	}
+})
+
+
         
         function showAlert() {
             alert('Welcome to Web School! Registration is opening soon.');
@@ -752,7 +788,9 @@
 			}
         setTimeout(async function (){
             try {
-				
+				if (!isStandalone()) {
+				maybeShowInstall();
+			}
 
                 await initDB();
 				
@@ -762,40 +800,9 @@
 	
             } catch (e) {
             }
-        },9000);
-
-window.addEventListener('load',async(e) =>{
-	try {
-		
-		if (!isStandalone()) {
-				maybeShowInstall();
-			}
-		const mypath = ref(database,`users/${userkey}/userInfo`)
-		const userNow = userAuth.currentUser; 
-		if(userNow) userkey = userNow.uid;
-		onChildChanged(mypath, async (snapshot) =>{
-			userData.userInfo[snapshot.key] = snapshot.val();
-			console.log('Update')
-			await saveData('userData',userData)
-		})
-		const msgpath = ref(database,`users/${userkey}/messageBox`)
-		onChildAdded(msgpath, async (snapshot) =>{
-			userData.messageBox[snapshot.key] = snapshot.val();
-			await saveData('userData',userData)
-			console.log('Recevied')
-			setTimeout(()=>{manageChat},1000*10)
-		})
-	} catch (error) {
-		console.warn(error)
-	}
-})
-
+        },1000);
         
-window.addEventListener('beforeinstallprompt', (e) => {    
-	e.preventDefault();            
-    deferredInstallPrompt = e;        
-    maybeShowInstall();                 
-});
+
 
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches
