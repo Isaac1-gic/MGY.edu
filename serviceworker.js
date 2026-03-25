@@ -60,7 +60,7 @@ self.addEventListener('fetch', event => {
       // 2. If not in cache, try network
       return fetch(event.request).then(networkResponse => {
         // Cache external assets (Tailwind/Fonts) on the fly
-        if (url || EXTERNAL_HOSTS.includes(url.hostname)) {
+        if (url.startsWith('https://res.cloudinary.com') || EXTERNAL_HOSTS.includes(url.hostname)) {
           return caches.open(CACHE_EXTERNAL_NAME).then(cache => {
             cache.put(event.request, networkResponse.clone());
             return networkResponse;
