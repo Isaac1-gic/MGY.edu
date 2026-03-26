@@ -291,7 +291,7 @@
 	            <div class="post-box">
 	                <img src="img/mgy.jpg" class="small_profile_img" id="pro-img" style="border-radius: 50%">
 	                <div class="input-mock">Install MGY app to get eductional updates.</div>
-					<button class="btn" id="insT">Install</button>
+					<button class="btn" id="insT" onclick="installApp()">Install</button>
 	            </div>
 	        </div>
 	    </div>
@@ -583,10 +583,10 @@
         };
         
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app); 
-        const database = getDatabase(app);
-		const auth = getAuth(app);
+        const app = await initializeApp(firebaseConfig);
+        const analytics = await getAnalytics(app); 
+        const database = await getDatabase(app);
+		const auth = await getAuth(app);
 
         window.database = database;
         window.ref = ref;
