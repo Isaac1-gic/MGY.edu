@@ -128,6 +128,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				return
 			}
 			else if (!userkey && pageId != "signPage"){
+				if(userAuth.currentUser.uid){
+					userkey = userAuth.currentUser.uid;
+					switchPage(pageId);
+					return;
+				}
 				switchPage("signPage")
 				return
 			}
@@ -784,10 +789,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
         },1000);
         
 window.onload = async function(){
-	setTimeout(async(e) =>{
-		if (!isStandalone()) {
+	if (!isStandalone()) {
 					maybeShowInstall();
 				}
+	setTimeout(async(e) =>{
 		try {
 			
 			
