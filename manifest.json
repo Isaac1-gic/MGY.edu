@@ -1,7 +1,25 @@
 {
     "name": "Malawian Genius Youth",
     "short_name": "MGY",
-    "description": "Lets say connected us schoolmates because together we grow!",
+    "description": "Malawian Genius Youth (MGY) - Learning Platform
+MGY is a progressive web app connecting young minds across Malawi through science, education, and innovation.
+
+Key Features:
+
+📚 Educational Courses — Access quality learning content
+💬 MGY Room — Collaborative chat and discussion space for questions and quizzes
+👤 User Profiles — Connect with peers, share achievements, and build your network
+📲 Offline Access — Installable PWA with service worker support for offline learning
+🎓 Community Learning — Engage with expert-led content and discussions
+Our Mission: Empower Malawian youth to think big, collaborate, innovate, and shape the future through shared learning and community support.
+
+Perfect for:
+
+Students seeking quality educational content
+Young innovators and problem-solvers
+Anyone passionate about science and education
+Collaborative learners building a network
+Join the Movement. Inspire Excellence. Transform Tomorrow.",
     "id": "/MGY.edu/",
     "start_url": "./index.html",
     "scope": "./",
