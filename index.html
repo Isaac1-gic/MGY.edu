@@ -10,6 +10,106 @@
 	<link rel="manifest" href="manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Malawian Genius Youths | Scie Gs</title>
+	 <!-- Basic SEO -->
+	<meta name="description" content="Malawian Genius Youth (MGY) - Learning Platform
+MGY is a progressive web app connecting young minds across Malawi through science, education, and innovation.
+
+Key Features:
+
+📚 Educational Courses — Access quality learning content
+💬 MGY Room — Collaborative chat and discussion space for questions and quizzes
+👤 User Profiles — Connect with peers, share achievements, and build your network
+📲 Offline Access — Installable PWA with service worker support for offline learning
+🎓 Community Learning — Engage with expert-led content and discussions
+Our Mission: Empower Malawian youth to think big, collaborate, innovate, and shape the future through shared learning and community support.
+
+Perfect for:
+
+Students seeking quality educational content
+Young innovators and problem-solvers
+Anyone passionate about science and education
+Collaborative learners building a network
+Join the Movement. Inspire Excellence. Transform Tomorrow.">
+	
+	<!-- Open Graph -->
+	<meta property="og:title" content="MSCE ">
+	<meta property="og:description" content="Malawian Genius Youth (MGY) - Learning Platform
+MGY is a progressive web app connecting young minds across Malawi through science, education, and innovation.
+
+Key Features:
+
+📚 Educational Courses — Access quality learning content
+💬 MGY Room — Collaborative chat and discussion space for questions and quizzes
+👤 User Profiles — Connect with peers, share achievements, and build your network
+📲 Offline Access — Installable PWA with service worker support for offline learning
+🎓 Community Learning — Engage with expert-led content and discussions
+Our Mission: Empower Malawian youth to think big, collaborate, innovate, and shape the future through shared learning and community support.
+
+Perfect for:
+
+Students seeking quality educational content
+Young innovators and problem-solvers
+Anyone passionate about science and education
+Collaborative learners building a network
+Join the Movement. Inspire Excellence. Transform Tomorrow.">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://mgy.netlify.app">
+	<meta property="og:image" content="img/mgy.jpg">
+	<meta property="og:site_name" content="MSCE ">
+	
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="MSCE ">
+	<meta name="twitter:description" content="Malawian Genius Youth (MGY) - Learning Platform
+MGY is a progressive web app connecting young minds across Malawi through science, education, and innovation.
+
+Key Features:
+
+📚 Educational Courses — Access quality learning content
+💬 MGY Room — Collaborative chat and discussion space for questions and quizzes
+👤 User Profiles — Connect with peers, share achievements, and build your network
+📲 Offline Access — Installable PWA with service worker support for offline learning
+🎓 Community Learning — Engage with expert-led content and discussions
+Our Mission: Empower Malawian youth to think big, collaborate, innovate, and shape the future through shared learning and community support.
+
+Perfect for:
+
+Students seeking quality educational content
+Young innovators and problem-solvers
+Anyone passionate about science and education
+Collaborative learners building a network
+Join the Movement. Inspire Excellence. Transform Tomorrow.">
+	<meta name="twitter:image" content="img/mgy.jpg">
+	
+	<!-- Schema.org Structured Data -->
+	<script type="application/ld+json">
+	{
+	  "@context": "https://schema.org",
+	  "@type": "Educational Organization",
+	  "name": "MGY",
+	  "url": "https://mgy.netlify.app",
+	  "description": "Malawian Genius Youth (MGY) - Learning Platform
+MGY is a progressive web app connecting young minds across Malawi through science, education, and innovation.
+
+Key Features:
+
+📚 Educational Courses — Access quality learning content
+💬 MGY Room — Collaborative chat and discussion space for questions and quizzes
+👤 User Profiles — Connect with peers, share achievements, and build your network
+📲 Offline Access — Installable PWA with service worker support for offline learning
+🎓 Community Learning — Engage with expert-led content and discussions
+Our Mission: Empower Malawian youth to think big, collaborate, innovate, and shape the future through shared learning and community support.
+
+Perfect for:
+
+Students seeking quality educational content
+Young innovators and problem-solvers
+Anyone passionate about science and education
+Collaborative learners building a network
+Join the Movement. Inspire Excellence. Transform Tomorrow.",
+	  "logo": "img/mgy.jpg"
+	}
+	</script>
     <style>
         :root {
             --primary: #2563eb;
@@ -281,10 +381,46 @@
 	            <p>Learn to design beautiful interfaces that users love.</p>
 	        </div>
 	    </section>
-	
-	    <footer id="contact">
-	        <p>&copy; 2026 MGY. All rights reserved.</p>
-	    </footer>
+
+		<section id="contact">
+		    <footer>
+				Malawian Genius Youth (MGY) - Learning Platform
+			</footer>
+			<div class="card">
+				
+				<p>
+					MGY is a progressive web app connecting young minds across Malawi through science, education, and innovation.
+				</p>
+				<p>
+					Key Features:
+				</p>
+				<p>
+					📚 Educational Courses — Access quality learning content<br>
+					💬 MGY Room — Collaborative chat and discussion space for questions and quizzes<br>
+					👤 User Profiles — Connect with peers, share achievements, and build your network<br>
+					📲 Offline Access — Installable PWA with service worker support for offline learning<br>
+					🎓 Community Learning — Engage with expert-led content and discussions
+				</p>
+				<p>
+					Our Mission: Empower Malawian youth to think big, collaborate, innovate, and shape the future through shared learning and community support.
+				</p>	
+				<p>
+					Perfect for:
+				</p>
+				<p>
+					Students seeking quality educational content<br>
+					Young innovators and problem-solvers<br>
+					Anyone passionate about science and education<br>
+					Collaborative learners building a network
+				</p>
+				<p>
+					Join the Movement. Inspire Excellence. Transform Tomorrow.
+				</p>
+			</div>
+			<footer>
+		        <p>&copy; 2026 MGY. All rights reserved. @Isaac G Chitsakamire</p>
+		    </footer>
+		</section>
 		
 		<div class="msg" id="install-banner">
 	        <div class="card">
@@ -601,11 +737,21 @@
 		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 		window.onChildChanged = onChildChanged;
+		
 
 		
       
         console.log("Firebase initialized and ready!"); 
-	
+		alert(`🔧 Development Notice:
+MGY is currently in beta and under active development. 
+Please be aware:
+• Features may be unstable or incomplete
+• The page may freeze or crash
+• Data may be lost during updates
+• Your feedback helps us improve!
+
+Thank you for being part of our journey! 🙏`)
+		window.userID = await auth.currentUser.uid;
 		
     </script>
 </body>
