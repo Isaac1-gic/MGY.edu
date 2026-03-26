@@ -792,13 +792,24 @@ window.onload = async function(){
 	if (!isStandalone()) {
 					maybeShowInstall();
 				}
+	await adddbListener(10)
+}
+
+function adddbListener(i) {
+	if (i == 0) {
+		return
+	}
 	setTimeout(async(e) =>{
 		try {
 			
+			if (userID) {
+				userkey = userID
+				return
 			
+			}
 			console.log(userkey,'old')
 			userkey = userAuth.currentUser.uid;
-			console.log(userkey,'old')
+			console.log(userkey,'new')
 			const mypath = ref(database,`users/${userkey}/userInfo`)
 			
 			onChildChanged(mypath, async (snapshot) =>{
@@ -814,11 +825,13 @@ window.onload = async function(){
 				setTimeout(()=>{manageChat},1000*10)
 			})
 		} catch (error) {
+			
 			console.warn(error)
+			await adddbListener(i-1)
 		}
 	},15000)
+	
 }
-
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches
         || window.navigator.standalone === true;
