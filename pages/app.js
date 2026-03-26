@@ -785,11 +785,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
         
 window.onload = async function(){
 	setTimeout(async(e) =>{
-		try {
-			
-			if (!isStandalone()) {
+		if (!isStandalone()) {
 					maybeShowInstall();
 				}
+		try {
+			
+			
 			console.log(userkey,'old')
 			userkey = userAuth.currentUser.uid;
 			console.log(userkey,'old')
