@@ -65,6 +65,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 							userkey = userNow.uid;
 							path = ref(database,`users/${userkey}`)
 							await set(path,userData)
+							await saveData('key',userkey)
 							await saveData('userData',userData)
 							alert("Success! Welcome to MGY.");
 						}else {
@@ -80,10 +81,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		}
 		async function signInWithEmailAndPassword(currentU,currentP){
 			await emergencyLogin(currentU.replaceAll(' ','')+'@mgy.com',currentP)
-			const userNow = userAuth.currentUser; 
 	
 			if (userNow) {
-				userkey = userNow.uid;
 				path = ref(database,`users/${userkey}`)
 				const snapshot = await get(path);
 			    const userData = snapshot.val(); 
@@ -324,12 +323,8 @@ async function emergencyLogin(email, password) {
 
   const data = await response.json();
   if (data.idToken) {
-	userAuth = getAuth();
-    
-    // This is the "Magic Link" that tells the SDK the user is logged in
-    // Note: If you have the 'idToken', you can often just use it directly 
-    // to fetch your Database data if you are in a rush.
     userkey = data.localId
+	await saveData('key',userkey)
     console.log("Logged in UID:", data.localId); // This is your 'uid'!
     return { status: 'success', uid: data.localId };
     console.log("Login Success!");
@@ -784,6 +779,7 @@ async function emergencyLogin(email, password) {
 				  if (onloadFlag === 'onload') {
 					
 					userData = val ? val:userData;
+					
 				  }
 				  resolve(val);
 				};
@@ -819,6 +815,7 @@ async function emergencyLogin(email, password) {
         },1000);
         
 window.onload = async function(){
+	userkey = await loadData('key')
 	if (!isStandalone()) {
 					maybeShowInstall();
 				}
@@ -832,10 +829,7 @@ function adddbListener(i) {
 	setTimeout(async(e) =>{
 		try {
 			
-			console.log(userkey,'old')
-			userAuth = await getAuth();
-			userkey = userAuth.currentUser.uid;
-			console.log(userkey,'new')
+			
 			const mypath = ref(database,`users/${userkey}/userInfo`)
 			
 			onChildChanged(mypath, async (snapshot) =>{
