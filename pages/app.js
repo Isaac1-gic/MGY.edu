@@ -79,7 +79,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 		}
 		async function signInWithEmailAndPassword(currentU,currentP){
-			await signInWithEmailAndPassword(userAuth,currentU.replaceAll(' ','')+'@mgy.com',currentP)
+			await emergencyLogin(currentU.replaceAll(' ','')+'@mgy.com',currentP)
 			const userNow = userAuth.currentUser; 
 	
 			if (userNow) {
@@ -307,6 +307,37 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			reader.readAsDataURL(file);
 			return img
 		}
+
+async function emergencyLogin(email, password) {
+  const API_KEY = FIREBASE_API_KEY; // Get this from your config
+  const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    body: JSON.stringify({
+      email: email,
+      password: password,
+      returnSecureToken: true
+    }),
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  const data = await response.json();
+  if (data.idToken) {
+	userAuth = getAuth();
+    
+    // This is the "Magic Link" that tells the SDK the user is logged in
+    // Note: If you have the 'idToken', you can often just use it directly 
+    // to fetch your Database data if you are in a rush.
+    userkey = data.localId
+    console.log("Logged in UID:", data.localId); // This is your 'uid'!
+    return { status: 'success', uid: data.localId };
+    console.log("Login Success!");
+    return "success";
+  } else {
+    throw new Error(data.error.message);
+  }
+}
 		async function promptSwitch(kind = String) {
                 const textarea = document.getElementById('textprompt-'+kind);
                 
@@ -649,7 +680,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			header.textContent = `${messager} ${time}`;
 		    const devsec = document.createElement('div')
 			devsec.className = "post-box"
-		    const p = document.createElement('pre');
+		    const p = document.createElement('div');
+			p.className = "pre"
 		    p.textContent = chat.prompt; 
 		            
 					
@@ -801,6 +833,7 @@ function adddbListener(i) {
 		try {
 			
 			console.log(userkey,'old')
+			userAuth = await getAuth();
 			userkey = userAuth.currentUser.uid;
 			console.log(userkey,'new')
 			const mypath = ref(database,`users/${userkey}/userInfo`)
