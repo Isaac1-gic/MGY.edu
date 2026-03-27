@@ -175,7 +175,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				alert('Oooh! Why you wanna message yourself?');
 				return;
 			} 
-			let chatKey = `${user['userkey']}-${userkey}`
+			let chatKey = `${id}-${userkey}`
 			if (!userData['messageBox'][chatKey]){
 				userData['messageBox'] = userData['messageBox'] == 'initialized' ? {}:userData['messageBox']
 				userData['messageBox'][chatKey] = user.userInfo.username
@@ -183,7 +183,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				try{
 					user_ref = ref(database,`users/${userkey}/messageBox`)
 					await set(user_ref,userData['messageBox'])
-					user_ref = ref(database,`users/${user["userkey"]}/messageBox`)
+					user_ref = ref(database,`users/${id}/messageBox`)
 					await set(user_ref,user['messageBox'])
 					manageChat(chatKey)
 					alert('Hello! '+userData.userInfo.username)
@@ -225,13 +225,17 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			document.getElementById('user').textContent = user["userInfo"]['username']
 			document.getElementById('friends').textContent = user['freinds']== 'initialized' ? '0' + " Friends" : user['freinds'].length + " Friends"
-			document.getElementById('bio').textContent = user["userInfo"]['Bio']
+			document.getElementById('bio').textContent = user["userInfo"]['Bio'] || "Today is your tomorrow history. If you are genius enough, make your famous history today."
 			if(user["userInfo"]['profile-img-preview']){
 				document.getElementById('pro-img').src = user["userInfo"]['profile-img-preview']
 				document.getElementById('profile-img-preview').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'],'M')
+			}else{
+				document.getElementById('profile-img-preview').src = 'img/mwflag.png'
 			}
 			if(user["userInfo"]['cover-img-preview']){
 				document.getElementById('cover-img-preview').src = getOptimizedImageUrl(user["userInfo"]['cover-img-preview'],'L')
+			}else {
+				document.getElementById('cover-img-preview').src = 'img/mgyG.jpg'
 			}
 			document.getElementById('email').textContent = user["userInfo"]['Email']
 			document.getElementById('phone-number').textContent = user["userInfo"]['Country code'] + user["userInfo"]['Phone number']
@@ -526,7 +530,7 @@ async function emergencyLogin(email, password) {
 						
 							lastMsg = chat[chat.length - 1][1]
 							mgy[key] = chat
-							const proImg = getOptimizedImageUrl(lastMsg['imgUrl'])
+							const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
 							createChatlist(value,lastMsg.prompt,proImg,key)
 							chatbox(key)
 						}catch (e){
@@ -597,7 +601,7 @@ async function emergencyLogin(email, password) {
 			                chatId: Date.now(),
 			                senderId: userData.userInfo.username,
 							userkey: userkey,
-							imgUrl: userData.userInfo['profile-img-preview'],
+							imgUrl: userData.userInfo['profile-img-preview'] || 'img/mgyG.jpg',
 			                prompt: text,
 
 			            };
@@ -923,8 +927,8 @@ function getOptimizedImageUrl(publicId,type) {
 	if(!publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,g_face,f_auto,q_auto";
-	if(type == 'L') transformations += 'w_400,h_400';
-	if(type == 'M') transformations += 'w_200,h_200,r_max';
-	if(type == 's') transformations += 'w_100,h_100,r_max';
+	if(type == 'L') transformations += ',w_400,h_400';
+	if(type == 'M') transformations += ',w_200,h_200,r_max';
+	if(type == 's') transformations += ',w_100,h_100,r_max';
     return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
 }
