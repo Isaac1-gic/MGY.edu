@@ -72,10 +72,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 							handleLoginFailure()
 						}
 					} catch (e){
-						if (error.code === 'auth/email-already-in-use') {
+						if (e.code === 'auth/email-already-in-use') {
 						    alert("That username is already taken!");
 							return
 					    }
+						console.warn(e)
 						handleLoginFailure()
 					}
 		}
