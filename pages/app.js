@@ -78,6 +78,20 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						handleLoginFailure()
 					}
 		}
+		async function signInWithEmailAndPassword(currentU,currentP){
+			await signInWithEmailAndPassword(userAuth,currentU.replaceAll(' ','')+'@mgy.com',currentP)
+			const userNow = userAuth.currentUser; 
+	
+			if (userNow) {
+				userkey = userNow.uid;
+				path = ref(database,`users/${userkey}`)
+				const snapshot = await get(path);
+			    const userData = snapshot.val(); 
+			    
+			    await saveData('userData', userData);
+			    
+			}
+		}
 
 		async function login() {
 			const logInFm = document.getElementById("loginForm");
@@ -89,22 +103,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				try {
 					
 					loginBtn.innerText = "Checking...";
-					await signInWithEmailAndPassword(userAuth,currentU.replaceAll(' ','')+'@mgy.com',currentP)
-						const userNow = userAuth.currentUser; 
-	
-						if (userNow) {
-							userkey = userNow.uid;
-							path = ref(database,`users/${userkey}`)
-							const snapshot = await get(path);
-			                const userData = snapshot.val(); 
-			                
-			                await saveData('userData', userData);
-			                switchPage('homePage');
-							alert("Success! Welcome to MGY.");
-			            }
-			        else {
-			            handleLoginFailure();
-			        }
+					await signInWithEmailAndPassword(currentU,currentP)
+					switchPage('homePage');
+					alert("Success! Welcome to MGY.");
+					
 			    } catch (err) {
 			        console.error(err);
 			        handleLoginFailure();
@@ -128,11 +130,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				return
 			}
 			else if (!userkey && pageId != "signPage"){
-				if(userAuth.currentUser.uid){
-					userkey = userAuth.currentUser.uid;
-					switchPage(pageId);
-					return;
-				}
+				
 				switchPage("signPage")
 				return
 			}
@@ -802,11 +800,6 @@ function adddbListener(i) {
 	setTimeout(async(e) =>{
 		try {
 			
-			if (userID) {
-				userkey = userID
-				return
-			
-			}
 			console.log(userkey,'old')
 			userkey = userAuth.currentUser.uid;
 			console.log(userkey,'new')
