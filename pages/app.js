@@ -924,7 +924,7 @@ async function uploadToCloudinary(file, studentId, type) {
 }
 
 function getOptimizedImageUrl(publicId,type) {
-	if(!publicId) return 'img/mgyG.jpg'
+	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,g_face,f_auto,q_auto";
 	if(type == 'L') transformations += ',w_400,h_400';
