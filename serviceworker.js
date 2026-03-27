@@ -26,7 +26,7 @@ const EXTERNAL_HOSTS = [
   'cdn.tailwindcss.com',
   'fonts.googleapis.com',
   'fonts.gstatic.com',
-  'https://res.cloudinary.com'
+  'res.cloudinary.com'
 ];
 // --- 1. INSTALL: Force caching of all critical files ---
 self.addEventListener('install', event => {
