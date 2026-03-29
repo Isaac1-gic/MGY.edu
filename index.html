@@ -340,10 +340,10 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
                 // Register the service worker, setting the scope to the current directory './'
                 navigator.serviceWorker.register('serviceworker.js', {scope: './'})
                     .then(function(registration) {
-                        
+                        console.log('sw is ready')
                     })
                     .catch(function(error) {
-                        
+                        console.log(error)
                     });
             } else {
                 
@@ -698,7 +698,9 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		import { 
 			getAuth,
 			createUserWithEmailAndPassword,
-			signInWithEmailAndPassword
+			signInWithEmailAndPassword,
+			GoogleAuthProvider,
+			signInWithCredential
 			   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
         import { 
@@ -753,15 +755,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		
       
         console.log("Firebase initialized and ready!"); 
-		alert(`🔧 Development Notice:
-MGY is currently in beta and under active development. 
-Please be aware:
-• Features may be unstable or incomplete
-• The page may freeze or crash
-• Data may be lost during updates
-• Your feedback helps us improve!
-
-Thank you for being part of our journey! 🙏`)
+		
 		
     </script>
 </body>
