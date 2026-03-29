@@ -698,9 +698,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		import { 
 			getAuth,
 			createUserWithEmailAndPassword,
-			signInWithEmailAndPassword,
-			GoogleAuthProvider,
-			signInWithCredential
+			signInWithEmailAndPassword
 			   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
         import { 
@@ -742,14 +740,12 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         window.onChildAdded = onChildAdded;
         window.off = off;
 		window.set = set;
-		window.GoogleAuthProvider = GoogleAuthProvider;
-		window.signInWithCredential = signInWithCredential;
 		window.get = get;
 		window.userAuth = auth;
 		window.getAuth = getAuth;
 		window.remove = remove;
 		window.onValue = onValue;
-		//window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 		window.onChildChanged = onChildChanged;
 		
