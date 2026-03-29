@@ -1,44 +1,46 @@
-﻿// netlify/functions/upload-image.js
 const cloudinary = require('cloudinary').v2;
 
-// Configure Cloudinary with Environment Variables 
-// (Set these in Netlify Console > Site Settings > Environment Variables)
+exports.handler = async (event) => {
+  // 1. Immediate Logging - This will show up in the Netlify Web Console
+  console.log("Function triggered!"); 
 
-
-export const handler = async (event) => {
-  console.log('Sarting')
-  // Only allow POST requests
   if (event.httpMethod !== "POST") {
     return { statusCode: 405, body: "Method Not Allowed" };
   }
 
   try {
-    console.log('get img and id')
+    // 2. Check if the body exists
+    if (!event.body) {
+      throw new Error("No body found in request");
+    }
+
     const { image, userUid } = JSON.parse(event.body);
-    console.log('getting keys')
+
     cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
+      cloud_name: process.env.CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
     });
-    console.log('uploading')
-    // Upload to Cloudinary
+
     const result = await cloudinary.uploader.upload(image, {
-      public_id: `profile_${userUid}`, // Using UID ensures the old one is overwritten
+      public_id: `profile_${userUid}`,
       folder: "mgy_profiles",
-      overwrite: true,               // This tells Cloudinary to replace existing file
-      invalidate: true               // This clears the old image from the CDN cache
+      overwrite: true,
+      invalidate: true
     });
 
     return {
       statusCode: 200,
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url: result.secure_url }),
     };
+
   } catch (error) {
-    console.log(error)
+    // 3. Force the error to be returned to the browser so you can see it
+    console.error("Cloudinary Error:", error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      body: JSON.stringify({ error: error.message, stack: error.stack }),
     };
   }
 };
