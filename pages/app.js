@@ -283,14 +283,16 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						
 						imgUrl = await uploadToCloudinary(file, userkey,previewId)
 						if (imgUrl) {
-							let user_ref = ref(database,`users/${userkey}/userInfo/${previewId}`)
-							set(user_ref,imgUrl);
-							console.log(imgUrl)
-							userData["userInfo"][previewId] = imgUrl;
-							await saveData('userData', userData)
+							if (!userData["userInfo"][previewId]){
+								let user_ref = ref(database,`users/${userkey}/userInfo/${previewId}`)
+								set(user_ref,imgUrl);
+								console.log(imgUrl)
+								userData["userInfo"][previewId] = imgUrl;
+								await saveData('userData', userData)
+							}
 							// Make sure the image is visible (especially for cover photo)
 							if (previewId) {
-								preview.src = getOptimizedImageUrl(imgUrl);
+								preview.src = getOptimizedImageUrl(imgUrl,previewId == 'cover-img-preview' ? 'L':'M');
 								preview.hidden = false
 							}
 						}
@@ -881,48 +883,43 @@ async function installApp() {
     document.getElementById('install-banner').style.display = 'none';
 }
 
-async function uploadToCloudinary(file, studentId, type) {
-    const formData = new FormData();
-    const CLOUD_NAME = "dlnnjv1ca"; 
-    const UPLOAD_PRESET = "malawian-genius-youths";
-    
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
-    formData.append("public_id", studentId + type); 
-    
-    console.log("Sending to Cloudinary:", file.name, studentId, type);
-    
-    try {
-        const response = await fetch(
-            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-            { method: "POST", body: formData }
-        );
+async function uploadToCloudinary(file, uid, type) {
+  
+	console.log('Start');
+	return new Promise((resolve,reject) => {
+	    const reader = new FileReader();
+	    reader.readAsDataURL(file);
+	    reader.onloadend = async () => {
+			try {
+	        const base64String = reader.result;
+	        const response = await fetch('/.netlify/functions/upload-image', {
+	            method: 'POST',
+	            body: JSON.stringify({ image: base64String, userUid: uid + type})
+	        }); 
+	    
+	        const data = await response.json();
+			if (data.url) {
+		      console.log("Image Updated:", data.url);
+		      // Now save data.url to your Firebase Database for that student
+		      resolve(data.url.slice(62));
+		    }else{
+				reject("No URL returned from Netlify")
+			}
+			} catch (err) {
+			    console.error("Upload failed:", err);
+			}
+	   
+	    };
+		reader.onerror = () => reject("File reading failed");
+	});
+  
 
-        const data = await response.json();
-        
-        // THE FIX: Check if Cloudinary rejected the upload
-        if (!response.ok) {
-            console.error("Cloudinary refused the upload:", data.error.message);
-            // This alert will tell you exactly what is wrong!
-            alert("Upload failed"); 
-            return null; // Stop execution
-        }
-        
-        const studentPhotoUrl = data.secure_url.slice(62);
-        console.log("Uploaded! URL:", studentPhotoUrl);
-        return studentPhotoUrl;
-
-    } catch (error) {
-        console.error("Network Error:", error);
-        alert("Check your internet connection.");
-        return null;
-    }
 }
 
 function getOptimizedImageUrl(publicId,type) {
 	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
-    let transformations = "c_fill,g_face,f_auto,q_auto";
+    let transformations = "c_fill,e,f_auto,q_auto";
 	if(type == 'L') transformations += ',w_400,h_400';
 	if(type == 'M') transformations += ',w_200,h_200,r_max';
 	if(type == 's') transformations += ',w_100,h_100,r_max';
