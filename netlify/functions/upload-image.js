@@ -24,7 +24,6 @@ exports.handler = async (event) => {
 
     const result = await cloudinary.uploader.upload(image, {
       public_id: `profile_${userUid}`,
-      folder: "mgy_profiles",
       overwrite: true,
       invalidate: true
     });
