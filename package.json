@@ -1,0 +1,6 @@
+{
+  "name": "mgy",
+  "dependencies": {
+    "cloudinary": "^2.0.0"
+  }
+}
