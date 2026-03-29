@@ -83,7 +83,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		async function EmailAndPassword(currentU,currentP){
 			const userCredential  = await signInWithEmailAndPassword(userAuth,currentU.replaceAll(' ','')+'@mgy.com',currentP)
 			
-	        const userkey = userCredential.user.uid;
+	        userkey = userCredential.user.uid;
 			path = ref(database,`users/${userkey}`)
 			const snapshot = await get(path);
 			userData = await snapshot.val();    
