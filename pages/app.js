@@ -327,7 +327,7 @@ async function emergencyLogin(email, password) {
   if (data.idToken) {
     userkey = data.localId
 	await saveData('key',userkey)
-	await saveData('refresh_token'data.refreshToken)
+	await saveData('refresh_token',data.refreshToken)
 	await getAuth();
     console.log("Logged in UID:", data.localId); // This is your 'uid'!
     return { status: 'success', uid: data.localId };
@@ -816,7 +816,7 @@ async function emergencyLogin(email, password) {
 	
             } catch (e) {
             }
-        },1000);
+        },10);
         
 window.onload = async function(){
 	userkey = await loadData('key')
