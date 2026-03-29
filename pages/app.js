@@ -851,7 +851,7 @@ function adddbListener(i) {
 			console.warn(error)
 			await adddbListener(i-1)
 		}
-	},1000)
+	},5000)
 	
 }
 
@@ -919,7 +919,7 @@ async function uploadToCloudinary(file, uid, type) {
 function getOptimizedImageUrl(publicId,type) {
 	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
-    let transformations = "c_fill,e,f_auto,q_auto";
+    let transformations = "c_fill,f_auto,q_auto";
 	if(type == 'L') transformations += ',w_400,h_400';
 	if(type == 'M') transformations += ',w_200,h_200,r_max';
 	if(type == 's') transformations += ',w_100,h_100,r_max';
