@@ -698,7 +698,8 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		import { 
 			getAuth,
 			createUserWithEmailAndPassword,
-			signInWithEmailAndPassword
+			signInWithEmailAndPassword,
+			onAuthStateChanged
 			   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
         import { 
@@ -748,6 +749,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
 		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
 		window.onChildChanged = onChildChanged;
+		window.onAuthStateChanged = onAuthStateChanged;
 		
 
 		
