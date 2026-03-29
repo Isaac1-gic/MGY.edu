@@ -101,8 +101,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					
 					loginBtn.innerText = "Checking...";
 					await EmailAndPassword(currentU,currentP)
-					switchPage('homePage');
 					alert("Success! Welcome to MGY.");
+					switchPage('homePage');
 					
 			    } catch (err) {
 			        console.error(err);
@@ -311,33 +311,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			return img
 		}
 
-async function emergencyLogin(email, password) {
-  const API_KEY = FIREBASE_API_KEY; // Get this from your config
-  const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    body: JSON.stringify({
-      email: email,
-      password: password,
-      returnSecureToken: true
-    }),
-    headers: { 'Content-Type': 'application/json' }
-  });
-
-  const data = await response.json();
-  if (data.idToken) {
-    userkey = data.localId
-	await saveData('key',userkey)
-	await saveData('refresh_token',data.refreshToken)
-	await getAuth();
-	await refreshSession()
-    console.log("Logged in UID:", data.localId);
-    return { status: 'success', uid: data.localId };
-  } else {
-    throw new Error(data.error.message);
-  }
-}
 		async function promptSwitch(kind = String) {
                 const textarea = document.getElementById('textprompt-'+kind);
                 
@@ -826,7 +799,6 @@ window.onload = async function(){
 	if (!isStandalone()) {
 			maybeShowInstall();
 		}
-	//await refreshSession()
 	await adddbListener(10)
 	alert(`🔧 Development Notice:
 	MGY is currently in beta and under active development. 
@@ -846,7 +818,18 @@ function adddbListener(i) {
 	setTimeout(async(e) =>{
 		try {
 			
-			userkey = getAuth().currentUser.uid
+			userkey = userAuth.currentUser.uid
+			onAuthStateChanged(userAuth, (user) => {
+			  if (user) {
+			    // User is already logged in! 
+			    // The SDK automatically refreshed the token if it was expired.
+			    console.log("Welcome back, " + user.uid);
+				alert('Welcome back, '+userData.userInfo['First name'])
+			  } else {
+			    // No user found, show login screen
+			    //switchPage('loginPage');
+			  }
+			});
 			const mypath = ref(database,`users/${userkey}/userInfo`)
 			
 			onChildChanged(mypath, async (snapshot) =>{
@@ -859,43 +842,17 @@ function adddbListener(i) {
 				userData.messageBox[snapshot.key] = snapshot.val();
 				await saveData('userData',userData)
 				console.log('Recevied')
-				setTimeout(()=>{manageChat},1000*10)
+				setTimeout(()=>{manageChat},1000)
 			})
 		} catch (error) {
 			
 			console.warn(error)
 			await adddbListener(i-1)
 		}
-	},15000)
+	},1000)
 	
 }
 
-async function refreshSession() {
-    const refreshToken = await loadData("refresh_token");
-
-    if (!refreshToken) {
-		userkey = '';
-		return;
-		};
-
-    const url = `https://securetoken.googleapis.com/v1/token?key=${FIREBASE_API_KEY}`;
-    
-    const response = await fetch(url, {
-        method: 'POST',
-        body: new URLSearchParams({
-            grant_type: 'refresh_token',
-            refresh_token: refreshToken
-        })
-    });
-
-    const data = await response.json();
-    if (data.id_token) {
-		const credential = GoogleAuthProvider.credential(data.idToken);
-	    await signInWithCredential(await getAuth(), credential);
-        console.log("Session Refreshed!");
-        return data.id_token;
-    }
-}
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches
         || window.navigator.standalone === true;
