@@ -82,15 +82,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		}
 		async function signInWithEmailAndPassword(currentU,currentP){
 			await emergencyLogin(currentU.replaceAll(' ','')+'@mgy.com',currentP)
-	
-			if (userNow) {
-				path = ref(database,`users/${userkey}`)
-				const snapshot = await get(path);
-			    const userData = snapshot.val(); 
-			    
-			    await saveData('userData', userData);
-			    
-			}
+			path = ref(database,`users/${userkey}`)
+			const snapshot = await get(path);
+			userData = await snapshot.val();    
+			await saveData('userData', snapshot.val());
 		}
 
 		async function login() {
@@ -222,6 +217,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				msg.onclick = () =>{
 					message(user,userId)
 				}
+			}else{
+				user = userData;
 			}
 			document.getElementById('user').textContent = user["userInfo"]['username']
 			document.getElementById('friends').textContent = user['freinds']== 'initialized' ? '0' + " Friends" : user['freinds'].length + " Friends"
@@ -330,6 +327,8 @@ async function emergencyLogin(email, password) {
   if (data.idToken) {
     userkey = data.localId
 	await saveData('key',userkey)
+	await saveData('refresh_token'data.refreshToken)
+	await getAuth();
     console.log("Logged in UID:", data.localId); // This is your 'uid'!
     return { status: 'success', uid: data.localId };
     console.log("Login Success!");
@@ -822,10 +821,20 @@ async function emergencyLogin(email, password) {
 window.onload = async function(){
 	userkey = await loadData('key')
 	if (!isStandalone()) {
-					maybeShowInstall();
-				}
+			maybeShowInstall();
+		}
+	await refreshSession()
 	await adddbListener(10)
-}
+	alert(`🔧 Development Notice:
+	MGY is currently in beta and under active development. 
+	Please be aware:
+	• Features may be unstable or incomplete
+	• The page may freeze or crash
+	• Data may be lost during updates
+	• Your feedback helps us improve!
+	
+	Thank you for being part of our journey! 🙏`)
+	}
 
 function adddbListener(i) {
 	if (i == 0) {
@@ -856,6 +865,33 @@ function adddbListener(i) {
 		}
 	},15000)
 	
+}
+
+async function refreshSession() {
+    const refreshToken = await loadData("refresh_token");
+
+    if (!refreshToken) {
+		userkey = '';
+		return;
+		};
+
+    const url = `https://securetoken.googleapis.com/v1/token?key=${FIREBASE_API_KEY}`;
+    
+    const response = await fetch(url, {
+        method: 'POST',
+        body: new URLSearchParams({
+            grant_type: 'refresh_token',
+            refresh_token: refreshToken
+        })
+    });
+
+    const data = await response.json();
+    if (data.id_token) {
+		const credential = GoogleAuthProvider.credential(data.idToken);
+	    await signInWithCredential(await getAuth(), credential);
+        console.log("Session Refreshed!");
+        return data.id_token;
+    }
 }
 function isStandalone() {
     return window.matchMedia('(display-mode: standalone)').matches
