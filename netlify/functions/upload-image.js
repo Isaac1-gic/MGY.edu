@@ -1,7 +1,6 @@
 const cloudinary = require('cloudinary').v2;
 
 exports.handler = async (event) => {
-  // 1. Immediate Logging - This will show up in the Netlify Web Console
   console.log("Function triggered!"); 
 
   if (event.httpMethod !== "POST") {
@@ -9,10 +8,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    // 2. Check if the body exists
-    if (!event.body) {
-      throw new Error("No body found in request");
-    }
+    if (!event.body) throw new Error("No body found in request");
 
     const { image, userUid } = JSON.parse(event.body);
 
@@ -22,24 +18,47 @@ exports.handler = async (event) => {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
 
-    const result = await cloudinary.uploader.upload(image, {
-      public_id: `profile_${userUid}`,
-      overwrite: true,
-      invalidate: true
-    });
+    // 1. Clean the base64 string
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const imageBuffer = Buffer.from(base64Data, 'base64');
+
+    // 2. Wrap upload_stream in a Promise to wait for Cloudinary
+    const uploadToCloudinary = () => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            public_id: `profile_${userUid}`,
+            folder: "mgy_profiles",
+            resource_type: "image", // Fixes the 400 transformation error
+            overwrite: true,
+          },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          }
+        );
+        stream.end(imageBuffer);
+      });
+    };
+
+    const result = await uploadToCloudinary();
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url: result.secure_url }),
+      // Return the secure_url and version to ensure transformations work
+      body: JSON.stringify({ 
+        url: result.secure_url,
+        public_id: result.public_id,
+        version: result.version 
+      }),
     };
 
   } catch (error) {
-    // 3. Force the error to be returned to the browser so you can see it
     console.error("Cloudinary Error:", error.message);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message, stack: error.stack }),
+      body: JSON.stringify({ error: error.message }),
     };
   }
 };
