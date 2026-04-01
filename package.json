@@ -4,7 +4,7 @@
   "description": "lets grow together",
   "main": "app.js",
   "dependencies": {
-    "aws-sdk": "^3",
+    "aws-sdk": "^2.152.0",
     "cloudinary": "^2.0.0"
   }
 }
