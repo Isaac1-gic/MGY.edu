@@ -1,5 +1,6 @@
-[functions."upload-image"]
-  node_bundler = "esbuild"
+[build]
+  command = "pip install -r requirements.txt"
+  functions = "netlify/functions"
 
-[functions."gemiai"]
-  runtime = "python"
+[functions]
+  included_files = ["*.py"]
