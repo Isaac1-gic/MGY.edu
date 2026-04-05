@@ -11,12 +11,9 @@ from io import BytesIO
 # 1. Initialize the Flask app
 app = Flask(__name__)
 
-# 2. Enable CORS (Cross-Origin Resource Sharing)
-# This is what allows your Netlify site to access this Render API
 CORS(app)
 
-# 3. Configure Gemini
-# Render will look for "GEMINI_API_KEY" in your Environment Variables
+
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 config = types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
 
@@ -77,7 +74,30 @@ def ask_gemini():
             "message": str(e)
         }), 500
 
-
+@app.route('/upload', methods=['POST'])
+def file_store_upload():
+    try:
+        file = request.files.get('file')
+        file_search_store = client.file_search_stores.create(config={'display_name':'MGY files'})
+        operation = client.file_search_stores.upload_to_file_search_store(
+                    file=file,
+                    file_search_store_name = file_search_store.name,
+                    config = {'display_name':'MGY files'})
+    
+        while not operation.done:
+            time.sleep(5)
+            operation = client.operations(operation)
+        return jsonify({
+                "status": "success",
+                "reply": 'file uploaded'
+            })
+    except Exception as e:
+        # If something breaks, Render will show this in the "Logs"
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+    
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
 if __name__ == "__main__":
