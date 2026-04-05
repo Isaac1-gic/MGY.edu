@@ -2,6 +2,9 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
+from google.genai import types
+from PIL import Image
+
 
 # 1. Initialize the Flask app
 app = Flask(__name__)
@@ -13,6 +16,7 @@ CORS(app)
 # 3. Configure Gemini
 # Render will look for "GEMINI_API_KEY" in your Environment Variables
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+config = types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
 
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
@@ -21,11 +25,65 @@ def ask_gemini():
         data = request.json
         user_message = data.get("message", "Hello")
         model = data.get("model", "gemini-2.5-flash-lite")
+        user_message = data.get("message", "Hello")
+        img = data.get("img_url", False)
 
+        if img:
+            img = Image.open(img)
+            response = client.models.generate_content(
+                model = model, 
+                contents = [img,user_message],
+                config = config
+            )
+    
+            # Return the AI response as JSON
+            return jsonify({
+                "status": "success",
+                "reply": response.text
+            })
+         
+        # Call the Gemini API
+        response = client.models.generate_content(
+            model = model, 
+            contents = user_message,
+            config = config
+        )
+
+        # Return the AI response as JSON
+        return jsonify({
+            "status": "success",
+            "reply": response.text
+        })
+
+    except Exception as e:
+        # If something breaks, Render will show this in the "Logs"
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+@app.route('/ask_img', methods=['POST'])
+def ask_gemini_img():
+    try:
+        # Get the JSON data sent from your Netlify frontend
+        data = request.json
+        user_message = data.get("message", "Hello")
+        model = data.get("model", "gemini-2.5-flash-lite")
+        user_message = data.get("message", "Hello")
+        img = data.get("img_url", False)
+
+        if not img:
+            return jsonify({
+                "status": "error",
+                "message": "Failed to get img_url"
+            }), 500
+        
+        
         # Call the Gemini API
         response = client.models.generate_content(
             model=model, 
-            contents=user_message
+            contents=user_message,
+            config=types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
         )
 
         # Return the AI response as JSON
