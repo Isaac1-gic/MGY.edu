@@ -79,25 +79,36 @@ def ask_gemini():
 def file_store_upload():
     try:
         file = request.files.get('file')
-        file_search_store = client.file_search_stores.create(config={'display_name':'MGY files'})
+        if not file:
+            return jsonify({"error": "No file provided"}), 400
+
+        # Read bytes once
+        file_data = file.read()
+
+        # Create the store (Consider moving this outside the route)
+        file_search_store = client.file_search_stores.create(
+            config={'display_name': 'MGY Library'}
+        )
+
+        # Upload using bytes and the original filename
         operation = client.file_search_stores.upload_to_file_search_store(
-                    file=file,
-                    file_search_store_name = file_search_store.name,
-                    config = {'display_name':'MGY files'})
+            file=file_data,
+            file_search_store_name=file_search_store.name,
+            config={'display_name': file.filename}
+        )
     
+        # Poll for completion
         while not operation.done:
-            time.sleep(5)
-            operation = client.operations(operation)
+            time.sleep(2)
+            # Ensure we refresh the operation status properly
+            operation = client.operations.get(name=operation.name)
+            
         return jsonify({
-                "status": "success",
-                "reply": 'file uploaded'
-            })
+            "status": "success",
+            "reply": f"File '{file.filename}' uploaded to store '{file_search_store.name}'"
+        })
     except Exception as e:
-        # If something breaks, Render will show this in the "Logs"
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
+        return jsonify({"status": "error", "message": str(e)}), 500
     
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
