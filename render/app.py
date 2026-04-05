@@ -20,10 +20,11 @@ def ask_gemini():
         # Get the JSON data sent from your Netlify frontend
         data = request.json
         user_message = data.get("message", "Hello")
+        model = data.get("model", "gemini-2.5-flash-lite")
 
         # Call the Gemini API
         response = client.models.generate_content(
-            model="gemini-2.0-flash", 
+            model=model, 
             contents=user_message
         )
 
