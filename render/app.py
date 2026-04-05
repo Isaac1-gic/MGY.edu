@@ -76,7 +76,6 @@ def ask_gemini():
         }), 500
 
 @app.route('/upload', methods=['POST'])
-@app.route('/upload', methods=['POST'])
 def file_store_upload():
     try:
         file = request.files.get('file')
