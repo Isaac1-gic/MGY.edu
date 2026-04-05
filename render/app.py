@@ -76,40 +76,36 @@ def ask_gemini():
         }), 500
 
 @app.route('/upload', methods=['POST'])
+@app.route('/upload', methods=['POST'])
 def file_store_upload():
     try:
         file = request.files.get('file')
         if not file:
-            return jsonify({"error": "No file provided"}), 400
+            return jsonify({"error": "No file"}), 400
 
-        # Read bytes once
-        file_data = file.read()
+        # Create the store
+        file_search_store = client.file_search_stores.create(config={'display_name':'MGY files'})
+        
+        # FIX: Ensure we are passing the raw bytes
+        file_bytes = file.read() 
 
-        # Create the store (Consider moving this outside the route)
-        file_search_store = client.file_search_stores.create(
-            config={'display_name': 'MGY Library'}
-        )
-
-        # Upload using bytes and the original filename
         operation = client.file_search_stores.upload_to_file_search_store(
-            file=file_data,
+            file=file_bytes, 
             file_search_store_name=file_search_store.name,
-            config={'display_name': file.filename}
+            config={'display_name': file.filename} # Use original filename
         )
     
-        # Poll for completion
         while not operation.done:
             time.sleep(2)
-            # Ensure we refresh the operation status properly
-            operation = client.operations.get(name=operation.name)
-            
-        return jsonify({
-            "status": "success",
-            "reply": f"File '{file.filename}' uploaded to store '{file_search_store.name}'"
-        })
+            operation = client.operations.get(operation.name)
+
+        return jsonify({"status": "success", "reply": "file uploaded"})
+
     except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
-    
+        # If the error 'e' is huge (like a PDF dump), this jsonify might fail.
+        # Let's keep the error message clean.
+        error_msg = str(e)[:500] # Limit the error length
+        return jsonify({"status": "error", "message": error_msg}), 500    
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
 if __name__ == "__main__":
