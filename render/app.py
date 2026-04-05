@@ -60,7 +60,15 @@ def ask_gemini():
             img = Image.open(file)
             contents.insert(0,img)
     
-        return Response(stream_with_context(generate()), mimetype='text/event-stream')
+        
+        response = Response(stream_with_context(generate()), mimetype='text/event-stream')
+        
+        response.headers['Access-Control-Allow-Origin'] = 'https://mgy265.netlify.app'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-Accel-Buffering'
+        response.headers['X-Accel-Buffering'] = 'no'
+        
+        return response
 
     except Exception as e:
         # If something breaks, Render will show this in the "Logs"
