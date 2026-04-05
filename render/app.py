@@ -62,42 +62,6 @@ def ask_gemini():
             "message": str(e)
         }), 500
 
-@app.route('/ask_img', methods=['POST'])
-def ask_gemini_img():
-    try:
-        # Get the JSON data sent from your Netlify frontend
-        data = request.json
-        user_message = data.get("message", "Hello")
-        model = data.get("model", "gemini-2.5-flash-lite")
-        user_message = data.get("message", "Hello")
-        img = data.get("img_url", False)
-
-        if not img:
-            return jsonify({
-                "status": "error",
-                "message": "Failed to get img_url"
-            }), 500
-        
-        
-        # Call the Gemini API
-        response = client.models.generate_content(
-            model=model, 
-            contents=user_message,
-            config=types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
-        )
-
-        # Return the AI response as JSON
-        return jsonify({
-            "status": "success",
-            "reply": response.text
-        })
-
-    except Exception as e:
-        # If something breaks, Render will show this in the "Logs"
-        return jsonify({
-            "status": "error",
-            "message": str(e)
-        }), 500
 
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
