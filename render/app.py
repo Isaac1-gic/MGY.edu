@@ -4,6 +4,8 @@ from flask_cors import CORS
 from google import genai
 from google.genai import types
 from PIL import Image
+import requests
+from io import BytesIO
 
 
 # 1. Initialize the Flask app
@@ -18,6 +20,14 @@ CORS(app)
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 config = types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
 
+def getFile(url):
+    try:
+        file = requests.get(url)
+        if file.status_code == 200:
+            return BytesIO(file.content)
+    except Exception as e:
+        return False
+
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
     try:
@@ -29,7 +39,13 @@ def ask_gemini():
         img = data.get("img_url", False)
 
         if img:
-            img = Image.open(img)
+            file = getFile(img)
+            if not file:
+                return jsonify({
+                    "status": "error",
+                    "message": img+' Not found.'
+                }), 500
+            img = Image.open(file)
             response = client.models.generate_content(
                 model = model, 
                 contents = [img,user_message],
