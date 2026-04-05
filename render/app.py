@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
 from google import genai
 from google.genai import types
@@ -37,6 +37,18 @@ def ask_gemini():
         model = data.get("model", "gemini-2.5-flash-lite")
         user_message = data.get("message", "Hello")
         img = data.get("img_url", False)
+        contents = [user_message]
+
+        def genelate():
+            response = client.models.generate_content_stream(
+                    model = model, 
+                    contents = contents,
+                    config = config
+                )
+            
+            for chunk in response_stream:
+                if chunk.text:
+                    yield f"data: {chunk.text}\n\n"
 
         if img:
             file = getFile(img)
@@ -46,30 +58,9 @@ def ask_gemini():
                     "message": img+' Not found.'
                 }), 500
             img = Image.open(file)
-            response = client.models.generate_content_stream(
-                model = model, 
-                contents = [img,user_message],
-                config = config
-            )
+            contents.insert(0,img)
     
-            # Return the AI response as JSON
-            return jsonify({
-                "status": "success",
-                "reply": response
-            })
-         
-        # Call the Gemini API
-        response = client.models.generate_content_stream(
-            model = model, 
-            contents = user_message,
-            config = config
-        )
-
-        # Return the AI response as JSON
-        return jsonify({
-            "status": "success",
-            "reply": response
-        })
+        return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
     except Exception as e:
         # If something breaks, Render will show this in the "Logs"
