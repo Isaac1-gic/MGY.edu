@@ -48,7 +48,7 @@ def ask_gemini():
                     config = config
                 )
             
-            for chunk in response_stream:
+            for chunk in response:
                 if chunk.text:
                     list.append(chunk.text)
 
