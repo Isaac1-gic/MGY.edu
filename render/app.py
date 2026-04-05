@@ -46,7 +46,7 @@ def ask_gemini():
                     "message": img+' Not found.'
                 }), 500
             img = Image.open(file)
-            response = client.models.generate_content(
+            response = client.models.generate_content_stream(
                 model = model, 
                 contents = [img,user_message],
                 config = config
@@ -55,11 +55,11 @@ def ask_gemini():
             # Return the AI response as JSON
             return jsonify({
                 "status": "success",
-                "reply": response.text
+                "reply": response
             })
          
         # Call the Gemini API
-        response = client.models.generate_content(
+        response = client.models.generate_content_stream(
             model = model, 
             contents = user_message,
             config = config
@@ -68,7 +68,7 @@ def ask_gemini():
         # Return the AI response as JSON
         return jsonify({
             "status": "success",
-            "reply": response.text
+            "reply": response
         })
 
     except Exception as e:
