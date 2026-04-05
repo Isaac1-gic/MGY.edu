@@ -75,36 +75,54 @@ def ask_gemini():
             "message": str(e)
         }), 500
 
+
+
 @app.route('/upload', methods=['POST'])
 def file_store_upload():
     try:
         file = request.files.get('file')
         if not file:
-            return jsonify({"error": "No file"}), 400
+            return jsonify({"status": "error", "message": "No file uploaded"}), 400
 
-        # Create the store
-        file_search_store = client.file_search_stores.create(config={'display_name':'MGY files'})
+        # 1. Read the file into a BytesIO object
+        # This makes the data look like a 'real' file to the SDK
+        file_content = BytesIO(file.read())
         
-        # FIX: Ensure we are passing the raw bytes
-        file_bytes = file.read() 
-
-        operation = client.file_search_stores.upload_to_file_search_store(
-            file=file_bytes, 
-            file_search_store_name=file_search_store.name,
-            config={'display_name': file.filename} # Use original filename
+        # 2. Create the store
+        file_search_store = client.file_search_stores.create(
+            config={'display_name': 'MGY Library'}
         )
-    
+
+        # 3. FIX: Pass the BytesIO object and the original filename
+        # The SDK uses the extension (.pdf) to know how to parse it
+        operation = client.file_search_stores.upload_to_file_search_store(
+            file=file_content,
+            file_search_store_name=file_search_store.name,
+            config={
+                'display_name': file.filename,
+            }
+        )
+
+        # 4. Correct Polling Logic
         while not operation.done:
             time.sleep(2)
-            operation = client.operations.get(operation.name)
+            # Use operation.name to refresh the status
+            operation = client.operations.get(name=operation.name)
 
-        return jsonify({"status": "success", "reply": "file uploaded"})
+        return jsonify({
+            "status": "success",
+            "reply": "file uploaded successfully",
+            "store_name": file_search_store.name
+        })
 
     except Exception as e:
-        # If the error 'e' is huge (like a PDF dump), this jsonify might fail.
-        # Let's keep the error message clean.
-        error_msg = str(e)[:500] # Limit the error length
-        return jsonify({"status": "error", "message": error_msg}), 500    
+        # We print to the Render logs so you can see the full error, 
+        # but send a clean message to the frontend.
+        print(f"Upload Error: {str(e)}") 
+        return jsonify({
+            "status": "error", 
+            "message": "Upload failed. Check server logs."
+        }), 500   
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
 if __name__ == "__main__":
