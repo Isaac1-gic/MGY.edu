@@ -80,13 +80,15 @@ def ask_gemini():
 @app.route('/upload', methods=['POST'])
 def file_store_upload():
     try:
-        file = request.files.get('file')
-        if not file:
+        data = request.json
+        file_name = data.get('name',False)
+        url = data.get('url',False)
+        if not file_name:
             return jsonify({"status": "error", "message": "No file uploaded"}), 400
 
         # 1. Read the file into a BytesIO object
         # This makes the data look like a 'real' file to the SDK
-        file_content = BytesIO(file.read())
+        file_content = getFile(url)
         
         # 2. Create the store
         file_search_store = client.file_search_stores.create(
@@ -99,7 +101,7 @@ def file_store_upload():
             file=file_content,
             file_search_store_name=file_search_store.name,
             config={
-                'display_name': file.filename,
+                'display_name': filename,
             }
         )
 
