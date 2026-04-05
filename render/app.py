@@ -39,7 +39,7 @@ def ask_gemini():
         img = data.get("img_url", False)
         contents = [user_message]
 
-        def genelate():
+        def generate():
             response = client.models.generate_content_stream(
                     model = model, 
                     contents = contents,
