@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, jsonify, Response, stream_with_context
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from google import genai
 from google.genai import types
@@ -40,7 +40,7 @@ def ask_gemini():
         user_message = data.get("message", "Hello")
         img = data.get("img_url", False)
         contents = [user_message]
-
+        list = []
         def generate():
             response = client.models.generate_content_stream(
                     model = model, 
@@ -50,7 +50,7 @@ def ask_gemini():
             
             for chunk in response_stream:
                 if chunk.text:
-                    yield f"data: {chunk.text}\n\n"
+                    list.append(chunk.text)
 
         if img:
             file = getFile(img)
@@ -63,14 +63,12 @@ def ask_gemini():
             contents.insert(0,img)
     
         
-        response = Response(stream_with_context(generate()), mimetype='text/event-stream')
+        generate()
         
-        response.headers['Access-Control-Allow-Origin'] = 'https://mgy265.netlify.app'
-        response.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-        response.headers['Access-Control-Allow-Headers'] = 'Content-Type, X-Accel-Buffering'
-        response.headers['X-Accel-Buffering'] = 'no'
-        
-        return response
+        return jsonify({
+            "status": "success",
+            "reply": list
+        })
 
     except Exception as e:
         # If something breaks, Render will show this in the "Logs"
