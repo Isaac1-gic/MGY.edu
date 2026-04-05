@@ -30,6 +30,8 @@ def getFile(url):
 
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
+    if request.method == 'OPTIONS':
+        return '', 204
     try:
         # Get the JSON data sent from your Netlify frontend
         data = request.json
