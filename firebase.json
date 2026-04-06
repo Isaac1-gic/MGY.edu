@@ -1,0 +1,26 @@
+{
+  "hosting": {
+    "site":  "mgy",    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    
+    
+    "public": "public",
+    "clean": true,
+    "aws": {
+
+      "accessKeyId": "YOUR_ACCESS_KEY_ID",
+      "secretAccessKey": "YOUR_SECRET_ACCESS_KEY",
+      "region": "YOUR_AWS_REGION"
+    }
+    
+  }
+}
