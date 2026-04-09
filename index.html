@@ -111,19 +111,52 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 	}
 	</script>
     <style>
+        /* --- 1. THEME VARIABLES --- */
         :root {
-            --primary: #2563eb;
+            --bg-page: #f0f2f5;
+            --bg-chat: #ffffff;
+            --text-main: #1c1e21;
+            --text-muted: #65676b;
+            --text-secondary: #65676b;
+            --border: #dddfe2;
+            --accent: #0084ff;
+            --bubble-recv: #f0f2f5;
+            --bubble-sent: #0084ff;
+            --text-sent: #ffffff;
+            --input-fill: #f0f2f5;
+			--primary: #2563eb;
             --secondary: #1e293b;
             --accent: #38bdf8;
             --bg: #f8fafc;
             --text: #334155;
         }
+
+        /* DARK MODE OVERRIDE */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-page: #0b141a;
+                --bg-chat: #111b21;
+                --text-main: #e9edef;
+                --text-muted: #8696a0;
+                --text-secondary: #8696a0;
+                --border: #222d34;
+                --bubble-recv: #202c33;
+                --bubble-sent: #005c4b;
+                --text-sent: #e9edef;
+                --input-fill: #2a3942;
+            }
+        }
+
+		* { box-sizing: border-box; margin: 0; padding: 0; }
+		
         body {
             font-family: 'Segoe UI', system-ui, sans-serif;
             margin: 0;
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
+            background-color: var(--bg-page);
+            justify-content: center;
         }
         header {
             background: white;
@@ -150,7 +183,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 			
         }
         .hero {
-            padding: 80px 5%;
+            padding: 10px 5%;
             text-align: center;
             background: linear-gradient(135deg, var(--primary), var(--accent));
             color: greenyellow;
@@ -164,8 +197,8 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         .courses {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            padding: 50px 5%;
+            gap: 0.5rem;
+            padding: 10px 2%;
         }
 		.courses :hover { 
 			transform: translateY(-5px);
@@ -193,7 +226,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
             color: white;
             text-align: center;
             padding: 2rem;
-            margin-top: 50px;
+            margin-top: 5px;
         }
         /* Responsive menu styles */
         .menu-btn {
@@ -319,37 +352,202 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		.nav-item.active { color: #1877f2; border-bottom: 3px solid #1877f2; }
 
         /* Main Grid (Responsive) */
-		.main-grid { display: grid; grid-template-columns: 1fr; gap: 20px; padding: 20px; max-width: 1024px; margin: 0 auto; }
+		.main-grid { display: grid; grid-template-columns: 1fr; gap: 10px;  max-width: 400px; margin: 0 auto; }
         @media (min-width: 768px) {
             
 		.main-grid { grid-template-columns: 2fr 3fr; }
         }
 
-        
-		.card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        
+        .feed{
+			padding: 25px 5%;
+			text-align: center;
+			background-size: cover;
+			background-position: center;
+			overflow: hidden;
+			object-fit: cover;
+			font-weight: bold;
+			color: var(--primary);
+		}
+		.post{
+			background-size: cover;
+			background-position: center;
+			overflow: hidden;
+			object-fit: cover;
+			font-weight: bold;
+			color: var(--primary);
+		}
 		.post-box { display: flex; gap: 10px; align-items: center; }
         
 		.input-mock { flex: 1; background: #f0f2f5; padding: 10px; border-radius: 20px; color: #65676b; cursor: pointer; }
-		
+
+		.container {
+            width: 100%;
+            max-width: 500px;
+            background-color: var(--bg-chat);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- 3. HEADER --- */
+        .header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            gap: 12px;
+        }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: #00a884; }
+
+        /* --- 4. CHAT AREA --- */
+        .chat-window {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .msg-bubble {
+            max-width: 85%;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        .recv { align-self: flex-start; background: var(--bubble-recv); color: var(--text-main); }
+        .sent { align-self: flex-end; background: var(--bubble-sent); color: var(--text-sent); }
+
+        /* MULTIMEDIA STYLES */
+        .media-file {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        audio { width: 100%; margin-top: 5px; height: 32px; }
+
+        /* Link Preview Card */
+        .link-preview {
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            text-decoration: none;
+            display: block;
+            margin-top: 5px;
+        }
+        .link-img { width: 100%; height: 100px; background: #555; object-fit: cover; }
+        .link-body { padding: 8px; color: var(--text-main); }
+
+        /* --- 5. MODERN PROMPT AREA --- */
+        .prompt-container {
+            padding: 12px 16px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: fixed;
+            left: 50%;
+            bottom: 14px;
+            transform: translateX(-50%);
+            z-index: 9999;
+            width: min(400px, 96%);     /* responsive width */
+            max-width: 400px;
+            pointer-events: auto;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--accent);
+            display: flex;
+            padding: 5px;
+        }
+        .btn-icon svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+        .input-box {
+            flex: 1;
+            background: var(--input-fill);
+            border-radius: 20px;
+            padding: 8px 15px;
+            border: none;
+            outline: none;
+            color: var(--text-main);
+            font-size: 15px;
+        }
+
+        .send-btn {
+            background: var(--accent);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .send-btn svg { width: 18px; height: 18px; fill: white; }
+
+        .file-card {
+	        display: flex;
+	        align-items: center;
+	        background: var(--bg-page); 
+	        border: 1px solid var(--border);
+	        border-radius: 12px;
+	        padding: 12px;
+	        cursor: pointer;
+	        gap: 12px;
+	        max-width: 300px;
+	        transition: background 0.2s;
+	    }
+	
+	    .file-card:hover {
+	        background: var(--border);
+	    }
+	
+	    .file-icon {
+	        background: #ef4444; 
+	        color: white;
+	        padding: 8px;
+	        border-radius: 8px;
+	        display: flex;
+	    }
+	
+	    .file-details {
+	        display: flex;
+	        flex-direction: column;
+	        overflow: hidden; 
+	        flex: 1;
+	    }
+	
+	    .file-name {
+	        font-size: 14px;
+	        font-weight: 600;
+	        color: var(--text-main);
+	        white-space: nowrap;
+	        overflow: hidden;
+	        text-overflow: ellipsis;
+	    }
+	
+	    .file-meta {
+	        font-size: 11px;
+	        color: var(--text-secondary);
+	        margin-top: 2px;
+	    }
+	
+	    .file-action {
+	        color: var(--text-secondary);
+	        opacity: 0.6;
+	    }
+	    .status {
+	        font-size: 12px;
+	        color: var(--text-secondary);
+	    }
     </style>
-	<script>
-        // Wait for the window to fully load to ensure all resources are ready
-        window.onload = function() {
-            if ('serviceWorker' in navigator) {
-                // Register the service worker, setting the scope to the current directory './'
-                navigator.serviceWorker.register('serviceworker.js', {scope: './'})
-                    .then(function(registration) {
-                        console.log('sw is ready')
-                    })
-                    .catch(function(error) {
-                        console.log(error)
-                    });
-            } else {
-                
-            }
-        };
-    </script>
 </head>
 <body>
     <header>
@@ -365,13 +563,20 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         <button class="menu-btn" onclick="toggleMenu()">&#9776;</button>
     </header>
 	
-	<section id="homePage" name='page'>
-	    <section class="hero" id="home">
+	<section id="homePage" name='page' >
+	    <section class="hero" id="home" style="max-height: 30vh;">
+			
 	        <h1>Master Web Development</h1>
 	        <p>Expert-led courses for the next generation of developers.</p>
 	        <button class="btn" onclick="showAlert()">Get Started</button>
 	    </section>
-
+		<div style="padding: 5px;">
+	        <div class="post-box">
+	            <img src="img/mgyG.jpg" class="small_profile_img" id="pro-img" style="border-radius: 50%">
+	            <div class="input-mock" onclick="postPre(true)">What's up G?</div>
+			</div>
+		</div>
+		
 		
 	
 	    <section class="courses" id="courses">
@@ -391,7 +596,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 	    </section>
 
 		<section id="contact">
-			<img src="img/poster.png" class='cover-img'></img>
+			<img name="img/poster.png" class='cover-img lazy-media'></img>
 		    <footer>
 				Malawian Genius Youth (MGY) - Learning Platform
 			</footer>
@@ -447,71 +652,59 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 	</section>
 	<section  id="chatHome" name='page' hidden>
 		
-		<div id="group" class="tab-content active">
-			<div id="headerR-chat"
-				<header>
-	                <p>MGY Room</p>
-				</header>
-	            
-            </div>
-            <div id="chatsList" class="chat-container">
-                <!-- chats will appear here -->
-            </div>
-            
-            
-           
-            <div id="prompt-container-chat" class="chat-body">
-			  <div class="fixed-card">
-				<div class="card" role="group" aria-label="chat input card">
-
-				  <!-- Left side actions -->
-				  <div class="actions-left" style="position:relative;">
-					<div style="position:relative;">
-					  <button id="mode-button" title="Select mode">
-						<!-- same inline svg as your original -->
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20" aria-hidden="true">
-						  <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd"></path>
-						</svg>
-					  </button>
-
-					  <div id="mode-dropdown" aria-hidden="true">
-						<div class="title">Select Mode</div>
-						<div style="padding:6px 4px; cursor:pointer;" data-mode="Question">Question</div>
-						<div style="padding:6px 4px; cursor:pointer;" data-mode="Quiz">Quiz</div>
-					  </div>
+		<div id="group" class="container">
+			<div id="chatHeader">
+				<div class="header" >
+			        <div >
+						<img class="avatar" src="img/mgyG.jpg"></img>
 					</div>
-				  </div>
-
-				  <!-- Textarea (Main Input Area) -->
-				  <div class="input-wrap">
-					<textarea
-					  id="textprompt-chat"
-					  class="textprompt"
-					  placeholder="Write your message"
-					  rows="1"
-					  aria-label="Chat input"></textarea>
-				  </div>
-
-				  <!-- Right side actions -->
-				  <div class="actions-right">
-					<div style="display: none;"><span id="current-mode-chat">Chat</span></div>
-                    <div id="loading-chat" class="loading-Net" style="display: none;"></div>
-					<button id="send-button-chat" class="send-button" disabled title="Send">
-					  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="transform:rotate(90deg)">
-						<path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.599 60.599 0 0 0 18.442-8.31.75.75 0 0 0 0-1.374 60.599 60.599 0 0 0-18.442-8.31Z"/>
-					  </svg>
-					</button>
-				  </div>
-
-				</div>
-			  </div>
-			</div>                          
-           
+			        <div class="user-info">
+			            <div id="active-user" style="font-weight: bold; color: var(--text-main);">Dev Team</div>
+			            <div class="status">online</div>
+			        </div>
+			    </div>
+			</div>
+            <div id="chatsList" style="max-height: 67vh;" class="chat-window">
+                <!-- chats will appear here -->
+				
+            </div>
+            
+	         <div id="prompt-container-chat" class="prompt-container">
+		        <input type="file" id="input" accept="image/*,video/*,audio/*,.pdf" hidden>
+				 <div>
+			        <label for="input" class="btn-icon">
+			            <svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+			        </label>
+			        <button class="btn-icon">
+			            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+			        </button>
+				 </div>
+		        
+		        <div class="input-box">
+	                 <textarea
+	                     id="textprompt-chat"
+	                     class="textprompt"
+	                     placeholder="Message..."
+	                     rows="1"
+	                     aria-label="Chat input"></textarea>
+	             </div>
+				<div>
+			        <button id="audioRecBt" class="btn-icon">
+			            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+			        </button>
+			        <button id="send-button-chat" class="send-button" disabled title="Send">
+			            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="transform:rotate(90deg)">
+			                <path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.599 60.599 0 0 0 18.442-8.31.75.75 0 0 0 0-1.374 60.599 60.599 0 0 0-18.442-8.31Z"/>
+			            </svg>
+			         </button>
+				 </div>
+		    </div> 
         </div>
 	</section>
 
 	<section id="profilePage" name="page" hidden>
-		<div class="container" name="show">
+		<div name="show">
+		<div class="container"  >
 	        <div class="profile-header">
 	            <div class="cover-area">
 	                <img src="img/mgyG.jpg" id="cover-img-preview" class="cover-img">
@@ -540,6 +733,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 	            </div>
 	        </div>
 	    </div>
+		</div>
 		<section  id="editProfile" hidden >
 			<div class="login-container active">
 			<form id="loginForm" class="login-form" method="post" onsubmit=" setTimeout(async function(e){await create_update_account()},10); return false;">
@@ -622,7 +816,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 	            </div>
 	        </div>
 			
-			<div class="feed" name="show">
+			<div  name="show">
 	            <div class="card">
 	                <div class="post-box">
 	                    <h3>Email:</h3>
@@ -650,22 +844,15 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 	                </div>
 	            </div>
 	        </div>
-	        <div class="feed" hidden>
-	            <div class="card">
-	                <div class="post-box">
-	                    <img src="img/mwflag.png" class="small_profile_img" id="pro-img" style="border-radius: 50%">
-	                    <div class="input-mock">What's up G?</div>
-	                </div>
-	            </div>
-	        </div>
+	        
 	    </div>
 	</section>
 	<section id="signPage" name='page' hidden>
 		<div id="login" class="login-container active">
-            <div class="header">
+            <header class="header">
                 <h1>Malawian Genius Youths</h1>
-                <p>Login to access NGY</p>
-            </div>
+                <p>Login to access MGY</p>
+            </header>
 
             <div class="login-form">
 
@@ -758,5 +945,6 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		
 		
     </script>
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </body>
 </html>
