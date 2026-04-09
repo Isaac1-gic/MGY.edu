@@ -1215,7 +1215,7 @@ input.onchange = async () =>{
 async function upload(file) {
     // 1. Create a unique name
 	const BUCKET_NAME = 'mgy'
-    const fileName = `${Date.now()}-${file.name || 'upload'}`;
+    const fileName = file.name
     
     try {
         // 2. Ask our Netlify function for a "permission slip" (Signed URL)
@@ -1230,7 +1230,7 @@ async function upload(file) {
         const { uploadUrl } = await tokenResponse.json();
         const uploadResponse = await fetch(uploadUrl, {
             method: 'PUT',
-            headers: { 'Content-Type': file.type },
+            headers: { 'Content-Type': file.type, 'x-amz-acl': 'public-read' },
             body: file
         });
 
