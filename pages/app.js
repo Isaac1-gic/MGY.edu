@@ -5,10 +5,14 @@
         const todaycheck = new Date().toISOString().split('T')[0];
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
+		const textarea = document.getElementById('textprompt-chat');
+		const activeChat = document.getElementById("active-user")
 		let profileImg;
 		let img;
 		let userkey;
+		let activeScreen;
 		let chatPath;
+		let tempPost = {types : []}
 		let firstMsg = false;
         let userData = {userInfo:{'Country code': '265'},
 						freinds: 'initialized',
@@ -16,7 +20,7 @@
 			};
         let mgy = {
                     };
-		let activeKey = '';
+		let activeKey = 'mgyPosts';
         let timeStamp = Date.now();
 		let SPACE_TIME = 30000;
 		let deferredInstallPrompt = null;
@@ -143,6 +147,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				setupImageUpload('profile-input', 'profile-img-preview');
                 setupImageUpload('cover-input', 'cover-img-preview');
                 profileUpdater(userData)
+			}else if (pageId == "homePage") {
+				activeKey = "mgyPosts";
 			}
 		}
 
@@ -226,7 +232,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			document.getElementById('friends').textContent = user['freinds']== 'initialized' ? '0' + " Friends" : user['freinds'].length + " Friends"
 			document.getElementById('bio').textContent = user["userInfo"]['Bio'] || "Today is your tomorrow history. If you are genius enough, make your famous history today."
 			if(user["userInfo"]['profile-img-preview']){
-				document.getElementById('pro-img').src = user["userInfo"]['profile-img-preview']
+				document.getElementById('pro-img').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'])
 				document.getElementById('profile-img-preview').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'],'M')
 			}else{
 				document.getElementById('profile-img-preview').src = 'img/mwflag.png'
@@ -324,44 +330,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
                 const HEADER_REMOVE = document.getElementById('headerR-'+kind);
                 loading = document.getElementById('loading-'+kind);
                 
-                 // Toggle dropdown
-				modeButton.addEventListener('click', (e) => {
-				  e.stopPropagation();
-				  
-				  modeDropdown.style.display = 'block' 
-				});
-				 // Select mode
-				modeDropdown.querySelectorAll('[data-mode]').forEach(el => {
-				  el.addEventListener('click', () => {
-					
-					const m = el.getAttribute('data-mode');
-					currentModeDisplay.textContent = m;
-					modeDropdown.style.display = 'none';
-				  });
-				});
-
-				// Close dropdown on outside click
-				//document.getElementById("prompt-container-ai").addEventListener('click', () => modeDropdown.style.display = 'none');
-			
+                 
+				 
                 
-                // --- 1. Textarea Auto-Resize and Send Button Toggle ---
-
-                // Function to resize the textarea height dynamically
-                const resizeTextarea = () => {
-                    // Reset height to collapse the scrollbar before calculation
-                    textarea.style.height = 'auto';
-                    
-                    // Set the new height, clamped to a max height (15rem)
-                    const newHeight = Math.min(textarea.scrollHeight, 15 * 16); // 15rem * 16px/rem
-                    textarea.style.height = newHeight+"px";
-
-                    // Enable/Disable Send button based on content
                     let isEmpty = textarea.value.trim().length === 0;
                     
-                    if(currentModeDisplay.textContent === 'Quiz'){
-						isEmpty = false;
-						
-					}
+                    
                     sendButton.disabled = isEmpty;
 
                     // Change button color based on state
@@ -372,69 +346,29 @@ window.addEventListener('beforeinstallprompt', (e) => {
                         sendButton.classList.remove('bg-[#343436]', 'text-[#7e7e7e]', 'opacity-50');
                         sendButton.classList.add('bg-[#8ab4f8]', 'text-white');
                     }
-                };
 
-                // Attach event listener for input and change
-                textarea.addEventListener('input', resizeTextarea);
+              
 
-                // --- 2. Mode Dropdown Interaction ---
-
-                // Toggle dropdown visibility
-                modeButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent the document listener from immediately closing it
-                    const isVisible = modeDropdown.classList.toggle('opacity-0');
-                    modeDropdown.classList.toggle('pointer-events-none');
-                });
-
-                // Handle mode selection from dropdown
-                modeDropdown.addEventListener('click',  (e) => {
-                    const modeElement = e.target;
-                    if (modeElement.dataset.mode) {
-                        newMode = modeElement.dataset.mode;
-                        
-                        // 1. Update the display label
-                        currentModeDisplay.textContent = newMode;
-                        
-                        // 2. Hide the dropdown
-                        modeDropdown.classList.add('opacity-0', 'pointer-events-none');
-                        
-        
-                    }
-                });
-
-                // Close dropdown when clicking anywhere else
-                document.addEventListener('click', () => {
-                    modeDropdown.classList.add('opacity-0', 'pointer-events-none');
-                });
 
 
                 // --- 3. Action Handlers (Example) ---
 
                 sendButton.addEventListener('click', async () => {
                     const promptText = textarea.value.trim();
-                    const currentMode = currentModeDisplay.textContent;
 					const space_T = Date.now()
-                    if (space_T - SPACE_TIME > 2000 && (promptText || currentMode === 'Quiz')) {
+                    if (space_T - SPACE_TIME > 2000 && promptText ) {
 						SPACE_TIME = space_T;
                         textarea.value = '';
-                        loading.classList.add('rotate');
-                        loading.style.display = 'block';
                         
                         try {
-                            if (currentMode === 'Quiz') {
-                                await quizMaker('submit');
-                            } else if (currentMode === 'Question' || currentMode === 'Chat') {
-                                await chatPrompt(promptText, kind);
-                            }
-                        } finally {
-                            loading.classList.remove('rotate');
-                            loading.style.display = 'none';
+                            await chatPrompt(promptText, kind);
+						}catch (e){
+							textarea.value = promptText;
+						} finally {
                             textarea.value = '';
                             textarea.style.height = 'auto';
-                            HEADER_REMOVE.style.display = 'none';
                         }
                        
-                        resizeTextarea(); 
                     }
                 });
 
@@ -444,14 +378,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
                         e.preventDefault(); 
                         sendButton.click(); 
                     }
-                });
-
-                // Initial resize/check on load
-                resizeTextarea();
-            
-
-                
-            }
+                }); 
+        }
 		
 		async function startChatPolling(){
 		    const hour = new Date().getHours();
@@ -481,6 +409,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				firstMsg = true;
 				return;
 			}
+			try{
+				chatPath = ref(database,'mgyPosts')
+				onValue(chatPath, async (snapshot) =>{
+					chat = Object.entries(snapshot.val()).reverse();
+					mgy['mgyPosts'] = chat
+					chatbox('mgyPosts')
+					
+				})
+			} catch (error) {console.warn(error)}
 			try{
 				chatPath = ref(database,'group_chats')
 				onValue(chatPath, async (snapshot) =>{
@@ -549,6 +486,26 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		    }
 		}
 
+	function postPre(close) {
+		chatHeader = document.getElementById("chatHeader");
+		if (close) {
+			activeScreen = "posts"
+			chatHeader.hidden = true;
+			chatSpace = document.getElementById("chatsList");
+			chatSpace.innerHTML = '';
+			chatSpace.appendChild(makePost({},true))
+			switchPage("chatHome")
+		} else {
+			switchPage("homePage")
+			chatSpace.innerHTML = '';
+			chatHeader.hidden = false;
+			return;
+		} 
+		textarea.addEventListener("input", ()=>{
+		    document.getElementById("post-1").innerText = textarea.value;
+		})
+	}
+
 		async function chatPrompt(text, kind) {
 		    const hour = new Date().getHours();
 		    const day = new Date().getDay();
@@ -572,18 +529,26 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		
 				    // If it's NOT the weekend AND NOT happy hour, stop.
 				    if (isWeekend || isHappyHour || true){
-			            const messageData = {
-			                chatId: Date.now(),
-			                senderId: userData.userInfo.username,
-							userkey: userkey,
-							imgUrl: userData.userInfo['profile-img-preview'] || 'img/mgyG.jpg',
-			                prompt: text,
-
-			            };
-						chatref = activeKey == 'mgyforum' ? 'group_chats':'messages/'+activeKey
+				        tempPost['chatId'] = Date.now()
+			            tempPost['senderId'] = userData.userInfo.username
+						tempPost['userkey'] = userkey
+						tempPost['imgUrl'] = userData.userInfo['profile-img-preview'] || 'img/mgyG.jpg'
+			            tempPost['prompt'] = text
+						tempPost.types.push('textMsg')
+						console.log(tempPost)
+						if (activeScreen) {
+							chatref = 'mgyPosts'
+							activeScreen = null;
+							postPre()
+						} else {
+							chatref = activeKey == 'mgyforum' ? 'group_chats':'messages/'+activeKey	
+						}
+						
 			            try{
 							chatPath = ref(database,chatref)
-							await push(chatPath,messageData)
+							await push(chatPath,tempPost)
+							tempPost = {types: []};
+							
 							if(firstMsg == true){
 								firstMsg = false;
 								manageChat()
@@ -604,9 +569,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 
 		async function chatbox(msgKey) {
+			console.log(msgKey)
 			if (msgKey != activeKey)return
 			const msg = mgy[activeKey]
-			const chatContainer = document.getElementById('chatsList');
+			const chatContainer = document.getElementById(msgKey == 'mgyPosts' ? "courses":'chatsList');
 		    chatContainer.innerHTML = '';
 			if (!msg)return
 		    if (msg.length > 100) {
@@ -624,58 +590,79 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		    scrollToBottom(chatContainer);	
 		}
 
-		async function createMsg(activeKey,chat,msg,i) {
-			const time = new Date(parseInt(chat.chatId)).toLocaleTimeString();
-		    const me = (chat['userkey'] === userkey);
-			const sessionDiv = document.createElement('div');
-			const img = document.createElement("img");
-			img.className = "small_profile_img";
-			img.onclick = () =>{switchPage('profilePage',chat['userkey'])}
-			if (!me) {
-		        sessionDiv.className = 'message chat-card';
-		        messager = chat.senderId;
-				img.src = getOptimizedImageUrl(chat['imgUrl'],'S')
-		    } else {
-		        sessionDiv.className = 'message mychat-card';
-		        messager = 'You';
-				img.src = getOptimizedImageUrl(userData["userInfo"]['profile-img-preview'],'S')
-				sessionDiv.ondblclick = async () =>{
-					if(!confirm('This message will be deleted!')) return
-					const refpath = activeKey == 'mgyforum' ? 'group_chats/':`messages/${activeKey}/`
-					try{
-						chatPath = ref(database,`${refpath}${msg[i][0]}`)
-						await remove(chatPath)
-					} catch (error) {console.warn(error)}
-				}
-		    }
+async function createMsg(activeKey,chat,msg,i) {
+	let sessionDiv;
+	console.log("MAKE",activeKey)
+	if (activeKey == 'mgyPosts') {
+		console.log("MAKEPOST")
+		sessionDiv = makePost(chat)
+	} else {
+		const time =  new Date(parseInt(chat["chatId"] || Date.now())).toGMTString().slice(5,22);
+	    const me = (chat['userkey'] === userkey);
+		sessionDiv = document.createElement('div');
+		const img = document.createElement("img");
+		img.className = "small_profile_img lazy-media";
+		img.onclick = () => switchPage('profilePage',chat['userkey'])
+		if (!me) {
+	        sessionDiv.className = 'msg-bubble recv';
+	        messager = chat.senderId;
+			img.name = getOptimizedImageUrl(chat['imgUrl'],'S')
+	    } else {
+	        sessionDiv.className = 'msg-bubble sent';
+	        messager = 'You';
+			img.src = getOptimizedImageUrl(userData["userInfo"]['profile-img-preview'],'S')
+			sessionDiv.ondblclick = async () =>{
+				if(!confirm('This message will be deleted!')) return
+				const refpath = activeKey == 'mgyforum' ? 'group_chats/':`messages/${activeKey}/`
+				try{
+					chatPath = ref(database,`${refpath}${msg[i][0]}`)
+					await remove(chatPath)
+				} catch (error) {console.warn(error)}
+			};
+			
+	    }
+	
+	    const header = document.createElement('div')
+		const userN = document.createElement('div')
+		const chatT = document.createElement('div')
+		userN.textContent = messager;
+		chatT.textContent = time;
+		chatT.className = 'status'
+		header.appendChild(userN)
+		header.appendChild(chatT)
+	    const devsec = document.createElement('div')
+		devsec.style = "display: flex;gap: 5px;"
 		
-		    // SAFE DOM CREATION (No innerHTML for user content to prevent XSS)
-		    const header = document.createElement('h4')
-			header.className = "input-mock"
-			header.textContent = `${messager} ${time}`;
-		    const devsec = document.createElement('div')
-			devsec.className = "post-box"
-		    const p = document.createElement('div');
-			p.className = "pre"
-		    p.textContent = chat.prompt; 
-		            
-					
-			devsec.appendChild(header);
-			devsec.appendChild(img)
-			sessionDiv.appendChild(devsec)
-		    const urlReg = /https?:\/\/\S*\w/
-		    try{
-				const matchUrl = chat.prompt.match(urlReg)[0].trim();
-				if(matchUrl){
-					p.href = matchUrl;
-				}
-			}
-			catch(e){}
-		    sessionDiv.appendChild(p);
-			return sessionDiv;
-		}
+		mediaObserver.observe(img)
+		devsec.appendChild(img)
+		devsec.appendChild(header);
+		sessionDiv.appendChild(devsec)
+	}
+	
+	
+	console.log(sessionDiv)
+    chat.types.forEach(type =>{
+        sessionDiv.appendChild(Tswitch(type,chat))
+    })
+	return sessionDiv;
+}
+
+	function Tswitch(type,chat) {
+		if (type == 'textMsg') {
+			return textMsg(chat)
+		}else if (type == 'pdfMsg') {
+			return pdfMsg(chat)
+		}else if (type == 'videoMsg') {
+			return videoMsg(chat)
+		} else if (type == 'audioMsg') {
+			return audioMsg(chat)
+		} else if (type == 'imageMsg') {
+			return imageMsg(chat)
+		} 
+	}
 
 		function createChatlist(name,msg,img,msgKey) {
+			if (document.getElementById("chatPage").hidden) return
 			const chatPresention = document.createElement('div')
 			chatPresention.className = 'card'
 			const chatHeader = document.createElement('div')
@@ -695,6 +682,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			chatPresention.appendChild(chatMsg)
 			chatPresention.onclick = () => {
 				activeKey = msgKey;
+				activeChat.textContent = name;
 				chatbox(activeKey)
 				switchPage('chatHome')
 				
@@ -723,7 +711,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		           
 		let loading           
 		const stBt = document.getElementById('send-button-ai');   
-		document.getElementById('prompt-container-chat').addEventListener('click',function(){
+		document.getElementById('prompt-container-chat').addEventListener('input',function(){
 		loading = document.getElementById('loading-chat');
 		promptSwitch('chat')});
 
@@ -788,8 +776,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				
                 // Load User Data
                 await loadData('userData', 'onload');
-				
-	
+				profileUpdater(userkey)
+				manageChat()
             } catch (e) {
             }
         },10);
@@ -801,6 +789,7 @@ window.onload = async function(){
 	if (!isStandalone()) {
 			maybeShowInstall();
 		}
+	registerSw()
 	await adddbListener(10)
 	alert(`🔧 Development Notice:
 	MGY is currently in beta and under active development. 
@@ -844,7 +833,7 @@ function adddbListener(i) {
 				userData.messageBox[snapshot.key] = snapshot.val();
 				await saveData('userData',userData)
 				console.log('Recevied')
-				setTimeout(()=>{manageChat},1000)
+				setTimeout(()=>{manageChat()},1000)
 			})
 		} catch (error) {
 			
@@ -883,45 +872,410 @@ async function installApp() {
     document.getElementById('install-banner').style.display = 'none';
 }
 
-async function uploadToCloudinary(file, uid, type) {
-  
-	console.log('Start');
-	return new Promise((resolve,reject) => {
-	    const reader = new FileReader();
-	    reader.readAsDataURL(file);
-	    reader.onloadend = async () => {
-			try {
-	        const base64String = reader.result;
-	        const response = await fetch('/.netlify/functions/upload-image', {
-	            method: 'POST',
-	            body: JSON.stringify({ image: base64String, userUid: uid + type})
-	        }); 
-	    
-	        const data = await response.json();
-			if (data.url) {
-		      console.log("Image Updated:", data.url);
-		      // Now save data.url to your Firebase Database for that student
-		      resolve(data.url.slice(62));
-		    }else{
-				reject("No URL returned from Netlify")
-			}
-			} catch (err) {
-			    console.error("Upload failed:", err);
-			}
-	   
-	    };
-		reader.onerror = () => reject("File reading failed");
-	});
-  
+function registerSw() {
+    if ('serviceWorker' in navigator) {
+        // Register the service worker, setting the scope to the current directory './'
+        navigator.serviceWorker.register('serviceworker.js', {scope: './'})
+            .then(function(registration) {
+                console.log('sw is ready')
+            })
+            .catch(function(error) {
+                console.log(error)
+            });
+    }
+        
+}
 
+async function uploadToCloudinary(file, studentId, type,update) {
+    const formData = new FormData();
+    const CLOUD_NAME = "dlnnjv1ca"; 
+    const UPLOAD_PRESET = "malawian-genius-youths";
+    if (update) {
+		try {
+		    const res = await fetch('/.netlify/functions/delete-old-image', {
+		        method: "POST",
+		        body: JSON.stringify({
+		            publicId: userData.userInfo[type] 
+		        })
+		    });
+		
+		    if (!res.ok) {
+		        const errorData = await res.json();
+		        throw new Error(`Server Error: ${errorData.error || res.statusText}`);
+		    }
+		
+		    const resp = await res.json(); 
+		    console.log("File deleted:", resp.result);
+		} catch (error) {
+		    console.error("Logic Error in uploadToCloudinary():", error);
+		}
+    }
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+    formData.append("public_id", studentId + type); 
+    const ftype = file.type.split('/')[0] === 'image' ? 'image':'video'
+	formData.append("resource_type", ftype);
+    console.log("Sending to Cloudinary:", file.name, studentId, type);
+	
+    
+    try {
+        const response = await fetch(
+            `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${ftype}/upload`,
+            { method: "POST", body: formData }
+        );
+
+        const data = await response.json();
+        
+        // THE FIX: Check if Cloudinary rejected the upload
+        if (!response.ok) {
+            console.error("Cloudinary refused the upload:", data.error.message);
+            // This alert will tell you exactly what is wrong!
+            alert("Upload failed"); 
+            return null; // Stop execution
+        }
+        
+        const studentPhotoUrl = data.public_id;
+        console.log("Uploaded! URL:", data.secure_url);
+        return studentPhotoUrl;
+
+    } catch (error) {
+        console.error("Network Error:", error);
+        alert("Check your internet connection.");
+        return null;
+    }
 }
 
 function getOptimizedImageUrl(publicId,type) {
 	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,f_auto,q_auto";
-	if(type == 'L') transformations += ',w_400,h_400';
+	if(type == 'L') transformations += ',w_400,h_200';
 	if(type == 'M') transformations += ',w_200,h_200,r_max';
 	if(type == 's') transformations += ',w_100,h_100,r_max';
     return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
+}
+
+let mediaRecorder;
+let chucks = [];
+let stream ;
+
+const tempVideo = document.createElement('video')
+const audioRecBt = document.getElementById('audioRecBt')
+
+audioRecBt.onclick = async () => {
+   
+
+}
+
+async function recoder(type) {
+	 if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        return
+    }
+	const media = type == 'audio' ? {audio : true}:{audio : true, video : true}
+    const stream = await navigator.mediaDevices.getUserMedia(media)
+    mediaRecorder = new MediaRecorder(stream)
+    chucks = [];
+
+    mediaRecorder.ondataavailable = (event) =>{
+        chucks.push(event.data)
+    }
+
+    mediaRecorder.onstop = async () =>{
+        const audioBlob = new Blob(chucks, {type: `${type}/webm`})
+        const fileUrl = URL.createObjectURL(audioBlob)
+		//await upload(audioBlob)
+        stream.getTracks().forEach(track => track.stop());
+        mediaRecorder = null;
+    }
+
+    mediaRecorder.start();
+}
+
+async function takePhoto(shot) {
+        if (!shot) {
+            stream = navigator.mediaDevices.getUserMedia({video: true})
+            tempVideo.srcObject = stream 
+        } else {
+              tempVideo.onloadedmetadata = async () =>{
+                tempVideo.play()
+    
+                const canvas = document.createElement('canvas');
+                canvas.width = tempVideo.videoWidth
+                canvas.height = tempVideo.videoHeight
+                canvas.getContext('2d').drawImage(tempVideo,0,0)
+                const fileUrl = canvas.toDataURL('image/png')
+                stream.getTracks.forEach(track => track.stop())
+            }  
+        }
+        
+}
+
+
+
+const mediaObserver = new IntersectionObserver((entries,observer) => {
+    entries.forEach(entry => {
+        const media = entry.target;
+
+        if (entry.isIntersecting) {
+            if (!media.src || media.src === window.location.href || media.src.endsWith('/')) {
+                media.src = media.name;
+                media.preload = "metadata";
+                try {
+                    media.load();
+                } catch (error) {
+                    observer.unobserve(media);
+                }
+                console.log("Downloading :", media.name);
+            }
+        } else {
+            try {
+                media.pause();
+                if (media.readyState < 4) {
+                    console.log("Cancelling active download to save data:", media.name);
+                    media.removeAttribute('src'); 
+                    media.load();               
+                } else {
+                    console.log("Keeping data: Video already fully downloaded.",media.name);
+                    observer.unobserve(media);
+                    
+                }  
+            } catch (error) {
+                
+            }
+            
+        }
+    });
+}, { threshold: 0.8 });
+
+
+document.querySelectorAll('.lazy-media').forEach(item => {
+    mediaObserver.observe(item);
+});
+
+/**
+ * Opens a PDF document.
+ * @param {string} url - The location of the file.
+ */
+function openPdf(url) {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+       
+        window.open(url, '_blank');
+    } else {
+        createPdfModal(url);
+    }
+}
+
+function createPdfModal(url) {
+    let modal = document.getElementById('pdfModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'pdfModal';
+        modal.innerHTML = `
+            <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; display:flex; flex-direction:column;">
+                <button onclick="document.getElementById('pdfModal').style.display='none'" 
+                        style="align-self:flex-end; margin:20px; color:white; background:none; border:none; font-size:30px; cursor:pointer;">&times;</button>
+                <iframe id="pdfFrame" style="flex:1; border:none; margin: 0 40px 40px 40px; border-radius:8px; background:white;"></iframe>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+    
+    // Set the source and show it
+    document.getElementById('pdfFrame').src = url;
+    modal.style.display = 'flex';
+}
+
+
+function imageMsg(msg) {
+    const img = document.createElement("img")
+    img.preload = "none";
+    img.name = getOptimizedImageUrl(msg.imageUrl,'L');
+    img.className = "media-file lazy-media"
+    img.alt = 'Photo'
+	mediaObserver.observe(img)
+    return img;
+    
+}
+
+function videoMsg(msg) {
+    const div = document.createElement("div")
+    div.className = "msg-bubble recv"
+    const vid = document.createElement("video")
+    vid.preload = "none";
+    vid.name = msg.videoUrl;
+    vid.className = "media-file lazy-media"
+	vid.controls = true
+	mediaObserver.observe(vid)
+    return vid;
+    
+}
+
+function audioMsg(msg) {
+    const aud = document.createElement("audio")
+    aud.preload = "none";
+    aud.name = msg.audioUrl;
+    aud.className = "lazy-media"
+	aud.controls = true
+	mediaObserver.observe(aud)
+    return aud;
+    
+}
+
+function textMsg(msg) {
+    const div = document.createElement("div")
+	div.style.padding = "5px 10px"
+    const urlReg = /https?:\/\/\S*\w/
+	try{
+		const matchUrl = msg.prompt.match(urlReg)[0].trim();
+		if(matchUrl){
+            const a = document.createElement("a")
+            const p1 = document.createElement("p")
+            const p2 = document.createElement("p")
+            urlStart = msg.prompt.indexOf(matchUrl)
+            p1.textContent = msg.prompt.slice(0,urlStart)
+            p1.textContent = msg.prompt.slice(urlStart + matchUrl.length)
+			a.href = matchUrl;
+            a.textContent = matchUrl
+            div.appendChild(p1)
+            div.appendChild(a)
+            div.appendChild(p2)
+		}
+	}
+	catch(e){
+        div.textContent = msg.prompt
+    }
+    return div;
+    
+}
+
+function pdfMsg(msg) {
+    const div = document.createElement("div")
+    div.className = "file-card"
+    div.innerHTML = `
+        <div class="file-icon">
+            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+        </div>`
+    const innerDiv = document.createElement("div")
+    innerDiv.className = "file-details"
+    const span1 = document.createElement("span")
+    span1.className = "file-name"
+    span1.textContent = msg.fileName
+    const span2 = document.createElement("span")
+    span2.textContent = `${msg.metadata} MB • PDF Document`
+    span2.className = "file-meta"
+    innerDiv.appendChild(span1)
+    innerDiv.appendChild(span2)
+    div.appendChild(innerDiv)
+    div.onclick = () => {openPdf(msg.pdfUrl)}
+    return div;
+    
+}
+
+
+
+const input = document.getElementById("input")
+input.onchange = async () =>{
+	const files = input.files
+	for (let i = 0; i < files.length; i++){
+		const file = files[i]
+        re = /\S*\w\//
+		const fName = file.name
+        typ = file.type.match(re)[0].trim()
+        if (typ == 'video/') {
+            tempPost.types.push('videoMsg')
+            tempPost['videoUrl'] = await uploadToCloudinary(file, fName, Date.now())
+        }else if (typ == 'audio/'){
+            tempPost.types.push('audioMsg')
+            tempPost['audioUrl'] = await upload(file)
+        }else if (typ == 'image/'){
+            tempPost.types.push('imageMsg')
+            tempPost['imageUrl'] = await uploadToCloudinary(file, fName, Date.now())
+        }else if (file.type == 'application/pdf'){
+            tempPost.types.push('pdfMsg')
+            tempPost['pdfUrl'] = await upload(file)
+            tempPost['fileName'] = file.name
+            tempPost['metadata'] = file.size/(1024 * 1024)
+        }
+    }
+}
+
+
+/**
+ * Uploads any file type (Video, PDF, Img, Audio) directly to Tebi.io
+ */
+async function upload(file) {
+    // 1. Create a unique name
+	const BUCKET_NAME = 'mgy'
+    const fileName = `${Date.now()}-${file.name || 'upload'}`;
+    
+    try {
+        // 2. Ask our Netlify function for a "permission slip" (Signed URL)
+        const tokenResponse = await fetch('/.netlify/functions/get-signed-url', {
+            method: 'POST',
+            body: JSON.stringify({
+                fileName: fileName,
+                contentType: file.type
+            })
+        });
+
+        const { uploadUrl } = await tokenResponse.json();
+        const uploadResponse = await fetch(uploadUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': file.type },
+            body: file
+        });
+
+        if (!uploadResponse.ok) throw new Error('Upload to Tebi failed');
+
+        // 4. Construct the final public URL
+        const finalUrl = `https://s3.tebi.io/${BUCKET_NAME}/${fileName}`;
+        console.log("Success! File is at:", finalUrl);
+        return finalUrl;
+
+    } catch (err) {
+        console.error("Logic Error:", err);
+    }
+}
+
+
+function makePost(post,preview){
+	const tm = new Date(post["chatId"] || Date.now()).toGMTString().slice(5,22);
+	div = document.createElement('div');
+	div.style = "min-height: 225px; background: white;";
+	div.className = 'post'
+	card = document.createElement('div');
+	card.className = 'card';
+	card.style.padding = "2px 10px"
+	postBox = document.createElement('div');
+	postBox.className = "post-box"
+	img = document.createElement('img');
+	img.className = "small_profile_img lazy-media";
+	img.style = "border-radius: 50%";
+	img.name = getOptimizedImageUrl(post['imgUrl'],'S') || getOptimizedImageUrl(userData.userInfo['profile-img-preview'] || 'img/mgyG.jpg','S');
+	img.onclick = () =>{switchPage('profilePage',post['userkey'])};
+	mediaObserver.observe(img)
+	cont = document.createElement('div');
+	Uname = document.createElement('p');
+	Uname.textContent = post["senderId"] || userData.userInfo["username"];
+	time = document.createElement('p');
+	time.className = 'status';
+	time.textContent = tm;
+	feed = document.createElement('div');
+	feed.className = "feed";
+	if (preview) feed.id = "post-1";
+
+	cont.append(Uname,time);
+	postBox.append(img,cont);
+	card.append(postBox);
+	div.append(card,feed);
+	return div;
 }
