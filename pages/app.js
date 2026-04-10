@@ -940,7 +940,7 @@ async function uploadToCloudinary(file, studentId, type,update) {
 
     } catch (error) {
         console.error("Network Error:", error);
-        alert("Check your internet connection.");
+        alert('Upload failed. File is too large for now.')
         return null;
     }
 }
@@ -1185,23 +1185,32 @@ function pdfMsg(msg) {
 const input = document.getElementById("input")
 input.onchange = async () =>{
 	const files = input.files
+	let url;
 	for (let i = 0; i < files.length; i++){
 		const file = files[i]
         re = /\S*\w\//
 		const fName = file.name
         typ = file.type.match(re)[0].trim()
         if (typ == 'video/') {
+			url = await uploadToCloudinary(file, fName, Date.now())
+			if(!url) return;
             tempPost.types.push('videoMsg')
-            tempPost['videoUrl'] = await uploadToCloudinary(file, fName, Date.now())
+            tempPost['videoUrl'] = url
         }else if (typ == 'audio/'){
+			url = await upload(file)
+			if(!url) return;
             tempPost.types.push('audioMsg')
-            tempPost['audioUrl'] = await upload(file)
+            tempPost['audioUrl'] = url
         }else if (typ == 'image/'){
+			url = await uploadToCloudinary(file, fName, Date.now())
+			if(!url) return;
             tempPost.types.push('imageMsg')
-            tempPost['imageUrl'] = await uploadToCloudinary(file, fName, Date.now())
+            tempPost['imageUrl'] = url
         }else if (file.type == 'application/pdf'){
+			url = await upload(file)
+			if(!url) return;
             tempPost.types.push('pdfMsg')
-            tempPost['pdfUrl'] = await upload(file)
+            tempPost['pdfUrl'] = url
             tempPost['fileName'] = file.name
             tempPost['metadata'] = file.size/(1024 * 1024)
         }
@@ -1242,6 +1251,7 @@ async function upload(file) {
         return finalUrl;
 
     } catch (err) {
+		alert('Upload failed. File is too large for now.')
         console.error("Logic Error:", err);
     }
 }
@@ -1278,4 +1288,12 @@ function makePost(post,preview){
 	card.append(postBox);
 	div.append(card,feed);
 	return div;
+}
+
+function whereAppOpen() {
+	const ua = window.navigator.userAgent.toLowerCase();
+	const signatures = ['fbav', 'instagram', 'whatsapp', 'fban', 'wv', 'linkedinapp', 'fbss', 'fb_iab'];
+	if (signatures.some(s => ua.includes(s))) {
+		document.getElementById("warn-banner").style.display = 'block';
+	}
 }
