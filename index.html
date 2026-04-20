@@ -950,6 +950,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		      
 		      console.log("Success! Firebase User ID:", userCredential.user.uid);
 		      // Now the user can read/write to Firebase Database normally
+				return userCredential;
 		    } else {
 		      throw new Error(data.error);
 		    }
