@@ -4,3 +4,5 @@ flask-cors
 python-dotenv
 Pillow
 requests
+firebase-admin
+gunicorn
