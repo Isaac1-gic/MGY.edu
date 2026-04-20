@@ -60,7 +60,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				
 					formBt.disabled = true;
 					try{
-						await createUserWithEmailAndPassword(userAuth,userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','')+'@mgy.com', userData.userInfo['Password'])
+						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','')+'@mgy.com', userData.userInfo['Password'])
 						delete userData.userInfo['Password']
 						switchPage('homePage')
 						const userNow = userAuth.currentUser; 
@@ -85,7 +85,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 		}
 		async function EmailAndPassword(currentU,currentP){
-			const userCredential  = await signInWithEmailAndPassword(userAuth,currentU.replaceAll(' ','')+'@mgy.com',currentP)
+			const userCredential  = await signInWithEmailAndPassword(currentU.replaceAll(' ','')+'@mgy.com',currentP)
 			
 	        userkey = userCredential.user.uid;
 			path = ref(database,`users/${userkey}`)
