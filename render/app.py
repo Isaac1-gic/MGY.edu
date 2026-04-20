@@ -7,17 +7,59 @@ from PIL import Image
 import requests
 import time
 from io import BytesIO
+import json
+import firebase_admin
+from firebase_admin import auth, credentials
 
 
 # 1. Initialize the Flask app
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, origins=[
+    "https://mgy265.netlify.app/",
+    "https://mgy265.netlify.app",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500"
+])
 
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 config = types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
 
+@app.route('/login', methods=['POST'])
+def login():
+    if not firebase_admin._apps:
+        config_json = os.getenv("FIREBASE_CONFIG")
+        if config_json:
+            # parse the string back into a dictionary
+            cred_dict = json.loads(config_json)
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # 2. CUSTOM LOGIC HERE
+    # This is where I check your own database or logic.
+    # let's assume the user is valid.
+    is_valid = True # for now anyone is valid user
+
+    if is_valid:
+        try:
+            # 3. Create a unique UID for this user
+            uid = f"user_{username[::-1]+'mgy'}"
+            
+            # 4. Generate the Custom Token (the "Permission Slip")
+            custom_token = auth.create_custom_token(uid)
+            
+            # Convert bytes to string for JSON transmission
+            return jsonify({"token": custom_token.decode('utf-8')}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    else:
+        return jsonify({"error": "Invalid credentials"}), 401
+        
 def getFile(url):
     try:
         file = requests.get(url)
