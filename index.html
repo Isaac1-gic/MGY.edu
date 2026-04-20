@@ -895,8 +895,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
 		import { 
 			getAuth,
-			createUserWithEmailAndPassword,
-			signInWithEmailAndPassword,
+			signInWithCustomToken,
 			onAuthStateChanged
 			   } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js";
@@ -932,6 +931,34 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         const database = await getDatabase(app);
 		const auth = await getAuth(app);
 
+		async function CustomLogin(username, password) {
+		  const auth = getAuth();
+		
+		  try {
+		    // 1. Ask Render server for the token
+		    const response = await fetch('https://your-render-app.onrender.com/login', {
+		      method: 'POST',
+		      headers: { 'Content-Type': 'application/json' },
+		      body: JSON.stringify({ username, password })
+		    });
+		
+		    const data = await response.json();
+		
+		    if (data.token) {
+		      // 2.  Tell the Firebase SDK to log in with token
+		      const userCredential = await signInWithCustomToken(auth, data.token);
+		      
+		      console.log("Success! Firebase User ID:", userCredential.user.uid);
+		      // Now the user can read/write to Firebase Database normally
+		    } else {
+		      throw new Error(data.error);
+		    }
+		  } catch (err) {
+		    console.error("Login failed:", err.message);
+		    alert("Check your credentials or connection.");
+		  }
+		}
+		
         window.database = database;
 		window.FIREBASE_API_KEY = firebaseConfig.apiKey;
         window.ref = ref;
@@ -944,8 +971,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		window.getAuth = getAuth;
 		window.remove = remove;
 		window.onValue = onValue;
-		window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-		window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+		window.signInWithEmailAndPassword = CustomLogin;
 		window.onChildChanged = onChildChanged;
 		window.onAuthStateChanged = onAuthStateChanged;
 		
