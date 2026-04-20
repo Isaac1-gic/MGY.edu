@@ -48,7 +48,17 @@ def login():
     if is_valid:
         try:
             # 3. Create a unique UID for this user
-            uid = f"user_{username[::-1]+'mgy'}"
+            mapping = {
+                ".": "mgyDOT",
+                "#": "mgyHASH",
+                "$": "mgyCASH",
+                "[": "mgyOBR",
+                "]": "mgyCBR"
+            }
+            
+            table = str.maketrans(mapping)
+            sanitized_uid = username.translate(table)
+            uid = f"user_{sanitized_uid[::-1]}"
             
             # 4. Generate the Custom Token (the "Permission Slip")
             custom_token = auth.create_custom_token(uid)
