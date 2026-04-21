@@ -19,8 +19,7 @@ CORS(app, origins=[
     "https://mgy265.netlify.app/",
     "https://mgy265.netlify.app",
     'https://isaac1-gic.github.io',
-    "http://localhost:5500",
-    "http://127.0.0.1:5500"
+    "https://mgy.web.app"
 ])
 
 
