@@ -398,8 +398,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			
 		}
+
 		//have chat manager to manage all chat so createChatlist
 		//there will be no chaos with onValue fuction
+		const init = {}
 		function manageChat(newId) {
 			document.getElementById('chatList').innerHTML = ''
 			if(newId){
@@ -409,25 +411,42 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				firstMsg = true;
 				return;
 			}
+
+			function h(chatKey,chatTitle,img){
+				chat = mgy[chatKey]
+				lastMsg = chat[chat.length - 1][1]
+				const proImg = img || getOptimizedImageUrl(lastMsg['imgUrl'])
+				createChatlist(chatTitle,lastMsg.prompt,proImg,chatKey)
+				chatbox(chatKey)
+			}
 			try{
-				chatPath = ref(database,'mgyPosts')
-				onValue(chatPath, async (snapshot) =>{
-					chat = Object.entries(snapshot.val()).reverse();
-					mgy['mgyPosts'] = chat
-					chatbox('mgyPosts')
-					
-				})
+				if (!init['mgyPosts']) {
+					init['mgyPosts'] = true
+					chatPath = ref(database,'mgyPosts')
+					onValue(chatPath, async (snapshot) =>{
+						chat = Object.entries(snapshot.val()).reverse();
+						mgy['mgyPosts'] = chat
+						chatbox('mgyPosts')
+						
+					})
+				}
+				
 			} catch (error) {console.warn(error)}
 			try{
-				chatPath = ref(database,'group_chats')
-				onValue(chatPath, async (snapshot) =>{
-					chat = Object.entries(snapshot.val());
-					lastMsg = chat[chat.length - 1][1]
-					mgy['mgyforum'] = chat
-					createChatlist('MGY Forum',lastMsg.prompt,'img/mgy.jpg','mgyforum')
-					chatbox('mgyforum')
-					
-				})
+				if (!init['mgyforum']) {
+					init['mgyforum'] = true
+					chatPath = ref(database,'group_chats')
+					onValue(chatPath, async (snapshot) =>{
+						chat = Object.entries(snapshot.val());
+						lastMsg = chat[chat.length - 1][1]
+						mgy['mgyforum'] = chat
+						createChatlist('MGY Forum',lastMsg.prompt,'img/mgy.jpg','mgyforum')
+						chatbox('mgyforum')
+						
+					})
+				}else{
+					h('mgyforum','MGY Forum','img/mgy.jpg')
+				}
 			} catch (error) {console.warn(error)}
 			if (userData['messageBox'] =='initialized') return
 			const key_value = Object.entries(userData.messageBox)
@@ -435,26 +454,32 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				const key = key_value[i][0]
 				const value = key_value[i][1]
 				try{
-					chatPath = ref(database,`messages/${key}`)
-					onValue(chatPath, async (snapshot) =>{
-						try{
-							chat = Object.entries(snapshot.val());
-						
-							lastMsg = chat[chat.length - 1][1]
-							mgy[key] = chat
-							const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
-							createChatlist(value,lastMsg.prompt,proImg,key)
-							chatbox(key)
-						}catch (e){
-							console.warn('No chat: ',e)
-						}
-					})
+					if (!init[key]) {
+						init[key] = true
+						chatPath = ref(database,`messages/${key}`)
+						onValue(chatPath, async (snapshot) =>{
+							try{
+								chat = Object.entries(snapshot.val());
+							
+								lastMsg = chat[chat.length - 1][1]
+								mgy[key] = chat
+								const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
+								createChatlist(value,lastMsg.prompt,proImg,key)
+								chatbox(key)
+							}catch (e){
+								console.warn('No chat: ',e)
+							}
+						})
+					}else{
+						h(key,value)
+					}
 				}
 				catch (e){
 					console.warn('manageChat: ',e)
 				}
 			}
 		}
+
 		function stopChatPolling(){
 		   
 			
