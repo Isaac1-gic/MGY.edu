@@ -11,8 +11,8 @@
         "destination": "/index.html"
       }
     ],
-    
-    
+
+
     "public": ".",
     "clean": true,
     "aws": {
