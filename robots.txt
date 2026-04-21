@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# This line is the most important
+Sitemap: https://mgy265.netlify.app/sitemap.xml
