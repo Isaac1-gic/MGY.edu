@@ -55,10 +55,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			function handleLoginFailure() {
 			    alert('Failed to create account!');
 			    formBt.disabled = false;
-				formBt.innerText = "Login";
+				formBt.innerText = "Sign";
 			}
 				
 					formBt.disabled = true;
+					formBt.innerText = "Checking...";
 					try{
 						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','')+'@mgy.com', userData.userInfo['Password'])
 						delete userData.userInfo['Password']
@@ -230,7 +231,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			document.getElementById('user').textContent = user["userInfo"]['username']
 			document.getElementById('friends').textContent = user['freinds']== 'initialized' ? '0' + " Friends" : user['freinds'].length + " Friends"
-			document.getElementById('bio').textContent = user["userInfo"]['Bio'] || "Today is your tomorrow history. If you are genius enough, make your famous history today."
+			document.getElementById('bio').innerHTML = cleanHTML(user["userInfo"]['Bio'] || "Today is your tomorrow history. If you are genius enough, make your famous history today.")
 			if(user["userInfo"]['profile-img-preview']){
 				document.getElementById('pro-img').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'])
 				document.getElementById('profile-img-preview').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'],'M')
@@ -247,7 +248,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			document.getElementById('dob').textContent = user["userInfo"]['DOB']
 			document.getElementById('sex').textContent = user["userInfo"]['Sex']
 			document.getElementById('district').textContent = user["userInfo"]['District']
-			document.getElementById('work').textContent = user["userInfo"]['Work']
+			document.getElementById('work').innerHTML = cleanHTML(user["userInfo"]['Work'])
 			document.getElementById('mgy-role').textContent = user["userInfo"]['MGY role']
 			document.getElementById('edu-level').textContent = user["userInfo"]['Educational level']
 			
@@ -398,7 +399,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			
 		}
-
 		//have chat manager to manage all chat so createChatlist
 		//there will be no chaos with onValue fuction
 		const init = {}
@@ -479,7 +479,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				}
 			}
 		}
-
 		function stopChatPolling(){
 		   
 			
@@ -699,7 +698,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatName.textContent = name 
 			const chatMsg = document.createElement('pre')
 			const chatCode = document.createElement('code')
-			chatCode.textContent = msg.length > 30 ? msg.slice(0,30)+'...':msg
+			chatCode.innerHTML = cleanHTML(msg.length > 30 ? msg.slice(0,30)+'...':msg)
 			chatMsg.appendChild(chatCode)
 			chatHeader.appendChild(chatImg)
 			chatHeader.appendChild(chatName)
@@ -1152,26 +1151,7 @@ function audioMsg(msg) {
 function textMsg(msg) {
     const div = document.createElement("div")
 	div.style.padding = "5px 10px"
-    const urlReg = /https?:\/\/\S*\w/
-	try{
-		const matchUrl = msg.prompt.match(urlReg)[0].trim();
-		if(matchUrl){
-            const a = document.createElement("a")
-            const p1 = document.createElement("p")
-            const p2 = document.createElement("p")
-            urlStart = msg.prompt.indexOf(matchUrl)
-            p1.textContent = msg.prompt.slice(0,urlStart)
-            p1.textContent = msg.prompt.slice(urlStart + matchUrl.length)
-			a.href = matchUrl;
-            a.textContent = matchUrl
-            div.appendChild(p1)
-            div.appendChild(a)
-            div.appendChild(p2)
-		}
-	}
-	catch(e){
-        div.textContent = msg.prompt
-    }
+    div.innerHTML = cleanHTML(msg.prompt)
     return div;
     
 }
@@ -1321,4 +1301,9 @@ function whereAppOpen() {
 	if (signatures.some(s => ua.includes(s))) {
 		document.getElementById("warn-banner").style.display = 'block';
 	}
+}
+
+function cleanHTML(input) {
+	const clean = DOMPurify.sanitize(input);
+	return  marked.parse(clean)
 }
