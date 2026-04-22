@@ -107,7 +107,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			function handleLoginFailure(username,err) {
 				if (username == 'Show Error') {
 					alert('Failed: '+ err)
-				}else{
+				}else{ 
 					alert("Wrong username or password.");	
 				}
 			    loginBtn.disabled = false;
@@ -980,13 +980,16 @@ async function uploadToCloudinary(file, studentId, type,update) {
     }
 }
 
-function getOptimizedImageUrl(publicId,type) {
+function getOptimizedImageUrl(publicId,type,vid) {
 	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,f_auto,q_auto";
 	if(type == 'L') transformations = 'ar_1:1,c_pad,f_auto,q_auto,b_auto,w_200';
 	if(type == 'M') transformations += ',w_200,h_200,r_max';
 	if(type == 's') transformations += ',w_100,h_100,r_max';
+	if (vid) {
+		return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/ar_12:6,c_pad,q_auto,b_auto,w_480/${publicId}`;
+	}
     return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
 }
 
@@ -1081,7 +1084,7 @@ const mediaObserver = new IntersectionObserver((entries,observer) => {
             
         }
     });
-}, { threshold: 0.2 });
+}, { threshold: 0.4 });
 
 
 document.querySelectorAll('.lazy-media').forEach(item => {
@@ -1140,7 +1143,7 @@ function videoMsg(msg) {
     div.className = "msg-bubble recv"
     const vid = document.createElement("video")
     vid.preload = "none";
-    vid.name = msg.videoUrl;
+    vid.name = getOptimizedImageUrl(msg.videoUrl,'L',true);
     vid.className = "media-file lazy-media"
 	vid.controls = true
 	mediaObserver.observe(vid)
