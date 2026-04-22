@@ -52,8 +52,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		async function create_update_account(){
 			const formBt = document.getElementById('sgnBt')
 			const form = document.getElementById('form')
-			function handleLoginFailure() {
-			    alert('Failed to create account!');
+			function handleLoginFailure(username,err) {
+				if (username == 'Show Error') {
+					alert('Failed: '+ err)
+				}else{
+					alert('Failed to create account!');	
+				}
 			    formBt.disabled = false;
 				formBt.innerText = "Sign";
 			}
@@ -63,7 +67,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					try{
 						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','')+'@mgy.com', userData.userInfo['Password'])
 						delete userData.userInfo['Password']
-						switchPage('homePage')
 						const userNow = userAuth.currentUser; 
 
 						if (userNow) {
@@ -73,6 +76,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 							await saveData('key',userkey)
 							await saveData('userData',userData)
 							alert("Success! Welcome to MGY.");
+							await adddbListener(10)
+							switchPage("chatPage");
 						}else {
 							handleLoginFailure()
 						}
@@ -82,7 +87,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 							return
 					    }
 						console.warn(e)
-						handleLoginFailure()
+						handleLoginFailure(userData.userInfo['username'],e)
 					}
 		}
 		async function EmailAndPassword(currentU,currentP){
@@ -98,6 +103,17 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		async function login() {
 			const logInFm = document.getElementById("loginForm");
 			const loginBtn = document.getElementById("login-btn");
+			
+			function handleLoginFailure(username,err) {
+				if (username == 'Show Error') {
+					alert('Failed: '+ err)
+				}else{
+					alert("Wrong username or password.");	
+				}
+			    loginBtn.disabled = false;
+				loginBtn.innerText = "Login";
+			}
+			
 				loginBtn.disabled = true;
 				loginBtn.innerText = "Checking...";
 				const currentU = document.getElementById("usernameS").value;
@@ -107,18 +123,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					loginBtn.innerText = "Checking...";
 					await EmailAndPassword(currentU,currentP)
 					alert("Success! Welcome to MGY.");
-					switchPage('homePage');
+					await adddbListener(10)
+					switchPage("chatPage");
 					
 			    } catch (err) {
 			        console.error(err);
-			        handleLoginFailure();
+			        handleLoginFailure(currentU,err);
 			    }
 			
-			function handleLoginFailure() {
-			    alert("Wrong username or password.");
-			    loginBtn.disabled = false;
-				loginBtn.innerText = "Login";
-			}
+			
 			
 		}
 		async function switchPage(pageId,id){
@@ -792,16 +805,13 @@ async function createMsg(activeKey,chat,msg,i) {
 			}
         setTimeout(async function (){
             try {
-				if (!isStandalone()) {
-				maybeShowInstall();
-			}
+				
 
                 await initDB();
 				
                 // Load User Data
                 await loadData('userData', 'onload');
 				profileUpdater(userkey)
-				manageChat()
             } catch (e) {
             }
         },10);
@@ -815,15 +825,7 @@ window.onload = async function(){
 		}
 	registerSw()
 	await adddbListener(10)
-	alert(`🔧 Development Notice:
-	MGY is currently in beta and under active development. 
-	Please be aware:
-	• Features may be unstable or incomplete
-	• The page may freeze or crash
-	• Data may be lost during updates
-	• Your feedback helps us improve!
 	
-	Thank you for being part of our journey! 🙏`)
 	}
 
 function adddbListener(i) {
@@ -836,8 +838,8 @@ function adddbListener(i) {
 			userkey = userAuth.currentUser.uid
 			onAuthStateChanged(userAuth, (user) => {
 			  if (user) {
-			    // User is already logged in! 
-			    // The SDK automatically refreshed the token if it was expired.
+			    profileUpdater(userkey)
+				manageChat()
 			    console.log("Welcome back, " + user.uid);
 				alert('Welcome back, '+userData.userInfo['First name'])
 			  } else {
@@ -893,6 +895,15 @@ async function installApp() {
     await deferredInstallPrompt.userChoice; 
 
     deferredInstallPrompt = null;
+	alert(`🔧 Development Notice:
+	MGY is currently in beta and under active development. 
+	Please be aware:
+	• Features may be unstable or incomplete
+	• The page may freeze or crash
+	• Data may be lost during updates
+	• Your feedback helps us improve!
+	
+	Thank you for being part of our journey! 🙏`)
     document.getElementById('install-banner').style.display = 'none';
 }
 
