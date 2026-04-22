@@ -1,5 +1,5 @@
 const CACHE_NAME = 'mgy';
-const CACHE_EXTERNAL_NAME = 'external-assets-cache-v14';
+const CACHE_EXTERNAL_NAME = 'external-assets-cache-v1';
 const STUDY_TAG = 'Daily-Study-Reminder';
 
 const OFFLINE_URLS = [
@@ -15,6 +15,9 @@ const OFFLINE_URLS = [
   'img/favicon-16x16.png',
   'img/android-chrome-192x192.png',
   'img/android-chrome-512x512.png',
+  'img/poster.png',
+  "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js",
+  "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js',
