@@ -973,7 +973,7 @@ function getOptimizedImageUrl(publicId,type) {
 	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,f_auto,q_auto";
-	if(type == 'L') transformations += ',w_400,h_200';
+	if(type == 'L') transformations = 'ar_1:1,c_pad,f_auto,q_auto,b_auto,w_200';
 	if(type == 'M') transformations += ',w_200,h_200,r_max';
 	if(type == 's') transformations += ',w_100,h_100,r_max';
     return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
