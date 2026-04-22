@@ -1081,7 +1081,7 @@ const mediaObserver = new IntersectionObserver((entries,observer) => {
             
         }
     });
-}, { threshold: 0.8 });
+}, { threshold: 0.2 });
 
 
 document.querySelectorAll('.lazy-media').forEach(item => {
