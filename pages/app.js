@@ -444,13 +444,15 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						chatbox('mgyPosts')
 						
 					})
+					oldmgy = await loadData('mgyUpdates')
+					if (!mgy['mgyPosts'] && oldmgy){
+						init['mgyPosts'] = true
+						init['mgyforum'] = true
+						mgy = oldmgy
+						chatbox('mgyPosts')
+					}
 				}
-				if (!mgy['mgyPosts']){
-					init['mgyPosts'] = true
-					init['mgyforum'] = true
-					mgy = await loadData('mgyUpdates')
-					chatbox('mgyPosts')
-				}
+				
 			} catch (error) {console.warn(error)}
 			try{
 				if (!init['mgyforum']) {
