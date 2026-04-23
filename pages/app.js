@@ -18,8 +18,8 @@
 						freinds: 'initialized',
 						messageBox: 'initialized'	   
 			};
-        let mgy = {
-                    };
+        let mgy = {};
+		const oldMsg = {};
 		let activeKey = 'mgyPosts';
         let timeStamp = Date.now();
 		let SPACE_TIME = 30000;
@@ -147,6 +147,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			else if (!userkey && pageId != "signPage"){
 				
 				switchPage("signPage")
+				fetch('https://mgy-edu.onrender.com/login')
 				return
 			}
 			const page = document.getElementById(pageId)
@@ -415,7 +416,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		//have chat manager to manage all chat so createChatlist
 		//there will be no chaos with onValue fuction
 		const init = {}
-		function manageChat(newId) {
+		async function manageChat(newId) {
 			document.getElementById('chatList').innerHTML = ''
 			if(newId){
 				activeKey = newId;
@@ -434,28 +435,35 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			try{
 				if (!init['mgyPosts']) {
-					init['mgyPosts'] = true
+					
 					chatPath = ref(database,'mgyPosts')
 					onValue(chatPath, async (snapshot) =>{
+						init['mgyPosts'] = true
 						chat = Object.entries(snapshot.val()).reverse();
 						mgy['mgyPosts'] = chat
 						chatbox('mgyPosts')
 						
 					})
 				}
-				
+				if (!mgy['mgyPosts']){
+					init['mgyPosts'] = true
+					init['mgyforum'] = true
+					mgy = await loadData('mgyUpdates')
+					chatbox('mgyPosts')
+				}
 			} catch (error) {console.warn(error)}
 			try{
 				if (!init['mgyforum']) {
-					init['mgyforum'] = true
+					
 					chatPath = ref(database,'group_chats')
 					onValue(chatPath, async (snapshot) =>{
+						init['mgyforum'] = true
 						chat = Object.entries(snapshot.val());
 						lastMsg = chat[chat.length - 1][1]
 						mgy['mgyforum'] = chat
 						createChatlist('MGY Forum',lastMsg.prompt,'img/mgy.jpg','mgyforum')
 						chatbox('mgyforum')
-						
+						await saveData('mgyUpdates',mgy)
 					})
 				}else{
 					h('mgyforum','MGY Forum','img/mgy.jpg')
@@ -468,12 +476,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				const value = key_value[i][1]
 				try{
 					if (!init[key]) {
-						init[key] = true
+						
 						chatPath = ref(database,`messages/${key}`)
 						onValue(chatPath, async (snapshot) =>{
 							try{
 								chat = Object.entries(snapshot.val());
-							
+								
 								lastMsg = chat[chat.length - 1][1]
 								mgy[key] = chat
 								const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
@@ -483,9 +491,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 								console.warn('No chat: ',e)
 							}
 						})
+						init[key] = true
 					}else{
 						h(key,value)
 					}
+					
 				}
 				catch (e){
 					console.warn('manageChat: ',e)
@@ -618,16 +628,24 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					chatPath = ref(database,refpath+msg[0][0])
 					await remove(chatPath)
 				} catch (error) {console.warn(error)}
-			}  
-		    for (let i=0; i < msg.length; i++){
+			}
+			const len = msg.length
+		    for (let i=0; i < len; i++){
 				const chat = msg[i][1]
 				const msgs = await createMsg(activeKey,chat,msg,i)
-		        chatContainer.appendChild(msgs); 
+		        chatContainer.appendChild(msgs);
+				if (i == len - 2) {
+					await saveData('lastseen',chat.chatId)
+				}
 		    };
 		    scrollToBottom(chatContainer);	
 		}
 
 async function createMsg(activeKey,chat,msg,i) {
+	if (oldMsg[chat["chatId"]]) {
+		console.log('old')
+		return oldMsg[chat["chatId"]]
+	}
 	let sessionDiv;
 	console.log("MAKE",activeKey)
 	if (activeKey == 'mgyPosts') {
@@ -674,6 +692,7 @@ async function createMsg(activeKey,chat,msg,i) {
 		devsec.appendChild(img)
 		devsec.appendChild(header);
 		sessionDiv.appendChild(devsec)
+		sessionDiv.id = chat["chatId"]
 	}
 	
 	
@@ -681,6 +700,8 @@ async function createMsg(activeKey,chat,msg,i) {
     chat.types.forEach(type =>{
         sessionDiv.appendChild(Tswitch(type,chat))
     })
+	oldMsg[chat["chatId"]] = sessionDiv;
+	console.log('new')
 	return sessionDiv;
 }
 
@@ -698,9 +719,10 @@ async function createMsg(activeKey,chat,msg,i) {
 		} 
 	}
 
-		function createChatlist(name,msg,img,msgKey) {
+		async function createChatlist(name,msg,img,msgKey) {
 			if (document.getElementById("chatPage").hidden) return
-			const chatPresention = document.createElement('div')
+			scrolled = false
+			const chatPresention = document.createElement('a')
 			chatPresention.className = 'msg-bubble sent'
 			chatPresention.style = 'max-width: 100%;'
 			const chatHeader = document.createElement('div')
@@ -718,6 +740,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatHeader.appendChild(chatName)
 			chatPresention.appendChild(chatHeader)
 			chatPresention.appendChild(chatMsg)
+			chatPresention.href = '#'+await loadData('lastseen')
 			chatPresention.onclick = () => {
 				activeKey = msgKey;
 				activeChat.textContent = name;
