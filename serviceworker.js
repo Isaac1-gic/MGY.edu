@@ -1,5 +1,5 @@
 const CACHE_NAME = 'mgy-v3';
-const CACHE_EXTERNAL_NAME = 'external-assets-cache-v2';
+const CACHE_EXTERNAL_NAME = 'external-assets-cache-v3';
 const STUDY_TAG = 'Daily-Study-Reminder';
 
 const OFFLINE_URLS = [
