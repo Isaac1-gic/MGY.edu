@@ -701,7 +701,8 @@ async function createMsg(activeKey,chat,msg,i) {
 		function createChatlist(name,msg,img,msgKey) {
 			if (document.getElementById("chatPage").hidden) return
 			const chatPresention = document.createElement('div')
-			chatPresention.className = 'card'
+			chatPresention.className = 'msg-bubble sent'
+			chatPresention.style = 'max-width: 100%;'
 			const chatHeader = document.createElement('div')
 			chatHeader.className = 'post-box'
 			const chatImg = document.createElement('img')
@@ -709,9 +710,9 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatImg.src = img
 			const chatName = document.createElement('p')
 			chatName.textContent = name 
-			const chatMsg = document.createElement('pre')
+			const chatMsg = document.createElement('div')
 			const chatCode = document.createElement('code')
-			chatCode.innerHTML = cleanHTML(msg.length > 30 ? msg.slice(0,30)+'...':msg)
+			chatCode.innerHTML = cleanHTML(msg.length > 45 ? msg.slice(0,45)+'...':msg)
 			chatMsg.appendChild(chatCode)
 			chatHeader.appendChild(chatImg)
 			chatHeader.appendChild(chatName)
