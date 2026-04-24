@@ -119,7 +119,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				const currentU = document.getElementById("usernameS").value;
 				const currentP = document.getElementById("passwordS").value;
 				try {
-					
+					if (currentU == "Guest  G") {
+						alert("Create your account. Or login to your account.");
+						return
+					}
 					loginBtn.innerText = "Checking...";
 					await EmailAndPassword(currentU,currentP)
 					alert("Success! Welcome to MGY.");
@@ -144,8 +147,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				edit('new')
 				return
 			}
-			else if (!userkey && pageId != "signPage"){
-				
+			else if (userkey == "user_mocTODygmygm@GtseuG" || !userkey && pageId != "signPage"){
+				alert("Create your account. Or login to your account.");
 				switchPage("signPage")
 				fetch('https://mgy-edu.onrender.com/login')
 				return
@@ -245,7 +248,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			document.getElementById('user').textContent = user["userInfo"]['username']
 			document.getElementById('friends').textContent = user['freinds']== 'initialized' ? '0' + " Friends" : user['freinds'].length + " Friends"
-			document.getElementById('bio').innerHTML = cleanHTML(user["userInfo"]['Bio'] || "Today is your tomorrow history. If you are genius enough, make your famous history today.")
+			document.getElementById('bio').innerHTML = await cleanHTML(user["userInfo"]['Bio'] || "Today is your tomorrow history. If you are genius enough, make your famous history today.")
 			if(user["userInfo"]['profile-img-preview']){
 				document.getElementById('pro-img').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'])
 				document.getElementById('profile-img-preview').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'],'M')
@@ -262,7 +265,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			document.getElementById('dob').textContent = user["userInfo"]['DOB']
 			document.getElementById('sex').textContent = user["userInfo"]['Sex']
 			document.getElementById('district').textContent = user["userInfo"]['District']
-			document.getElementById('work').innerHTML = cleanHTML(user["userInfo"]['Work'])
+			document.getElementById('work').innerHTML = await cleanHTML(user["userInfo"]['Work'])
 			document.getElementById('mgy-role').textContent = user["userInfo"]['MGY role']
 			document.getElementById('edu-level').textContent = user["userInfo"]['Educational level']
 			
@@ -699,17 +702,18 @@ async function createMsg(activeKey,chat,msg,i) {
 	
 	
 	console.log(sessionDiv)
-    chat.types.forEach(type =>{
-        sessionDiv.appendChild(Tswitch(type,chat))
-    })
+	const len =  chat.types.length
+	for (let i=0; i < len; i++){
+       await sessionDiv.appendChild(await Tswitch(chat.types[i],chat))
+    }
 	oldMsg[chat["chatId"]] = sessionDiv;
 	console.log('new')
 	return sessionDiv;
 }
 
-	function Tswitch(type,chat) {
+	async function Tswitch(type,chat) {
 		if (type == 'textMsg') {
-			return textMsg(chat)
+			return await textMsg(chat)
 		}else if (type == 'pdfMsg') {
 			return pdfMsg(chat)
 		}else if (type == 'videoMsg') {
@@ -736,7 +740,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatName.textContent = name 
 			const chatMsg = document.createElement('div')
 			const chatCode = document.createElement('code')
-			chatCode.innerHTML = cleanHTML(msg.length > 45 ? msg.slice(0,45)+'...':msg)
+			chatCode.innerHTML = await cleanHTML(msg.length > 45 ? msg.slice(0,45)+'...':msg)
 			chatMsg.appendChild(chatCode)
 			chatHeader.appendChild(chatImg)
 			chatHeader.appendChild(chatName)
@@ -1188,10 +1192,10 @@ function audioMsg(msg) {
     
 }
 
-function textMsg(msg) {
+async function textMsg(msg) {
     const div = document.createElement("div")
 	div.style.padding = "5px 10px"
-    div.innerHTML = cleanHTML(msg.prompt)
+    div.innerHTML = await cleanHTML(msg.prompt)
     return div;
     
 }
@@ -1320,7 +1324,7 @@ function makePost(post,preview){
 	mediaObserver.observe(img)
 	cont = document.createElement('div');
 	Uname = document.createElement('p');
-	Uname.textContent = post["senderId"] || userData.userInfo["username"];
+	Uname.textContent = post["senderId"] || userData.userInfo["username"]+ ' post';
 	time = document.createElement('p');
 	time.className = 'status';
 	time.textContent = tm;
@@ -1343,7 +1347,13 @@ function whereAppOpen() {
 	}
 }
 
-function cleanHTML(input) {
-	const clean = DOMPurify.sanitize(input);
-	return  marked.parse(clean)
+async function cleanHTML(input) {
+	try {
+		const clean = DOMPurify.sanitize(input);
+		const htmlOutput = await marked.parse(clean, { async: true });
+		return htmlOutput	
+	} catch (error) {
+		console.log(error)
+	}
+	
 }
