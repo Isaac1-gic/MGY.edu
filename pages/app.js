@@ -114,8 +114,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				loginBtn.innerText = "Login";
 			}
 			
-				loginBtn.disabled = true;
-				loginBtn.innerText = "Checking...";
+				
 				const currentU = document.getElementById("usernameS").value.replaceAll(' ','').toLowerCase();
 				const currentP = document.getElementById("passwordS").value.replaceAll(' ','').toLowerCase();
 				try {
@@ -124,6 +123,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						return
 					}
 					loginBtn.innerText = "Checking...";
+					loginBtn.disabled = true;
 					await EmailAndPassword(currentU,currentP)
 					alert("Success! Welcome to MGY.");
 					await adddbListener(10)
