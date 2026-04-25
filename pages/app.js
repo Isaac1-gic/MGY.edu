@@ -65,7 +65,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					formBt.disabled = true;
 					formBt.innerText = "Checking...";
 					try{
-						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','')+'@mgy.com', userData.userInfo['Password'])
+						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','').toLowerCase()+'@mgy.com', userData.userInfo['Password'].replaceAll(' ','').toLowerCase())
 						delete userData.userInfo['Password']
 						const userNow = userAuth.currentUser; 
 
@@ -116,10 +116,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			
 				loginBtn.disabled = true;
 				loginBtn.innerText = "Checking...";
-				const currentU = document.getElementById("usernameS").value;
-				const currentP = document.getElementById("passwordS").value;
+				const currentU = document.getElementById("usernameS").value.replaceAll(' ','').toLowerCase();
+				const currentP = document.getElementById("passwordS").value.replaceAll(' ','').toLowerCase();
 				try {
-					if (currentU == "Guest  G") {
+					if (currentU == "guestg") {
 						alert("Create your account. Or login to your account.");
 						return
 					}
@@ -147,8 +147,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				edit('new')
 				return
 			}
-			else if (userkey == "user_mocTODygmygm@GtseuG" || !userkey && pageId != "signPage"){
-				alert("Create your account. Or login to your account.");
+			else if ((userkey == "user_mocTODygmygm@GtseuG" || !userkey) && pageId != "signPage"){
 				switchPage("signPage")
 				fetch('https://mgy-edu.onrender.com/login')
 				return
