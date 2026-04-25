@@ -1,6 +1,6 @@
 const CACHE_NAME = 'mgy-v4';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v4';
-const STUDY_TAG = 'Daily-Study-Reminder';
+const STUDY_TAG = 'Daily-edu-updates';
 
 const OFFLINE_URLS = [
   './',
