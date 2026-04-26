@@ -766,7 +766,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>Bio</h3>
-		            <input  class="input-mock" type="text" onchange="updateProfile('Bio',value)">
+		            <textarea id="h_bio" type="text" onchange="updateProfile('Bio',value)" class="input-mock" style="width: 100%;"></textarea>
 		        </div>
 				<div class="form-group" name="input" >
 		            <h3>Sex</h3>
@@ -786,7 +786,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		        </div>
 				<div class="form-group" name="input" >
 		            <h3>Work</h3>
-		            <input class="input-mock" type="text" placeholder="Online Teacher" required onchange="updateProfile('Work',value)">
+		            <textarea name='textarea' class="input-mock" type="text" placeholder="Online Teacher" required style="width: 100%;" onchange="updateProfile('Work',value)"></textarea>
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>MGY role</h3>
@@ -798,7 +798,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 						<option value="Student" >Student</option>
 					</select>
 		        </div>
-				<button type='submit' id="sgnBt" class="login-btn">SignIn</button>
+				<button type='submit' id="sgnBt" class="login-btn">Sign</button>
 			</form>
 			</div>
 	    </section>
