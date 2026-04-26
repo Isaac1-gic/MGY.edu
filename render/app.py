@@ -48,9 +48,20 @@ def login():
 
     if not username or not password:
         return jsonify({"error": "Missing username or password"}), 400
-
+     mapping = {
+                ".": "mgyDOT",
+                "#": "mgyHASH",
+                "$": "mgyCASH",
+                "[": "mgyOBR",
+                "]": "mgyCBR"
+            }
+            
+    table = str.maketrans(mapping)
+    sanitized_uid = username.translate(table)
+    uid = f"user_{sanitized_uid[::-1]}"
+            
     # 1. Access the database reference
-    ref = db.reference('lock/' + username)
+    ref = db.reference('lock/' + uid)
     user_data = ref.get() # Fetch the actual data at this path
 
     # 2. FIXED LOGIC: 'if ref:' is always true. You must check 'user_data'.
@@ -70,18 +81,7 @@ def login():
     if is_valid:
         try:
             # 3. Create a unique UID for this user
-            mapping = {
-                ".": "mgyDOT",
-                "#": "mgyHASH",
-                "$": "mgyCASH",
-                "[": "mgyOBR",
-                "]": "mgyCBR"
-            }
-            
-            table = str.maketrans(mapping)
-            sanitized_uid = username.translate(table)
-            uid = f"user_{sanitized_uid[::-1]}"
-            
+           
             # 4. Generate the Custom Token
             custom_token = auth.create_custom_token(uid)
             
