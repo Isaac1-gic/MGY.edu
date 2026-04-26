@@ -48,18 +48,19 @@ def login():
 
     if not username or not password:
         return jsonify({"error": "Missing username or password"}), 400
-     mapping = {
-                ".": "mgyDOT",
-                "#": "mgyHASH",
-                "$": "mgyCASH",
-                "[": "mgyOBR",
-                "]": "mgyCBR"
-            }
-            
+        
+    mapping = { 
+        ".": "mgyDOT",
+        "#": "mgyHASH",
+        "$": "mgyCASH",
+        "[": "mgyOBR",
+        "]": "mgyCBR"
+    }
+    
     table = str.maketrans(mapping)
     sanitized_uid = username.translate(table)
-    uid = f"user_{sanitized_uid[::-1]}"
-            
+    uid = f"user_{sanitized_uid[::-1]}" 
+    
     # 1. Access the database reference
     ref = db.reference('lock/' + uid)
     user_data = ref.get() # Fetch the actual data at this path
