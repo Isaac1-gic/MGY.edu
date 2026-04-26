@@ -78,6 +78,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 							alert("Success! Welcome to MGY.");
 							await adddbListener(10)
 							switchPage("chatPage");
+							edit()
 						}else {
 							handleLoginFailure()
 						}
@@ -91,13 +92,13 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 		}
 		async function EmailAndPassword(currentU,currentP){
-			const userCredential  = await signInWithEmailAndPassword(currentU.replaceAll(' ','')+'@mgy.com',currentP)
+			const userCredential  = await signInWithEmailAndPassword(currentU.endsWith('.com') ? currentU : currentU.replaceAll(' ','')+'@mgy.com',currentP)
 			
 	        userkey = userCredential.user.uid;
 			path = ref(database,`users/${userkey}`)
 			const snapshot = await get(path);
-			userData = await snapshot.val();    
-			await saveData('userData', snapshot.val());
+			return await snapshot.val();    
+			
 		}
 
 		async function login() {
@@ -124,7 +125,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 					loginBtn.innerText = "Checking...";
 					loginBtn.disabled = true;
-					await EmailAndPassword(currentU,currentP)
+					data = await EmailAndPassword(currentU,currentP)
+					if (!data) {
+						handleLoginFailure(currentU,'Get -> :'+data)
+						return
+					}
+					await saveData('userData', data);
 					alert("Success! Welcome to MGY.");
 					await adddbListener(10)
 					switchPage("chatPage");
@@ -170,7 +176,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		}
 
 		function edit(job){
-			document.getElementById("editProfile").hidden = false
+			const hide = document.getElementById("editProfile")
+			hide.hidden = false
 			if (job == 'edit'){
 				document.getElementById("edit").classList.add('active')
 				const inputs = document.getElementsByName('input')
@@ -182,10 +189,25 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 					i ++
 				})
+				const SignBt = document.getElementById("sgnBt")
+				SignBt.innerText = 'Done'
+				SignBt.addEventListener('click',async (e) =>{
+					profileUpdater(userkey)
+					path = ref(database,`users/${userkey}`)
+					await set(path,userData)
+					hide.hidden = true
+					await saveData('key',userkey)
+					
+				})
 			}else if(job == 'new'){
 				document.getElementsByName('show').forEach(show =>{
 					show.hidden = true
 				})
+			}else{
+				document.getElementsByName('show').forEach(show =>{
+					show.hidden = false
+				})
+				profileUpdater(userkey)
 			}
 		}
 
@@ -196,11 +218,25 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				return;
 			} 
 			let chatKey = `${id}-${userkey}`
-			if (!userData['messageBox'][chatKey]){
-				userData['messageBox'] = userData['messageBox'] == 'initialized' ? {}:userData['messageBox']
+			const freindKey = `${userkey}-${id}`
+			activeKey = chatKey;
+			userData['messageBox'] = userData['messageBox'] == 'initialized' ? {}:userData['messageBox']
+			if (!userData['messageBox'][chatKey] && !userData['messageBox'][freindKey]){
 				userData['messageBox'][chatKey] = user.userInfo.username
 				user['messageBox'][chatKey] = userData.userInfo.username
+				const WelcomeMsg = {
+									    "chatId": Date.now(),
+									    "imgUrl": "img/KQDQM27wZwaO7U6LLDjGjjOplYf1profile-img-preview.jpg",
+									    "prompt": intro,
+									    "senderId": "IGC",
+									    "types": [
+									        "textMsg"
+									    ],
+									    "userkey": "user_m978987978i"
+									}
 				try{
+					chatPath = ref(database,'messages/'+chatKey)
+					await push(chatPath,WelcomeMsg)
 					user_ref = ref(database,`users/${userkey}/messageBox`)
 					await set(user_ref,userData['messageBox'])
 					user_ref = ref(database,`users/${id}/messageBox`)
@@ -210,8 +246,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					return;
 				} catch (error) {console.warn(error)}
 			}
-			switchPage('chatPage')
-			manageChat()
+			chatbox(userData['messageBox'][chatKey] || userData['messageBox'][freindKey])
+			switchPage('chatHome')
+			
 		}
 
 		async function getUser(userKey,users={}) {
@@ -727,7 +764,7 @@ async function createMsg(activeKey,chat,msg,i) {
 		async function createChatlist(name,msg,img,msgKey) {
 			if (document.getElementById("chatPage").hidden) return
 			scrolled = false
-			const chatPresention = document.createElement('a')
+			const chatPresention = document.createElement('div')
 			chatPresention.className = 'msg-bubble sent'
 			chatPresention.style = 'max-width: 100%;'
 			const chatHeader = document.createElement('div')
@@ -745,16 +782,17 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatHeader.appendChild(chatName)
 			chatPresention.appendChild(chatHeader)
 			chatPresention.appendChild(chatMsg)
-			chatPresention.href = '#'+await loadData('lastseen')
-			chatPresention.onclick = () => {
+			chatPresention.onclick = async () => {
 				activeKey = msgKey;
 				activeChat.textContent = name;
-				chatbox(activeKey)
-				switchPage('chatHome')
+				await chatbox(activeKey)
+				await switchPage('chatHome')
+				document.getElementById(await loadData('lastseen')).scrollIntoView({ behavior: 'smooth' });
 				
 			}
 			document.getElementById('chatList').appendChild(chatPresention)
 		}
+
 		async function getPhoto(userKey,imgP={}){
 			if (imgP['img-'+userKey]){
 				return imgP['img-'+userKey]
@@ -1356,3 +1394,30 @@ async function cleanHTML(input) {
 	}
 	
 }
+
+
+
+
+
+
+
+
+
+const intro = `# 🚀 Synergy Established!
+
+Welcome to a new connection in the **MGY Hub**. You are now messaging a fellow **Genius**. Great things happen when Malawian Genius Youths start talking.
+
+---
+
+### 🧊 Break the Ice
+Not sure how to start? Try one of these:
+* 💻 **"What project or programming language are you working on lately?"**
+* 🎓 **"Which university or course are you aiming for this year?"**
+* 💡 **"If you could automate one daily task in Malawi, what would it be?"**
+* 🛠️ **"What's the coolest thing you've built or learned this month?"**
+
+---
+
+> **Community Tip:** Stay respectful and stay curious. The future is built on collaboration.
+
+**Start the conversation below!** 👇`
