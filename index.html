@@ -733,44 +733,44 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 			<form id="loginForm" class="login-form" method="post" onsubmit=" setTimeout(async function(e){await create_update_account()},10); return false;">
 		        <div class="form-group" id="e-home" name="input">
 		            <h3>First name</h3>
-		            <input  class="input-mock" type="text" placeholder="Malawian" required onchange="updateProfile('First name',value)">
+		            <input  class="input-mock" type="text" placeholder="Malawian" required oninput="updateProfile('First name',value)">
 		        </div>
 		        <div class="form-group" name="input">
 		            <h3>Last name</h3>
-		            <input  class="input-mock" type="text" placeholder="Genius" required onchange="updateProfile('Last name',value)">
+		            <input  class="input-mock" type="text" placeholder="Genius" required oninput="updateProfile('Last name',value)">
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>Password</h3>
-		            <input  class="input-mock" type="password" required onchange="updateProfile('Password',value)">
+		            <input  class="input-mock" type="password" required oninput="updateProfile('Password',value)">
 		        </div>
 		        <div class="form-group" name="input">
 		            <h3>Email(optional)</h3>
-		            <input  class="input-mock" type="email" placeholder="malawiangeniusyouths@gmail.com" onchange="updateProfile('Email',value)">
+		            <input  class="input-mock" type="email" placeholder="malawiangeniusyouths@gmail.com" oninput="updateProfile('Email',value)">
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>Phone number</h3>
 					<div class="post-box">
 			            <p>Code:</p>
-						<input   type="number" style="width: 20%" required min='1' max='999' value='265' onchange="updateProfile('Country code',value)">
+						<input   type="number" style="width: 20%" required min='1' max='999' value='265' oninput="updateProfile('Country code',value)">
 						<p>No:</p>
-						<input  class="input-mock" type="number" min='880000000' max='999999999' placeholder="---_---_---" required onchange="updateProfile('Phone number',value)">
+						<input  class="input-mock" type="number" min='880000000' max='999999999' placeholder="---_---_---" required oninput="updateProfile('Phone number',value)">
 			        </div>
 		        </div>
 				<div class="form-group" name="input" >
 		            <h3>Date of Birth</h3>
-		            <input  class="input-mock" type="date" required onchange="updateProfile('DOB',value)">
+		            <input  class="input-mock" type="date" required oninput="updateProfile('DOB',value)">
 		        </div>
 				<div class="form-group" name="input" >
 		            <h3>District</h3>
-		            <input  class="input-mock" type="text" required onchange="updateProfile('District',value)">
+		            <input  class="input-mock" type="text" required oninput="updateProfile('District',value)">
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>Bio</h3>
-		            <textarea id="h_bio" type="text" onchange="updateProfile('Bio',value)" class="input-mock" style="width: 100%;"></textarea>
+		            <textarea id="h_bio" type="text" oninput="updateProfile('Bio',value)" class="input-mock" style="width: 100%;"></textarea>
 		        </div>
 				<div class="form-group" name="input" >
 		            <h3>Sex</h3>
-					<select class="input-mock" onchange="updateProfile('Sex',value)">
+					<select class="input-mock" oninput="updateProfile('Sex',value)">
 						<option value='' selected disabled>Gender</option>
 						<option value="Male" >Male</option>
 						<option value="Female">Female</option>
@@ -778,7 +778,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>Educational level</h3>
-		            <select class="input-mock"  onchange="updateProfile('Educational level',value)">
+		            <select class="input-mock" oninput="updateProfile('Educational level',value)">
 						<option value='' selected disabled>Level</option>
 						<option value="Secondary level" >Secondary level</option>
 						<option value="Tertiary level" >Tertiary level</option>
@@ -786,11 +786,11 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 		        </div>
 				<div class="form-group" name="input" >
 		            <h3>Work</h3>
-		            <textarea name='textarea' class="input-mock" type="text" placeholder="Online Teacher" required style="width: 100%;" onchange="updateProfile('Work',value)"></textarea>
+		            <textarea name='textarea' class="input-mock" type="text" placeholder="Online Teacher" required style="width: 100%;" oninput="updateProfile('Work',value)"></textarea>
 		        </div>
 				<div class="form-group" name="input">
 		            <h3>MGY role</h3>
-		            <select class="input-mock" onchange="updateProfile('MGY role',value)">
+		            <select class="input-mock" oninput="updateProfile('MGY role',value)">
 						<option value='' selected disabled>Role</option>
 						<option value="Group Admin" >Group Admin</option>
 						<option value="Teacher" >Teacher</option>
