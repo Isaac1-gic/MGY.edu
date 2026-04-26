@@ -216,6 +216,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				document.getElementsByName('show').forEach(show =>{
 					show.hidden = false
 				})
+				hide.hidden = true
 				profileUpdater(userkey)
 			}
 		}
@@ -493,13 +494,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						chatbox('mgyPosts')
 						
 					})
-					oldmgy = await loadData('mgyUpdates')
-					if (!mgy['mgyPosts'] && oldmgy){
-						init['mgyPosts'] = true
-						init['mgyforum'] = true
-						mgy = oldmgy
-						chatbox('mgyPosts')
-					}
+					
 				}
 				
 			} catch (error) {console.warn(error)}
@@ -552,12 +547,19 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					console.warn('manageChat: ',e)
 				}
 			}
+			oldmgy = await loadData('mgyUpdates')
+			if (!mgy['mgyPosts'] && oldmgy){
+				init['mgyPosts'] = true
+				init['mgyforum'] = true
+				mgy = oldmgy
+				chatbox('mgyPosts')
+			}
 		}
 
 async function userStatus(chatKey){
 	const arry = chatKey.split('-')
 	const freindIndex = arry.indexOf(userkey) == 0 ? 1:0
-	const StatusRef = ref(db, 'online'+arry[freindIndex]);
+	const StatusRef = ref(database, 'online/'+arry[freindIndex]);
 	onValue(StatusRef, async (snp) =>{
 		if (snp.exists()) {
 			val = snp.val()
@@ -605,6 +607,9 @@ async function userStatus(chatKey){
 		}
 
 	function postPre(close) {
+		function h(){
+			document.getElementById("post-1").innerText = textarea.value;
+		}
 		chatHeader = document.getElementById("chatHeader");
 		if (close) {
 			activeScreen = "posts"
@@ -613,15 +618,15 @@ async function userStatus(chatKey){
 			chatSpace.innerHTML = '';
 			chatSpace.appendChild(makePost({},true))
 			switchPage("chatHome")
+			textarea.addEventListener("input", h)
 		} else {
 			switchPage("homePage")
 			chatSpace.innerHTML = '';
 			chatHeader.hidden = false;
+			textarea.removeEventListener("input", h)
 			return;
 		} 
-		textarea.addEventListener("input", ()=>{
-		    document.getElementById("post-1").innerText = textarea.value;
-		})
+		
 	}
 
 		async function chatPrompt(text, kind) {
@@ -961,7 +966,7 @@ function adddbListener(i) {
 				setTimeout(()=>{manageChat()},1000)
 			})
 
-			const myStatusRef = ref(db, 'online'+userkey);
+			const myStatusRef = ref(database, 'online/'+userkey);
 			set(myStatusRef, 'online');
 			onDisconnect(myStatusRef).set(Date.now());
 			document.addEventListener("visibilitychange", () => {
