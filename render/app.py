@@ -9,7 +9,7 @@ import time
 from io import BytesIO
 import json
 import firebase_admin
-from firebase_admin import auth, credentials
+from firebase_admin import auth, credentials, db
 
 
 # 1. Initialize the Flask app
@@ -26,24 +26,46 @@ CORS(app, origins=[
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 config = types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
 
-@app.route('/login', methods=['POST'])
-def login():
+
+
+def firebase_init():
     if not firebase_admin._apps:
         config_json = os.getenv("FIREBASE_CONFIG")
         if config_json:
-            # parse the string back into a dictionary
             cred_dict = json.loads(config_json)
             cred = credentials.Certificate(cred_dict)
-            firebase_admin.initialize_app(cred)
+            firebase_admin.initialize_app(cred, {
+                'databaseURL': "https://msce-g-studies-tracker-baa6f-default-rtdb.europe-west1.firebasedatabase.app"
+            })
 
+@app.route('/login', methods=['POST'])
+def login():
+    firebase_init()
     data = request.json
     username = data.get('username')
     password = data.get('password')
+    notnew = data.get('notnew')
 
-    # 2. CUSTOM LOGIC HERE
-    # This is where I check your own database or logic.
-    # let's assume the user is valid.
-    is_valid = True # for now anyone is valid user
+    if not username or not password:
+        return jsonify({"error": "Missing username or password"}), 400
+
+    # 1. Access the database reference
+    ref = db.reference('lock/' + username)
+    user_data = ref.get() # Fetch the actual data at this path
+
+    # 2. FIXED LOGIC: 'if ref:' is always true. You must check 'user_data'.
+    if notnew:
+        # Check if password matches for existing user
+        is_valid = (user_data == password)
+    else:
+        # For new users, only set password if the spot is empty
+        ref.set(password)
+        is_valid = True
+        """if user_data is None:
+            ref.set(password)
+            is_valid = True
+        else:
+            return jsonify({"error": "Username already taken"}), 400"""
 
     if is_valid:
         try:
@@ -60,11 +82,12 @@ def login():
             sanitized_uid = username.translate(table)
             uid = f"user_{sanitized_uid[::-1]}"
             
-            # 4. Generate the Custom Token (the "Permission Slip")
+            # 4. Generate the Custom Token
             custom_token = auth.create_custom_token(uid)
             
-            # Convert bytes to string for JSON transmission
-            return jsonify({"token": custom_token.decode('utf-8')}), 200
+            token_str = custom_token.decode('utf-8') if isinstance(custom_token, bytes) else custom_token
+            
+            return jsonify({"token": token_str}), 200
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     else:
