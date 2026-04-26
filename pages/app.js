@@ -6,7 +6,8 @@
         const errorMessage = document.getElementById('errorMessage');
         const successMessage = document.getElementById('successMessage');
 		const textarea = document.getElementById('textprompt-chat');
-		const activeChat = document.getElementById("active-user")
+		const activeChat = document.getElementById("active-user");
+		const activeStatusElm = document.getElementById("activeStatusElm");
 		let profileImg;
 		let img;
 		let userkey;
@@ -64,6 +65,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				
 					formBt.disabled = true;
 					formBt.innerText = "Checking...";
+			
 					try{
 						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','').toLowerCase()+'@mgy.com', userData.userInfo['Password'].replaceAll(' ','').toLowerCase())
 						delete userData.userInfo['Password']
@@ -93,7 +95,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		}
 		async function EmailAndPassword(currentU,currentP){
 			const userCredential  = await signInWithEmailAndPassword(currentU.endsWith('.com') ? currentU : currentU.replaceAll(' ','')+'@mgy.com',currentP)
-			
+			userData = {userInfo:{'Country code': '265'},
+						freinds: 'initialized',
+						messageBox: 'initialized'	   
+			};
 	        userkey = userCredential.user.uid;
 			path = ref(database,`users/${userkey}`)
 			const snapshot = await get(path);
@@ -200,6 +205,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					
 				})
 			}else if(job == 'new'){
+				userData = {userInfo:{'Country code': '265'},
+							freinds: 'initialized',
+							messageBox: 'initialized'	   
+				};
 				document.getElementsByName('show').forEach(show =>{
 					show.hidden = true
 				})
@@ -223,7 +232,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			userData['messageBox'] = userData['messageBox'] == 'initialized' ? {}:userData['messageBox']
 			if (!userData['messageBox'][chatKey] && !userData['messageBox'][freindKey]){
 				userData['messageBox'][chatKey] = user.userInfo.username
-				user['messageBox'][chatKey] = userData.userInfo.username
+				
 				const WelcomeMsg = {
 									    "chatId": Date.now(),
 									    "imgUrl": "img/KQDQM27wZwaO7U6LLDjGjjOplYf1profile-img-preview.jpg",
@@ -237,12 +246,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				try{
 					chatPath = ref(database,'messages/'+chatKey)
 					await push(chatPath,WelcomeMsg)
-					user_ref = ref(database,`users/${userkey}/messageBox`)
-					await set(user_ref,userData['messageBox'])
-					user_ref = ref(database,`users/${id}/messageBox`)
-					await set(user_ref,user['messageBox'])
+					user_ref = ref(database,`users/${userkey}/messageBox/${chatKey}`)
+					await set(user_ref,user.userInfo.username)
+					user_ref = ref(database,`users/${id}/messageBox/${chatKey}`)
+					await set(user_ref,userData.userInfo.username)
 					manageChat(chatKey)
-					alert('Hello! '+userData.userInfo.username)
 					return;
 				} catch (error) {console.warn(error)}
 			}
@@ -256,7 +264,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				return users[userKey]
 			}
 			try{
-				user_ref = ref(database,'users/'+userKey)
+				user_ref = ref(database,'users/'+userKey+'/userInfo')
 				const snapshot = await get(user_ref)
 				const user = snapshot.val()
 				users[userKey] = user
@@ -275,7 +283,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				document.getElementsByName('input').forEach(lebel =>{
 					lebel.hidden = true
 				})
-				user = userId == userkey ? userData:await getUser(userId)
+				user = userId == userkey ? userData:{userInfo: await getUser(userId), freinds: 
+'initialized'}
 				msg.onclick = () =>{
 					message(user,userId)
 				}
@@ -455,6 +464,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 		//have chat manager to manage all chat so createChatlist
 		//there will be no chaos with onValue fuction
 		const init = {}
+		const onlineStatus = {}
 		async function manageChat(newId) {
 			document.getElementById('chatList').innerHTML = ''
 			if(newId){
@@ -517,7 +527,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				const value = key_value[i][1]
 				try{
 					if (!init[key]) {
-						
+						await userStatus(key)
 						chatPath = ref(database,`messages/${key}`)
 						onValue(chatPath, async (snapshot) =>{
 							try{
@@ -526,7 +536,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 								lastMsg = chat[chat.length - 1][1]
 								mgy[key] = chat
 								const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
-								createChatlist(value,lastMsg.prompt,proImg,key)
+								createChatlist(value,lastMsg.prompt,proImg,key,onlineStatus[key])
 								chatbox(key)
 							}catch (e){
 								console.warn('No chat: ',e)
@@ -543,6 +553,26 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				}
 			}
 		}
+
+async function userStatus(chatKey){
+	const arry = chatKey.split('-')
+	const freindIndex = arry.indexOf(userkey) == 0 ? 1:0
+	const StatusRef = ref(db, 'online'+arry[freindIndex]);
+	onValue(StatusRef, async (snp) =>{
+		if (snp.exists()) {
+			val = snp.val()
+			if (val ==="online") {
+				onlineStatus[chatKey] = val
+			} else {
+				onlineStatus[chatKey] = val === 'away' ? val: new Date(val).toGMTString().slice(5,22);
+			}
+		} else {
+			onlineStatus[chatKey] = 'new'
+		}
+		if (activeKey == chatKey) activeStatusElm.textContent = onlineStatus[chatKey]
+	})
+}
+
 		function stopChatPolling(){
 		   
 			
@@ -761,7 +791,7 @@ async function createMsg(activeKey,chat,msg,i) {
 		} 
 	}
 
-		async function createChatlist(name,msg,img,msgKey) {
+		async function createChatlist(name,msg,img,msgKey,state) {
 			if (document.getElementById("chatPage").hidden) return
 			scrolled = false
 			const chatPresention = document.createElement('div')
@@ -785,6 +815,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatPresention.onclick = async () => {
 				activeKey = msgKey;
 				activeChat.textContent = name;
+				if (state) activeStatusElm.textContent = state;
 				await chatbox(activeKey)
 				await switchPage('chatHome')
 				document.getElementById(await loadData('lastseen')).scrollIntoView({ behavior: 'smooth' });
@@ -923,11 +954,23 @@ function adddbListener(i) {
 			})
 			const msgpath = ref(database,`users/${userkey}/messageBox`)
 			onChildAdded(msgpath, async (snapshot) =>{
+				userData['messageBox'] = userData['messageBox'] == 'initialized' ? {}:userData['messageBox']
 				userData.messageBox[snapshot.key] = snapshot.val();
 				await saveData('userData',userData)
 				console.log('Recevied')
 				setTimeout(()=>{manageChat()},1000)
 			})
+
+			const myStatusRef = ref(db, 'online'+userkey);
+			set(myStatusRef, 'online');
+			onDisconnect(myStatusRef).set(Date.now());
+			document.addEventListener("visibilitychange", () => {
+			  if (document.visibilityState === "visible") {
+			    set(myStatusRef, 'online');
+			  } else {
+			    set(myStatusRef, 'away'); 
+			  }
+			});
 		} catch (error) {
 			
 			console.warn(error)
@@ -1151,7 +1194,7 @@ const mediaObserver = new IntersectionObserver((entries,observer) => {
             
         }
     });
-}, { threshold: 0.4 });
+}, { threshold: 0.5 });
 
 
 document.querySelectorAll('.lazy-media').forEach(item => {
@@ -1213,7 +1256,9 @@ function videoMsg(msg) {
     vid.name = getOptimizedImageUrl(msg.videoUrl,'L',true);
     vid.className = "media-file lazy-media"
 	vid.controls = true
-	mediaObserver.observe(vid)
+	vid.onclick = () => {
+		if(confirm('Do you want to download?')) mediaObserver.observe(vid)
+	}
     return vid;
     
 }
@@ -1224,7 +1269,9 @@ function audioMsg(msg) {
     aud.name = msg.audioUrl;
     aud.className = "lazy-media"
 	aud.controls = true
-	mediaObserver.observe(aud)
+	aud.onclick = () => {
+		if(confirm('Do you want to download?')) mediaObserver.observe(aud)
+	}
     return aud;
     
 }
