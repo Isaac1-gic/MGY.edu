@@ -181,7 +181,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 		}
 
-		function edit(job){
+		async function edit(job){
 			const hide = document.getElementById("editProfile")
 			hide.hidden = false
 			if (job == 'edit'){
