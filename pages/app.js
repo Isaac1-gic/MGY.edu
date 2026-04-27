@@ -99,6 +99,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						freinds: 'initialized',
 						messageBox: 'initialized'	   
 			};
+			await saveData('userData', userData);
 	        userkey = userCredential.user.uid;
 			path = ref(database,`users/${userkey}`)
 			const snapshot = await get(path);
@@ -158,7 +159,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				edit('new')
 				return
 			}
-			else if ((userkey == "user_mocTODygmygm@GtseuG" || !userkey) && pageId != "signPage"){
+			else if ((userkey == "user_mocTODygmygm@GtseuG" || !userkey || !userData.userInfo['username']) && pageId != "signPage"){
 				switchPage("signPage")
 				fetch('https://mgy-edu.onrender.com/login')
 				return
@@ -209,6 +210,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 							freinds: 'initialized',
 							messageBox: 'initialized'	   
 				};
+				await saveData('userData',userData)
 				document.getElementsByName('show').forEach(show =>{
 					show.hidden = true
 				})
@@ -1212,12 +1214,12 @@ document.querySelectorAll('.lazy-media').forEach(item => {
  */
 function openPdf(url) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-
+	window.open(url, '_blank');
     if (isMobile) {
        
-        window.open(url, '_blank');
+        //window.open(url, '_blank');
     } else {
-        createPdfModal(url);
+        //createPdfModal(url);
     }
 }
 
