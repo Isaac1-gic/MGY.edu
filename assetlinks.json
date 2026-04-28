@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "app.web.mgy.twa",
+        "sha256_cert_fingerprints": ["7E:73:7D:E2:13:B6:0B:4C:FF:8E:F7:2F:9C:46:F1:82:23:7F:A1:CE:87:68:72:D8:61:24:41:56:A0:FA:77:44"]
+      }
+    }]
