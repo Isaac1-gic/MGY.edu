@@ -23,7 +23,7 @@ class MGYNotification {
 
 	async registerSW() {
 		if ('serviceWorker' in navigator) {
-			const reg = await navigator.serviceWorker.register('serviceWorker.js', {scope: './'})
+			const reg = await navigator.serviceWorker.register('serviceworker.js', {scope: './'})
 			if ('periodicSync' in reg) {
 				try {
 					await reg.periodicSync.register('Notifications',{minInterval: 15 * 60 * 1000})
