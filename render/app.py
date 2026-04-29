@@ -161,7 +161,7 @@ def ask_gemini():
             response = chat.send_message(user_message)
 
             ref.set(chat.get_history())
-            text = response.text
+            text = response
             
         def generate():
             response = client.models.generate_content_stream(
