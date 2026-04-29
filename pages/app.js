@@ -929,6 +929,11 @@ window.onload = async function(){
 			maybeShowInstall();
 		}
 	registerSw()
+	const params = new URLSearchParams(window.location.search);
+	const sharedLink = params.get('mode')
+	if (sharedLink == 'install') {
+		alert('If you have not seen install button please go on menu and click download app then install that apk file. Make sure you are using uptodate chrome browser to install this app.')
+	}
 	await adddbListener(10)
 	
 	}
