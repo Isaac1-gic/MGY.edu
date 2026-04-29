@@ -160,7 +160,7 @@ def ask_gemini():
                                        )
             response = chat.send_message(user_message)
 
-            ref.set(chat.history)
+            ref.set(chat.get_history())
             text = response.text
             
         def generate():
