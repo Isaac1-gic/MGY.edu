@@ -139,7 +139,7 @@ def ask_gemini():
         # Get the JSON data sent from your Netlify frontend
         data = request.json
         user_message = data.get("message", "Hello")
-        model = data.get("model", "gemini-2.5-flash-lite")
+        model = data.get("model", "gemini-2.5-flash-pro")
         img = data.get("img_url", False)
         contents = [user_message]
         list = []
@@ -166,10 +166,17 @@ def ask_gemini():
         
             # 4. FIX: Extract only the TEXT string from the response object
             reply_text = response.text 
-            print(reply_text)
+            print(chat.get_history())
             # 5. FIX: Convert the new history (objects) into dicts for Firebase
             # Firebase cannot save 'UserContent' objects, only JSON-like dictionaries
             #updated_history = [item.to_dict() for item in chat.get_history()]
+            clean_history = []
+            for message in chat.get_history():
+                # Manually build a dict that JSON can understand
+                clean_history.append({
+                    "role": message.role,
+                    "parts": [{"text": message.parts[0].text}] 
+                })
             ref.set(chat.get_history())
         
             return reply_text # Return the string to be used in jsonify
