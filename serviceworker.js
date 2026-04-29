@@ -111,7 +111,7 @@ function showLocalNotification(data) {
       body: data.body,
       tag: data.id,
       icon: './img/favicon-32x32.png',
-      badge: './img/favicon-32x32.png'
+      badge: './img/favicon-32x32.png',
       image: data.img,
       data: { url: './?'+data.quary }
     }
@@ -135,7 +135,7 @@ self.addEventListener('periodicsync', event => {
         body: 'Check out whats new today',
         tag: 'Updates',
         icon: './img/favicon-32x32.png',
-        badge: './img/favicon-32x32.png'
+        badge: './img/favicon-32x32.png',
         image: 'img/mwflag.png',
         data: { url: './' }
       })
