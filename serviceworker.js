@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mgy-v29-04-2026_6';
+const CACHE_NAME = 'mgy-v30-04-2026';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
@@ -103,36 +103,41 @@ self.addEventListener('message', event => {
   }
 });
 
+
 function showLocalNotification(data) {
   self.registration.showNotification(
-    data.title || 'Study Tracker',
+    data.sender,
     {
-      body: data.body || 'Reminder',
-      tag: data.id || 'study',
-      renotify: true,
-      icon: data.icon,
-      badge: data.badge,
+      body: data.body,
+      tag: data.id,
+      icon: './img/favicon-32x32.png',
+      badge: './img/favicon-32x32.png'
       image: data.img,
-      data: { url: './' }
+      data: { url: './?'+data.quary }
     }
   );
 }
 
 
-`self.addEventListener('notificationclick', event => {
+self.addEventListener('notificationclick', event => {
   event.notification.close();
   event.waitUntil(
     clients.openWindow(event.notification.data.url)
   );
-});`
+});
 
 
 self.addEventListener('periodicsync', event => {
   if (event.tag === STUDY_TAG) {
     event.waitUntil(
       showLocalNotification({
-        title: 'Daily Study Plan',
-        body: 'Check your timetable'
+        title: 'Daily Educational Updates',
+        body: 'Check out whats new today',
+        tag: 'Updates',
+        icon: './img/favicon-32x32.png',
+        badge: './img/favicon-32x32.png'
+        image: 'img/mwflag.png',
+        data: { url: './' }
       })
     );
   }
