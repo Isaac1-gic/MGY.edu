@@ -25,8 +25,7 @@ CORS(app, origins=[
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 grounding_search = types.Tool(google_search=types.GoogleSearch())
-config = types.GenerateContentConfig(tools=[grounding_search,{"url_context": {}}], system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
-system_instruction = """ROLE: You are the MGY Intelligence Unit, a specialized educational analyst for the "Malawi Genius Youth" (MGY) platform. 
+commands = """ROLE: You are the MGY Intelligence Unit, a specialized educational analyst for the "Malawian Genius Youth" (MGY) platform. 
 
 OBJECTIVE: Your task is to analyze scraped text from Malawian educational websites and extract only high-impact, actionable updates for students.
 
@@ -55,6 +54,7 @@ You must return a list of only 1 very important update in the following JSON for
 
 TONE: 
 Professional, empowering, and clear. Avoid "fluff" words. Do everthing as educational news maker not like AI If no important updates are found, return an empty list."""
+config = types.GenerateContentConfig(tools=[grounding_search,{"url_context": {}}], system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands)
 
 
 def firebase_init():
@@ -155,13 +155,10 @@ def ask_gemini():
                 data = []
             chat = client.chats.create(
                                        model=model,
-                                       history=data
+                                       history=data,
+                                       config = config
                                        )
-            response = chat.send_message( 
-                    contents = contents,
-                    system_instruction=system_instruction,
-                    config = config
-                )
+            response = chat.send_message(user_message)
 
             ref.set(chat.history)
             text = response.text
