@@ -189,7 +189,7 @@ def ask_gemini():
             contents.insert(0,img)
     
         
-        generate()
+        chatAi()
         
         return jsonify({
             "status": "success",
