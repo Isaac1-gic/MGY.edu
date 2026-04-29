@@ -145,23 +145,34 @@ def ask_gemini():
         list = []
         text = ''
         def chatAi():
-            firebase_init()
-            global text
-            ref = db.reference('history')
-            history = ref.get() 
-            if history:
-                data = history
-            else:
-                data = []
-            chat = client.chats.create(
-                                       model=model,
-                                       history=data,
-                                       config = config
-                                       )
-            response = chat.send_message(user_message)
-
-            ref.set(chat.get_history())
-            text = response
+        firebase_init()
+        # 1. Get history from Firebase
+        ref = db.reference('history')
+        history_data = ref.get() 
+        
+        # Ensure history is a list for the SDK
+        if not history_data:
+            history_data = []
+    
+        # 2. Create the chat session
+        chat = client.chats.create(
+            model=model,
+            history=history_data, # Firebase dicts work directly here
+            config=config
+        )
+    
+        # 3. Send the message
+        response = chat.send_message(user_message)
+    
+        # 4. FIX: Extract only the TEXT string from the response object
+        reply_text = response.text 
+    
+        # 5. FIX: Convert the new history (objects) into dicts for Firebase
+        # Firebase cannot save 'UserContent' objects, only JSON-like dictionaries
+        updated_history = [item.to_dict() for item in chat.history]
+        ref.set(updated_history)
+    
+        return reply_text # Return the string to be used in jsonify
             
         def generate():
             response = client.models.generate_content_stream(
@@ -186,11 +197,11 @@ def ask_gemini():
             contents.insert(0,img)
     
         
-        chatAi()
+        
         
         return jsonify({
             "status": "success",
-            "reply": text#list
+            "reply": chatAi()#list
         })
 
     except Exception as e:
