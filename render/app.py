@@ -166,10 +166,10 @@ def ask_gemini():
     
         # 4. FIX: Extract only the TEXT string from the response object
         reply_text = response.text 
-    
+        print(reply_text)
         # 5. FIX: Convert the new history (objects) into dicts for Firebase
         # Firebase cannot save 'UserContent' objects, only JSON-like dictionaries
-        updated_history = [item.to_dict() for item in chat.history]
+        updated_history = [item.to_dict() for item in chat.get_history()]
         ref.set(updated_history)
     
         return reply_text # Return the string to be used in jsonify
