@@ -13,6 +13,7 @@
 		let userkey;
 		let activeScreen;
 		let chatPath;
+		let notification;
 		let tempPost = {types : []}
 		let firstMsg = false;
         let userData = {userInfo:{'Country code': '265'},
@@ -483,7 +484,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				lastMsg = chat[chat.length - 1][1]
 				const proImg = img || getOptimizedImageUrl(lastMsg['imgUrl'])
 				createChatlist(chatTitle,lastMsg.prompt,proImg,chatKey)
-				chatbox(chatKey)
+				chatbox(chatKey,lastMsg)
 			}
 			try{
 				if (!init['mgyPosts']) {
@@ -510,7 +511,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						lastMsg = chat[chat.length - 1][1]
 						mgy['mgyforum'] = chat
 						createChatlist('MGY Forum',lastMsg.prompt,'img/mgy.jpg','mgyforum')
-						chatbox('mgyforum')
+						chatbox('mgyforum',lastMsg)
 						await saveData('mgyUpdates',mgy)
 					})
 				}else{
@@ -534,7 +535,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 								mgy[key] = chat
 								const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
 								createChatlist(value,lastMsg.prompt,proImg,key,onlineStatus[key])
-								chatbox(key)
+								chatbox(key,lastMsg)
 							}catch (e){
 								console.warn('No chat: ',e)
 							}
@@ -693,9 +694,13 @@ async function userStatus(chatKey){
 				}
 			}
 
-		async function chatbox(msgKey) {
+		async function chatbox(msgKey,lastMsg) {
 			console.log(msgKey)
-			if (msgKey != activeKey)return
+			if (msgKey != activeKey){
+				await notification.createNotification(lastMsg)
+				await saveData('notifications',notification.seenMsgs)
+				return
+			}
 			const msg = mgy[activeKey]
 			const chatContainer = document.getElementById(msgKey == 'mgyPosts' ? "courses":'chatsList');
 		    chatContainer.innerHTML = '';
@@ -726,6 +731,7 @@ async function createMsg(activeKey,chat,msg,i) {
 	}
 	let sessionDiv;
 	console.log("MAKE",activeKey)
+	
 	if (activeKey == 'mgyPosts') {
 		console.log("MAKEPOST")
 		sessionDiv = makePost(chat)
@@ -946,6 +952,7 @@ function adddbListener(i) {
 		try {
 			
 			userkey = userAuth.currentUser.uid
+			notification = new MGYNotification(await loadData('notifications') || {})
 			onAuthStateChanged(userAuth, (user) => {
 			  if (user) {
 			    profileUpdater(userkey)
