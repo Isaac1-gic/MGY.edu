@@ -169,8 +169,8 @@ def ask_gemini():
             print(reply_text)
             # 5. FIX: Convert the new history (objects) into dicts for Firebase
             # Firebase cannot save 'UserContent' objects, only JSON-like dictionaries
-            updated_history = [item.to_dict() for item in chat.get_history()]
-            ref.set(updated_history)
+            #updated_history = [item.to_dict() for item in chat.get_history()]
+            ref.set(chat.get_history())
         
             return reply_text # Return the string to be used in jsonify
             
