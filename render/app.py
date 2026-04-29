@@ -140,12 +140,12 @@ def ask_gemini():
         data = request.json
         user_message = data.get("message", "Hello")
         model = data.get("model", "gemini-2.5-flash-lite")
-        user_message = data.get("message", "Hello")
         img = data.get("img_url", False)
         contents = [user_message]
         list = []
         text = ''
         def chatAi():
+            firebase_init()
             global text
             ref = db.reference('history')
             history = ref.get() 
