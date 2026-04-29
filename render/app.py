@@ -155,12 +155,12 @@ def ask_gemini():
                 data = []
             chat = client.chats.create(
                                        model=model,
-                                       history=data,
-                                       system_instruction=system_instruction,
-                                       config = config
+                                       history=data
                                        )
             response = chat.send_message( 
-                    contents = contents
+                    contents = contents,
+                    system_instruction=system_instruction,
+                    config = config
                 )
 
             ref.set(chat.history)
