@@ -26,7 +26,7 @@ class MGYNotification {
 			const reg = await navigator.serviceWorker.register('serviceWorker.js', {scope: './'})
 			if ('periodicSync' in reg) {
 				try {
-					await reg.periodicSync.register('Notifications',{minInterval: 15: 60: 1000})
+					await reg.periodicSync.register('Notifications',{minInterval: 15 * 60 * 1000})
 				} catch (e) {
 					
 				}
@@ -45,7 +45,7 @@ class MGYNotification {
 	}
 
 	async createNotification(chatObject) {
-		if !chatObject || !this.ready || this.seenMsgs[chatObject.chatId] return
+		if (!chatObject || !this.ready || this.seenMsgs[chatObject.chatId]) return
 		const notfctn = {
 			id:chatObject.chatId,
 			sender:chatObject.senderId,
