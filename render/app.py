@@ -24,8 +24,37 @@ CORS(app, origins=[
 
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-config = types.GenerateContentConfig(system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
+grounding_search = types.Tool(google_search=types.GoogleSearch())
+config = types.GenerateContentConfig(tools=[grounding_search,{"url_context": {}}], system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC.")
+system_instruction = """ROLE: You are the MGY Intelligence Unit, a specialized educational analyst for the "Malawi Genius Youth" (MGY) platform. 
 
+OBJECTIVE: Your task is to analyze scraped text from Malawian educational websites and extract only high-impact, actionable updates for students.
+
+CRITERIA FOR "IMPORTANT" UPDATES:
+1. URGENCY: Deadlines for MSCE/JCE registration, University application closing dates, or immediate school calendar changes.
+2. IMPACT: National exam results releases (MANEB), University selection lists (NCHE), or major scholarship opportunities.
+3. ACTIONABLE: Any update that requires a student to "do" something (e.g., "Download this form," "Check this list").
+
+INPUT HANDLING:
+- You will be provided with raw text with educational url sites.
+- Ignore navigation bars, footers, advertisements, and old news (anything older than 48 hours unless it is a major announcement).
+
+OUTPUT FORMAT (STRICT JSON):
+You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase:
+{
+  "updates": [
+    {
+      "post": "title-> Short, catchy headline. body-> explanation of why this is important and matters to an MGY user. action_text -> e.g., Apply Now, Check Results, or Save Date. Include clickable text -> eg [https://example.com](Example) in short use markdowm format",
+      "category": "Exams | Selection | Policy | Scholarship | etc",
+      "imgUrl": "The exact URL where to find image to present on this update",
+      "urgency": "High | Medium | Low"
+      
+    }
+  ]
+}
+
+TONE: 
+Professional, empowering, and clear. Avoid "fluff" words. Do everthing as educational news maker not like AI If no important updates are found, return an empty list."""
 
 
 def firebase_init():
@@ -115,6 +144,28 @@ def ask_gemini():
         img = data.get("img_url", False)
         contents = [user_message]
         list = []
+        text = ''
+        def chatAi():
+            global text
+            ref = db.reference('history')
+            history = ref.get() 
+            if history:
+                data = history
+            else:
+                data = []
+            chat = client.chats.create(
+                                       model=model,
+                                       history=data,
+                                       system_instruction=system_instruction,
+                                       config = config
+                                       )
+            response = chat.send_message( 
+                    contents = contents
+                )
+
+            ref.set(chat.history)
+            text = response.text
+            
         def generate():
             response = client.models.generate_content_stream(
                     model = model, 
@@ -125,6 +176,7 @@ def ask_gemini():
             for chunk in response:
                 if chunk.text:
                     list.append(chunk.text)
+                    text += chunk.text
 
         if img:
             file = getFile(img)
@@ -141,7 +193,7 @@ def ask_gemini():
         
         return jsonify({
             "status": "success",
-            "reply": list
+            "reply": text#list
         })
 
     except Exception as e:
