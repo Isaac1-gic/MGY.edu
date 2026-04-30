@@ -144,6 +144,17 @@ def getFile(url):
     except Exception as e:
         return False
 
+
+def parse_mgy_json(text):
+    clean_text = text.replace("```json", "").replace("```", "").strip()
+    
+    try:
+        data = json.loads(clean_text)
+        return data
+    except Exception as e:
+        print(f"Failed to parse JSON: {e}")
+        return None
+        
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
     if request.method == 'OPTIONS':
@@ -176,19 +187,15 @@ def ask_gemini():
         
             # 3. Send the message
             response = chat.send_message(user_message)
-        
-            # 4. FIX: Extract only the TEXT string from the response object
             reply_text = response.text 
             print(type(chat.get_history()))
             print(chat.get_history())
-            # 5. FIX: Convert the new history (objects) into dicts for Firebase
-            # Firebase cannot save 'UserContent' objects, only JSON-like dictionaries
-            #updated_history = [item.to_dict() for item in chat.get_history()]
-            #clean_history = json.dumps(chat.get_history())
-            
-            #ref.set(clean_history)
+            obj = parse_mgy_json(text)
+            if obj:
+                ref.set(clean_history)
+                return obj
         
-            return reply_text # Return the string to be used in jsonify
+            return reply_text
             
         def generate():
             response = client.models.generate_content_stream(
