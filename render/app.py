@@ -33,9 +33,21 @@ CRITERIA FOR "IMPORTANT" UPDATES:
 1. URGENCY: Deadlines for MSCE/JCE registration, University application closing dates, or immediate school calendar changes.
 2. IMPACT: National exam results releases (MANEB), University selection lists (NCHE), or major scholarship opportunities.
 3. ACTIONABLE: Any update that requires a student to "do" something (e.g., "Download this form," "Check this list").
-
+SOURCES OF UPDATES:
+    'https://www.education.gov.mw/',
+     'https://www.google.com/search?q=https://www.gov.mw/',
+     'https://www.google.com/search?q=https://www.maneb.edu.mw/',
+     'https://www.nche.ac.mw/',
+     'https://www.mubas.ac.mw/',
+     'https://www.unima.ac.mw/',
+     'http://www.luanar.ac.mw/',
+     'https://www.mzuni.ac.mw/',
+     'https://www.google.com/search?q=https://times.mw/category/education/',
+     'https://www.google.com/search?q=https://mwnation.com/category/national/education/',
+     'https://www.google.com/search?q=https://www.maravipost.com/education/'
+ 
 INPUT HANDLING:
-- You will be provided with raw text with educational url sites.
+- You will be provided with raw text.
 - Ignore navigation bars, footers, advertisements, and old news (anything older than 48 hours unless it is a major announcement).
 
 OUTPUT FORMAT (STRICT JSON):
