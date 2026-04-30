@@ -54,8 +54,9 @@ OUTPUT FORMAT (STRICT JSON):
 You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase:
 {
   "updates": [
-    {
-      "post": "title-> Short, catchy headline. body-> explanation of why this is important and matters to an MGY user. action_text -> e.g., Apply Now, Check Results, or Save Date. Include clickable text -> eg [https://example.com](Example) in short use markdowm format",
+    { 
+      "title": "title-> Short, catchy headline",
+      "post": "title-> Short, catchy headline. body-> explanation of why this is important and matters to an MGY user. action_text -> e.g., Apply Now, Check Results, or Save Date. Include clickable text -> eg [https://example.com](Example) in short use markdowm format only on this child [post]. ",
       "category": "Exams | Selection | Policy | Scholarship | etc",
       "imgUrl": "The exact URL where to find image to present on this update",
       "urgency": "High | Medium | Low"
