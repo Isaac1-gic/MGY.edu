@@ -153,8 +153,6 @@ def ask_gemini():
             # Ensure history is a list for the SDK
             if not history_data:
                 history_data = []
-            else:
-                history_data = json.loads(history_data)
         
             # 2. Create the chat session
             chat = client.chats.create(
@@ -168,13 +166,14 @@ def ask_gemini():
         
             # 4. FIX: Extract only the TEXT string from the response object
             reply_text = response.text 
+            print(type(chat.get_history()))
             print(chat.get_history())
             # 5. FIX: Convert the new history (objects) into dicts for Firebase
             # Firebase cannot save 'UserContent' objects, only JSON-like dictionaries
             #updated_history = [item.to_dict() for item in chat.get_history()]
-            clean_history = json.dumps(chat.get_history())
+            #clean_history = json.dumps(chat.get_history())
             
-            ref.set(clean_history)
+            #ref.set(clean_history)
         
             return reply_text # Return the string to be used in jsonify
             
