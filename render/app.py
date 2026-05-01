@@ -210,7 +210,7 @@ def ask_gemini():
                 mgyPostFormat = {
                     'imageUrl':post['imageUrl'],
                     'prompt': post['post'],
-                    'title': post['title',
+                    'title': post['title'],
                     'imgUrl': 'img/mgy.jpg',
                     'senderId': 'MGY',
                     'userkey': 'mgy',
