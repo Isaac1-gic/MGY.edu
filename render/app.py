@@ -287,17 +287,17 @@ def ask_gemini():
 @app.route('/update/<id>')
 def show_update(id):
     firebase_init()
-    if not id:
+    if not idpy
+    
         raise('Post not found')
     
     if id == 'home':
         post_ref = db.reference('post')
         updates = post_ref.get()
-        update = updates[-1][1]
+        update = updates.values()[-1]
     else:
         post_ref = db.reference('post/'+id)
-        updates = post_ref.get()
-        update = updates[1]
+        update = post_ref.get()
     html_content = markdown2.markdown(post, extras=["fenced-code-blocks", "tables"])
     update['prompt'] = html_content
     return render_template('updates.html', update)
