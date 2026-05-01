@@ -206,6 +206,7 @@ def ask_gemini():
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
             reply_text = response.text 
             print(chat.get_history())
+            print(reply_text)
             obj = parse_mgy_json(reply_text)
             if obj:
                 post = obj[0]
