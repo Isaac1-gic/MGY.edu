@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy">
+	<link rel="apple-touch-icon" sizes="180x180" href="https://res.cloudinary.com/dlnnjv1ca/image/upload/ar_1:1,c_pad,f_auto,q_auto,b_auto,w_180/android-chrome-192x192.png1776856358198">
+	<link rel="icon" type="image/png" sizes="32x32" href="https://res.cloudinary.com/dlnnjv1ca/image/upload/ar_1:1,c_pad,f_auto,q_auto,b_auto,w_32/android-chrome-192x192.png1776856358198"
+	<link rel="icon" type="image/png" sizes="16x16" href="https://res.cloudinary.com/dlnnjv1ca/image/upload/ar_1:1,c_pad,f_auto,q_auto,b_auto,w_16/android-chrome-192x192.png1776856358198"
+	<link rel="icon" type="image/png" sizes="48x48" href="https://res.cloudinary.com/dlnnjv1ca/image/upload/ar_1:1,c_pad,f_auto,q_auto,b_auto,w_48/android-chrome-192x192.png1776856358198">
+	<link rel="icon" type="image/png" sizes="96x96" href="https://res.cloudinary.com/dlnnjv1ca/image/upload/ar_1:1,c_pad,f_auto,q_auto,b_auto,w_96/android-chrome-192x192.png1776856358198">
+    <meta name="description" content="{{ update.prompt }}">
+	<meta property="og:title" content="{{ update.title }}">
+	<meta property="og:image" content="{{ update.imageUrl }}">
+	<meta property="og:description" content="{{ update.prompt }}">
+	<meta property="og:site_name" content="Malawian Genius Youth">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://mgy.web.app">
+	
+	<!-- Twitter Card -->
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:title" content="{{ update.title }}">
+	<meta name="twitter:description" content="{{ update.prompt }}">
+	<meta name="twitter:image" content="{{ update.imageUrl }}">
+	
+	<!-- Schema.org Structured Data -->
+	<script type="application/ld+json">
+	{
+	  "@context": "https://schema.org",
+	  "@type": "Educational Organization",
+	  "name": "Malawian Genius Youth",
+	  "url": "https://mgy.web.app",
+	  "description": "{{ update.prompt }}",
+	  "logo": "{{ update.imageUrl }}"
+	}
+	</script>
+    <title>{{ update.title }}</title>
+    <style>
+        body { 
+            background-color: #f7f9f9; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .post-body { 
+            background: white;
+            border: 1px solid #e1e8ed;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 550px;
+            margin: 0 auto;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* X-Style Typography */
+        .post-body h1 { 
+            font-size: 1.4rem; 
+            margin: 0 0 10px 0; 
+            color: #0f1419;
+            font-weight: 800;
+        }
+
+        .post-body p { 
+            font-size: 1.1rem; 
+            color: #0f1419; 
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .post-body a { 
+            color: #1d9bf0; /* Official X Blue */
+            text-decoration: none; 
+            font-weight: normal;
+        }
+
+        .post-body a:hover { text-decoration: underline; }
+        
+
+        /* Style the 'Source' footer to look like an X-meta tag */
+        .post-body hr { border: 0; border-top: 1px solid #eff3f4; margin: 20px 0; }
+        .post-body em { color: #536471; font-style: normal; font-size: 0.9rem; }
+        .post-box { display: flex; gap: 10px; align-items: center; }
+        .small_profile_img {
+            width: 40px; height: 40px; 
+			border-radius: 50%;
+            background: #eee; object-fit: cover;
+        }
+        
+    </style>
+</head>
+<body>
+    <section>
+        <div class="post-body">
+			<div class="post-box">
+	            <img class="small_profile_img"  src="https://res.cloudinary.com/dlnnjv1ca/image/upload/c_fill,f_auto,q_auto/android-chrome-192x192.png1776856358198" style="border-radius: 50%;">
+	            <div>
+	                <p>{{ update.senderId }}</p>
+	            </div>
+	        </div>
+            <img src="{{ update.imageUrl }}">
+            {{ update.post | safe }}
+        </div>
+    </section>
+		<a href="https://mgy-edu.onrender.com/updates?post={{ update.previous_chatId }}" >See more: {{ update.previous_title }}</a>
+    <footer>
+		<a href="https://mgy.web.app/?mode=install">&copy; 2026 Malawian Genius Youth. All rights reserved. @Isaac G Chitsakamire</a>
+	</footer>
+</body>
+</html>
