@@ -70,8 +70,9 @@ config = types.GenerateContentConfig(
     )
 
 class MatchResult(BaseModel):
-    "title": str = Field(description="""Short, catchy headline""")
-    "post": str = Field(description="""The 'post' field must strictly follow this Markdown structure:
+    # Field Name : Type = Field(description="...")
+    title: str = Field(description="Short, catchy headline")
+    post: str = Field(description="""The 'post' field must strictly follow this Markdown structure:
             
             # 📌 [CATCHY HEADLINE]
             ---
@@ -86,11 +87,12 @@ class MatchResult(BaseModel):
             
             ---
             _Source: [Name of Institution]_""")
-    "category": str = Field(description="""Exams | Selection | Policy | Scholarship | etc""")
-    "imageUrl": str = Field(description="""The exact URL where to find image to present on this update""")
-    "urgency": str = Field(description="""High | Medium | Low""")
-    "source": str = Field(description="""exactly Which url from given list of sources above you get this update""")
-                            
+    category: str = Field(description="Exams | Selection | Policy | Scholarship | etc")
+    imageUrl: str = Field(description="The exact URL where to find image to present on this update")
+    urgency: str = Field(description="High | Medium | Low")
+    source: str = Field(description="Exactly Which url from given list of sources above you get this update")
+
+
 def firebase_init():
     if not firebase_admin._apps:
         config_json = os.getenv("FIREBASE_CONFIG")
@@ -295,7 +297,7 @@ def show_update(id):
         updates = post_ref.get()
         update = updates[1]
     html_content = markdown2.markdown(post, extras=["fenced-code-blocks", "tables"])
-    update[prompt] = html_content
+    update['prompt'] = html_content
     return render_template('updates.html', update)
 
 @app.route('/upload', methods=['POST'])
