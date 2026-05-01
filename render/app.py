@@ -150,7 +150,7 @@ def parse_mgy_json(text):
     
     try:
         data = json.loads(clean_text)
-        return data
+        return data['updates']
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
         return None
@@ -190,9 +190,10 @@ def ask_gemini():
             reply_text = response.text 
             print(type(chat.get_history()))
             print(chat.get_history())
-            obj = parse_mgy_json(text)
+            obj = parse_mgy_json(reply_text)
             if obj:
-                ref.set(clean_history)
+                ref = db.reference('post')
+                ref.push(obj[0])
                 return obj
         
             return reply_text
