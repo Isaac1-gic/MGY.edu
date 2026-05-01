@@ -227,6 +227,7 @@ def ask_gemini():
             if obj:
                 post = obj[0]
                 print(type(old_post))
+                lastMsg = list(old_post.items())[-1]
                 mgyPostFormat = {
                     'imageUrl':post['imageUrl'],
                     'prompt': post['post'],
@@ -239,8 +240,8 @@ def ask_gemini():
                     "category": post["category"],
                     "urgency": post["urgency"],
                     "source": post["source"],
-                    "previous_chatId": old_post[-1][0],
-                    "previous_title": old_post[-1][1]["title"]
+                    "previous_chatId": lastMsg[0],
+                    "previous_title": lastMsg[1]["title"]
                 }
                 post_ref.push(mgyPostFormat)
                 return obj
@@ -292,13 +293,12 @@ def show_update(id):
     if id == 'home':
         post_ref = db.reference('post')
         updates = post_ref.get()
-        print(updates.values())
-        update = updates.values()[-1]
+        update = list(updates.values())[-1]
     else:
         post_ref = db.reference('post/'+id)
         update = post_ref.get()
         print(update)
-    html_content = markdown2.markdown(post, extras=["fenced-code-blocks", "tables"])
+    html_content = markdown2.markdown(prompt, extras=["fenced-code-blocks", "tables"])
     update['post'] = html_content
     return render_template('updates.html', update)
 
