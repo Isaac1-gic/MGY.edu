@@ -75,7 +75,7 @@ You must return a list of only 1 very important update in the following JSON for
       "category": "Exams | Selection | Policy | Scholarship | etc",
       "imageUrl": "The exact URL where to find image to present on this update",
       "urgency": "High | Medium | Low",
-      "source": "Which url from given sources"
+      "source": "exactly Which url from given list of sources you get the update"
       
     }
   ]
@@ -210,6 +210,7 @@ def ask_gemini():
             obj = parse_mgy_json(reply_text)
             if obj:
                 post = obj[0]
+                print(type(old_post))
                 mgyPostFormat = {
                     'imageUrl':post['imageUrl'],
                     'prompt': post['post'],
