@@ -51,7 +51,7 @@ INPUT HANDLING:
 
 OUTPUT FORMAT (STRICT JSON):
 Ignore advertisements, and old news (anything older than 48 hours unless it is a major announcement and do not remake same post unless you will bring new things on same title).
-You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase:
+You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase and no matter what you must strictly follow this format:
 {
   "updates": [
     { 
