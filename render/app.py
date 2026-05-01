@@ -162,9 +162,8 @@ def getFile(url):
 
 
 def parse_mgy_json(text):
-    clean_text = text.replace("```json", "").replace("```", "").strip()
-    
     try:
+        clean_text = text.replace("```json", "").replace("```", "").strip()
         data = json.loads(clean_text,chat)
         return data['updates']
     except Exception as e:
