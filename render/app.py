@@ -292,14 +292,14 @@ def show_update(id):
     if id == 'home':
         post_ref = db.reference('post')
         updates = post_ref.get()
-        print(updates)
-        update = updates.values()
+        print(updates.values())
+        update = updates.values()[-1]
     else:
         post_ref = db.reference('post/'+id)
         update = post_ref.get()
         print(update)
     html_content = markdown2.markdown(post, extras=["fenced-code-blocks", "tables"])
-    update['prompt'] = html_content
+    update['post'] = html_content
     return render_template('updates.html', update)
 
 @app.route('/upload', methods=['POST'])
