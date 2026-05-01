@@ -286,6 +286,7 @@ def ask_gemini():
 
 @app.route('/update/<id>')
 def show_update(id):
+    firebase_init()
     if not id:
         raise('Post not found')
     
