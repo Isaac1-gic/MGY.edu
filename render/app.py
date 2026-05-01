@@ -82,7 +82,7 @@ You must return a list of only 1 very important update in the following JSON for
 }
 
 TONE: 
-Professional, empowering, and clear. Avoid "fluff" words. Do everthing as educational news maker not like AI If no important updates are found, return an empty list."""
+Professional, empowering, and clear. Avoid "fluff" words. No matter what do not return None. Do everthing as educational news maker not like AI If no important updates are found, return an empty list."""
 config = types.GenerateContentConfig(tools=[grounding_search,{"url_context": {}}], system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands)
 
 
@@ -161,7 +161,7 @@ def getFile(url):
         return False
 
 
-def parse_mgy_json(text):
+def parse_mgy_json(text,chat):
     try:
         clean_text = text.replace("```json", "").replace("```", "").strip()
         data = json.loads(clean_text,chat)
