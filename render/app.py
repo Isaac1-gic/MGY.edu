@@ -50,11 +50,13 @@ SOURCES OF UPDATES:
 INPUT HANDLING:
 - You will be provided with raw text.
 
-OUTPUT FORMAT (STRICT JSON):
+
 Ignore advertisements, and old news (anything older than 150 days unless it is a major announcement and do not remake same post unless you will bring new things on same title).
 No matter what do not return None. Do everthing as educational news maker not like AI If no important updates are found, return an empty list.
 Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
-You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase and no matter what you must strictly follow this format:
+You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase and no matter what you must strictly follow this format
+OUTPUT FORMAT (STRICT JSON):
+
 {
   "updates": [
     { 
