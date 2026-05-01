@@ -94,8 +94,8 @@ config = types.GenerateContentConfig(
                     grounding_search,
                     {"url_context": {}}
                 ],
-            "response_mime_type" = "application/json",
-            "response_json_schema" = MatchResult.model_json_schema(),
+            response_mime_type = "application/json",
+            response_json_schema = MatchResult.model_json_schema(),
             system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
     )
 
