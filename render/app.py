@@ -7,7 +7,7 @@ from PIL import Image
 import requests
 import time
 from io import BytesIO
-import json
+import json, time
 import firebase_admin
 from firebase_admin import auth, credentials, db
 
@@ -215,7 +215,7 @@ def ask_gemini():
                     'senderId': 'MGY',
                     'userkey': 'mgy',
                     'types': ['imageMsg','textMsg'],
-                    'chatId': db.server_timestamp()
+                    'chatId': int(time.time())*1000
                 }
                 post_ref.push(mgyPostFormat)
                 return obj
