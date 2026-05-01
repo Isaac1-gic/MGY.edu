@@ -1,9 +1,10 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 from google import genai
 from google.genai import types
 from PIL import Image
+import markdown2
 import requests
 import time
 from io import BytesIO
@@ -219,13 +220,15 @@ def ask_gemini():
                     'chatId': int(time.time())*1000,
                     "category": post["category"],
                     "urgency": post["urgency"],
-                    "source": post["source"]
+                    "source": post["source"],
+                    "previous_chatId": old_post[-1][0],
+                    "previous_title": old_post[-1][1]["title"]
                 }
                 post_ref.push(mgyPostFormat)
                 return obj
         
             return reply_text
-            
+          
         def generate():
             response = client.models.generate_content_stream(
                     model = model, 
@@ -263,7 +266,22 @@ def ask_gemini():
             "message": str(e)
         }), 500
 
-
+@app.route('/update/<id>')
+def show_update(id):
+    if not id:
+        raise('Post not found')
+    
+    if id == 'home':
+        post_ref = db.reference('post')
+        updates = post_ref.get()
+        update = updates[-1][1]
+    else:
+        post_ref = db.reference('post/'+id)
+        updates = post_ref.get()
+        update = updates[1]
+    html_content = markdown2.markdown(post, extras=["fenced-code-blocks", "tables"])
+    update[prompt] = html_content
+    return render_template('updates.html', update)
 
 @app.route('/upload', methods=['POST'])
 def file_store_upload():
