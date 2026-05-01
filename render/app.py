@@ -56,7 +56,21 @@ You must return a list of only 1 very important update in the following JSON for
   "updates": [
     { 
       "title": "title-> Short, catchy headline",
-      "post": "title-> Short, catchy headline. body-> explanation of why this is important and matters to an MGY user. action_text -> e.g., Apply Now, Check Results, or Save Date. Include clickable text -> eg [https://example.com](Example) in short use markdowm format only on this child [post]. ",
+      "post": "The 'post' field must strictly follow this Markdown structure:
+            
+            # 📌 [CATCHY HEADLINE]
+            ---
+            **What’s Happening:** [Clear, 1-2 sentence summary of the news.]
+            
+            **Why It Matters for Geniuses:** [Explain the impact on MGY users/students.]
+            
+            **🚀 Action Steps:**
+            * 📅 **Deadline:** [Date]
+            * 📝 **Requirement:** [What to bring/do]
+            * 🔗 **Link:** [Text](URL)
+            
+            ---
+            _Source: [Name of Institution]_",
       "category": "Exams | Selection | Policy | Scholarship | etc",
       "imgUrl": "The exact URL where to find image to present on this update",
       "urgency": "High | Medium | Low"
@@ -145,11 +159,13 @@ def getFile(url):
         return False
 
 
-def parse_mgy_json(text):
+def parse_mgy_json(text,hist):
     clean_text = text.replace("```json", "").replace("```", "").strip()
     
     try:
         data = json.loads(clean_text)
+        res = "_mgy_"+hist+"_mgy_"
+        print(res)
         return data['updates']
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
@@ -172,7 +188,8 @@ def ask_gemini():
             firebase_init()
             # 1. Get history from Firebase
             ref = db.reference('history')
-            history_data = ref.get() 
+            history_data = ref.get()
+            post_ref = db.reference('post')
             
             # Ensure history is a list for the SDK
             if not history_data:
@@ -190,10 +207,9 @@ def ask_gemini():
             reply_text = response.text 
             print(type(chat.get_history()))
             print(chat.get_history())
-            obj = parse_mgy_json(reply_text)
+            obj = parse_mgy_json(reply_text,chat.get_history())
             if obj:
-                ref = db.reference('post')
-                ref.push(obj[0])
+                post_ref.push(obj[0])
                 return obj
         
             return reply_text
