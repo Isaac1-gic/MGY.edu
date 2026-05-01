@@ -48,9 +48,9 @@ SOURCES OF UPDATES:
  
 INPUT HANDLING:
 - You will be provided with raw text.
-- Ignore navigation bars, footers, advertisements, and old news (anything older than 48 hours unless it is a major announcement).
 
 OUTPUT FORMAT (STRICT JSON):
+Ignore advertisements, and old news (anything older than 48 hours unless it is a major announcement and do not remake same post unless you will bring new things on same title).
 You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase:
 {
   "updates": [
@@ -72,7 +72,7 @@ You must return a list of only 1 very important update in the following JSON for
             ---
             _Source: [Name of Institution]_",
       "category": "Exams | Selection | Policy | Scholarship | etc",
-      "imgUrl": "The exact URL where to find image to present on this update",
+      "imageUrl": "The exact URL where to find image to present on this update",
       "urgency": "High | Medium | Low"
       
     }
@@ -188,7 +188,7 @@ def ask_gemini():
             ref = db.reference('history')
             history_data = ref.get()
             post_ref = db.reference('post')
-            
+            old_Post = post_ref.get()
             # Ensure history is a list for the SDK
             if not history_data:
                 history_data = []
@@ -201,12 +201,23 @@ def ask_gemini():
             )
         
             # 3. Send the message
-            response = chat.send_message(user_message)
+            response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
             reply_text = response.text 
-            ref.set(chat.get_history())
+            print(chat.get_history())
             obj = parse_mgy_json(reply_text)
             if obj:
-                post_ref.push(obj[0])
+                post = obj[0]
+                mgyPostFormat = {
+                    'imageUrl':post['imageUrl'],
+                    'prompt': post['post'],
+                    'title': post['title',
+                    'imgUrl': 'img/mgy.jpg',
+                    'senderId': 'MGY',
+                    'userkey': 'mgy',
+                    'types': ['imageMsg','textMsg'],
+                    'chatId': db.server_timestamp()
+                }
+                post_ref.push(mgyPostFormat)
                 return obj
         
             return reply_text
