@@ -59,15 +59,7 @@ Note: if you break structure/formart of output It will cause error which will ke
 
 TONE: 
 Professional, empowering, and clear. Avoid "fluff" words. """
-config = types.GenerateContentConfig(
-            tools=[
-                    grounding_search,
-                    {"url_context": {}}
-                ],
-            response_mime_type = "application/json",
-            response_json_schema = MatchResult.model_json_schema(),
-            system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
-    )
+
 
 class MatchResult(BaseModel):
     # Field Name : Type = Field(description="...")
@@ -92,6 +84,15 @@ class MatchResult(BaseModel):
     urgency: str = Field(description="High | Medium | Low")
     source: str = Field(description="Exactly Which url from given list of sources above you get this update")
 
+config = types.GenerateContentConfig(
+            tools=[
+                    grounding_search,
+                    {"url_context": {}}
+                ],
+            response_mime_type = "application/json",
+            response_json_schema = MatchResult.model_json_schema(),
+            system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
+    )
 
 def firebase_init():
     if not firebase_admin._apps:
