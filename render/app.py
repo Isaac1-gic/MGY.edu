@@ -159,13 +159,11 @@ def getFile(url):
         return False
 
 
-def parse_mgy_json(text,hist):
+def parse_mgy_json(text):
     clean_text = text.replace("```json", "").replace("```", "").strip()
     
     try:
         data = json.loads(clean_text)
-        res = "_mgy_"+hist+"_mgy_"
-        print(res)
         return data['updates']
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
@@ -205,9 +203,8 @@ def ask_gemini():
             # 3. Send the message
             response = chat.send_message(user_message)
             reply_text = response.text 
-            print(type(chat.get_history()))
-            print(chat.get_history())
-            obj = parse_mgy_json(reply_text,chat.get_history())
+            ref.set(chat.get_history())
+            obj = parse_mgy_json(reply_text)
             if obj:
                 post_ref.push(obj[0])
                 return obj
