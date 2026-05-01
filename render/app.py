@@ -73,7 +73,8 @@ You must return a list of only 1 very important update in the following JSON for
             _Source: [Name of Institution]_",
       "category": "Exams | Selection | Policy | Scholarship | etc",
       "imageUrl": "The exact URL where to find image to present on this update",
-      "urgency": "High | Medium | Low"
+      "urgency": "High | Medium | Low",
+      "source": "Which url from given sources"
       
     }
   ]
@@ -215,7 +216,10 @@ def ask_gemini():
                     'senderId': 'MGY',
                     'userkey': 'mgy',
                     'types': ['imageMsg','textMsg'],
-                    'chatId': int(time.time())*1000
+                    'chatId': int(time.time())*1000,
+                    "category": post["category"],
+                    "urgency": post["urgency"],
+                    "source": post["source"]
                 }
                 post_ref.push(mgyPostFormat)
                 return obj
