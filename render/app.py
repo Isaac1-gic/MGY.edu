@@ -287,10 +287,8 @@ def ask_gemini():
 @app.route('/update/<id>')
 def show_update(id):
     firebase_init()
-    if not id
-    
+    if not id:
         raise('Post not found')
-    
     if id == 'home':
         post_ref = db.reference('post')
         updates = post_ref.get()
