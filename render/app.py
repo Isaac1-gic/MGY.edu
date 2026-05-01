@@ -165,11 +165,13 @@ def parse_mgy_json(text):
     clean_text = text.replace("```json", "").replace("```", "").strip()
     
     try:
-        data = json.loads(clean_text)
+        data = json.loads(clean_text,chat)
         return data['updates']
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
-        return None
+        resp = chat.send_message("Oooosh! you haven`t follow output system instructions which has result in code errors. Please read back with care and bring correct format and structure.")
+        reply_text = resp.text
+        return output(reply_text,chat)
         
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
@@ -204,10 +206,13 @@ def ask_gemini():
         
             # 3. Send the message
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
-            reply_text = response.text 
+            reply_text = response.text
+            return output(reply_text,chat)
+            
+        def output(reply_text,chat):
             print(chat.get_history())
             print(reply_text)
-            obj = parse_mgy_json(reply_text)
+            obj = parse_mgy_json(reply_text,chat)
             if obj:
                 post = obj[0]
                 print(type(old_post))
