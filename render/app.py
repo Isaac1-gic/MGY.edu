@@ -6,6 +6,8 @@ from google.genai import types
 from PIL import Image
 import markdown2
 import requests
+from pydantic import BaseModel, Field
+from typing import List
 import time
 from io import BytesIO
 import json, time
@@ -87,9 +89,38 @@ OUTPUT FORMAT (STRICT JSON):
 
 TONE: 
 Professional, empowering, and clear. Avoid "fluff" words. """
-config = types.GenerateContentConfig(tools=[grounding_search,{"url_context": {}}], system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands)
+config = types.GenerateContentConfig(
+            tools=[
+                    grounding_search,
+                    {"url_context": {}}
+                ],
+            "response_mime_type": "application/json",
+            "response_json_schema": MatchResult.model_json_schema(),
+            system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
+    )
 
-
+class MatchResult(BaseModel):
+    "title": str = Field(description="title-> Short, catchy headline")
+    "post": str = Field(description="The 'post' field must strictly follow this Markdown structure:
+            
+            # 📌 [CATCHY HEADLINE]
+            ---
+            **What’s Happening:** [Clear, 1-2 sentence summary of the news.]
+            
+            **Why It Matters for Geniuses:** [Explain the impact on MGY users/students.]
+            
+            **🚀 Action Steps:**
+            * 📅 **Deadline:** [Date]
+            * 📝 **Requirement:** [What to bring/do]
+            * 🔗 **Link:** [Text](URL)
+            
+            ---
+            _Source: [Name of Institution]_")
+    "category": str = Field(description="Exams | Selection | Policy | Scholarship | etc")
+    "imageUrl": str = Field(description="The exact URL where to find image to present on this update")
+    "urgency": str = Field(description="High | Medium | Low")
+    "source": str = Field(description="exactly Which url from given list of sources above you get this update")
+                            
 def firebase_init():
     if not firebase_admin._apps:
         config_json = os.getenv("FIREBASE_CONFIG")
