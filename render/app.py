@@ -75,7 +75,7 @@ You must return a list of only 1 very important update in the following JSON for
       "category": "Exams | Selection | Policy | Scholarship | etc",
       "imageUrl": "The exact URL where to find image to present on this update",
       "urgency": "High | Medium | Low",
-      "source": "exactly Which url from given list of sources you get the update"
+      "source": "exactly Which url from given list of sources above you get this update"
       
     }
   ]
@@ -164,7 +164,7 @@ def getFile(url):
 def parse_mgy_json(text,chat):
     try:
         clean_text = text.replace("```json", "").replace("```", "").strip()
-        data = json.loads(clean_text,chat)
+        data = json.loads(clean_text)
         return data['updates']
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
