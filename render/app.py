@@ -101,7 +101,7 @@ config = types.GenerateContentConfig(
 
 class MatchResult(BaseModel):
     "title": str = Field(description="title-> Short, catchy headline")
-    "post": str = Field(description="The 'post' field must strictly follow this Markdown structure:
+    "post": str = Field(description="""The 'post' field must strictly follow this Markdown structure:
             
             # 📌 [CATCHY HEADLINE]
             ---
@@ -115,7 +115,7 @@ class MatchResult(BaseModel):
             * 🔗 **Link:** [Text](URL)
             
             ---
-            _Source: [Name of Institution]_")
+            _Source: [Name of Institution]_""")
     "category": str = Field(description="Exams | Selection | Policy | Scholarship | etc")
     "imageUrl": str = Field(description="The exact URL where to find image to present on this update")
     "urgency": str = Field(description="High | Medium | Low")
@@ -231,6 +231,7 @@ def ask_gemini():
         
             # 3. Send the message
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
+            print(type(response),response)
             reply_text = response.text
             return output(reply_text,chat)
 
