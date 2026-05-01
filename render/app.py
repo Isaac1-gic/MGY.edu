@@ -188,7 +188,7 @@ def ask_gemini():
             ref = db.reference('history')
             history_data = ref.get()
             post_ref = db.reference('post')
-            old_Post = post_ref.get()
+            old_post = post_ref.get()
             # Ensure history is a list for the SDK
             if not history_data:
                 history_data = []
