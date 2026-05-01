@@ -56,36 +56,6 @@ INPUT HANDLING:
 Ignore advertisements, and old news (anything older than 150 days unless it is a major announcement and do not remake same post unless you will bring new things on same title).
 No matter what do not return None. Do everthing as educational news maker not like AI If no important updates are found, return an empty list.
 Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
-You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase and no matter what you must strictly follow this format
-OUTPUT FORMAT (STRICT JSON):
-
-{
-  "updates": [
-    { 
-      "title": "title-> Short, catchy headline",
-      "post": "The 'post' field must strictly follow this Markdown structure:
-            
-            # 📌 [CATCHY HEADLINE]
-            ---
-            **What’s Happening:** [Clear, 1-2 sentence summary of the news.]
-            
-            **Why It Matters for Geniuses:** [Explain the impact on MGY users/students.]
-            
-            **🚀 Action Steps:**
-            * 📅 **Deadline:** [Date]
-            * 📝 **Requirement:** [What to bring/do]
-            * 🔗 **Link:** [Text](URL)
-            
-            ---
-            _Source: [Name of Institution]_",
-      "category": "Exams | Selection | Policy | Scholarship | etc",
-      "imageUrl": "The exact URL where to find image to present on this update",
-      "urgency": "High | Medium | Low",
-      "source": "exactly Which url from given list of sources above you get this update"
-      
-    }
-  ]
-}
 
 TONE: 
 Professional, empowering, and clear. Avoid "fluff" words. """
@@ -100,7 +70,7 @@ config = types.GenerateContentConfig(
     )
 
 class MatchResult(BaseModel):
-    "title": str = Field(description="title-> Short, catchy headline")
+    "title": str = Field(description="""Short, catchy headline""")
     "post": str = Field(description="""The 'post' field must strictly follow this Markdown structure:
             
             # 📌 [CATCHY HEADLINE]
@@ -116,10 +86,10 @@ class MatchResult(BaseModel):
             
             ---
             _Source: [Name of Institution]_""")
-    "category": str = Field(description="Exams | Selection | Policy | Scholarship | etc")
-    "imageUrl": str = Field(description="The exact URL where to find image to present on this update")
-    "urgency": str = Field(description="High | Medium | Low")
-    "source": str = Field(description="exactly Which url from given list of sources above you get this update")
+    "category": str = Field(description="""Exams | Selection | Policy | Scholarship | etc""")
+    "imageUrl": str = Field(description="""The exact URL where to find image to present on this update""")
+    "urgency": str = Field(description="""High | Medium | Low""")
+    "source": str = Field(description="""exactly Which url from given list of sources above you get this update""")
                             
 def firebase_init():
     if not firebase_admin._apps:
