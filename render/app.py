@@ -52,6 +52,8 @@ INPUT HANDLING:
 
 OUTPUT FORMAT (STRICT JSON):
 Ignore advertisements, and old news (anything older than 48 hours unless it is a major announcement and do not remake same post unless you will bring new things on same title).
+No matter what do not return None. Do everthing as educational news maker not like AI If no important updates are found, return an empty list.
+Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
 You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase and no matter what you must strictly follow this format:
 {
   "updates": [
@@ -82,7 +84,7 @@ You must return a list of only 1 very important update in the following JSON for
 }
 
 TONE: 
-Professional, empowering, and clear. Avoid "fluff" words. No matter what do not return None. Do everthing as educational news maker not like AI If no important updates are found, return an empty list."""
+Professional, empowering, and clear. Avoid "fluff" words. """
 config = types.GenerateContentConfig(tools=[grounding_search,{"url_context": {}}], system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands)
 
 
@@ -168,6 +170,7 @@ def parse_mgy_json(text,chat):
         return data['updates']
     except Exception as e:
         print(f"Failed to parse JSON: {e}")
+        time.sleep(3)
         resp = chat.send_message("Oooosh! you haven`t follow output system instructions which has result in code errors. Please read back with care and bring correct format and structure.")
         reply_text = resp.text
         return output(reply_text,chat)
