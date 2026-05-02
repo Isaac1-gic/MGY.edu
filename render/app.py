@@ -289,7 +289,7 @@ def ask_gemini():
 def show_update(id):
     firebase_init()
     if not id:
-        raise('Post not found')
+        raise Exception('Post not found')
     if id == 'home':
         post_ref = db.reference('post')
         updates = post_ref.get()
@@ -300,7 +300,7 @@ def show_update(id):
         print(update)
     html_content = markdown2.markdown(update['prompt'], extras=["fenced-code-blocks", "tables"])
     update['post'] = html_content
-    return render_template('updates.html', update)
+    return render_template('updates.html', update = update)
 
 @app.route('/upload', methods=['POST'])
 def file_store_upload():
