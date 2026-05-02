@@ -298,7 +298,7 @@ def show_update(id):
         post_ref = db.reference('post/'+id)
         update = post_ref.get()
         print(update)
-    html_content = markdown2.markdown(prompt, extras=["fenced-code-blocks", "tables"])
+    html_content = markdown2.markdown(update.prompt, extras=["fenced-code-blocks", "tables"])
     update['post'] = html_content
     return render_template('updates.html', update)
 
