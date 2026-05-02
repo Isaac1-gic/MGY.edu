@@ -89,10 +89,16 @@ config = types.GenerateContentConfig(
                     grounding_search,
                     {"url_context": {}}
                 ],
-            response_mime_type = "application/json",
-            response_json_schema = MatchResult.model_json_schema(),
+            #response_mime_type = "application/json",
+            #response_json_schema = MatchResult.model_json_schema(),
             system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
     )
+
+extract_config = types.GenerateContentConfig(
+    response_mime_type="application/json",
+    response_json_schema=MatchResult.model_json_schema(),
+    system_instruction="You are a JSON formatter. Turn the provided news summary into a valid JSON object matching the MatchResult schema. " + commands
+)
 
 def firebase_init():
     if not firebase_admin._apps:
@@ -204,9 +210,11 @@ def ask_gemini():
         
             # 3. Send the message
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
-            print(type(response),response)
-            reply_text = response.text
-            return output(reply_text,chat)
+            extract_chat = client.chats.create(model=model, config=extract_config)
+            final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+            json_data = json.loads(final_response.text)
+            print(type(json_data),json_data)
+            return output(json_data,extract_chat)
 
         def parse_mgy_json(text,chat):
             try:
