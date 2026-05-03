@@ -68,7 +68,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					formBt.innerText = "Checking...";
 			
 					try{
-						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','').toLowerCase()+'@mgy.com', userData.userInfo['Password'].replaceAll(' ','').toLowerCase())
+						await signInWithEmailAndPassword(userData.userInfo['Email'] || userData.userInfo['username'].replaceAll(' ','').toLowerCase()+'@mgy.com', userData.userInfo['Password'].toLowerCase(),false)
 						delete userData.userInfo['Password']
 						const userNow = userAuth.currentUser; 
 
@@ -95,7 +95,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 		}
 		async function EmailAndPassword(currentU,currentP){
-			const userCredential  = await signInWithEmailAndPassword(currentU.endsWith('.com') ? currentU : currentU.replaceAll(' ','')+'@mgy.com',currentP)
+			const userCredential  = await signInWithEmailAndPassword(currentU.endsWith('.com') ? currentU : currentU.replaceAll(' ','')+'@mgy.com',currentP,true)
 			userData = {userInfo:{'Country code': '265'},
 						freinds: 'initialized',
 						messageBox: 'initialized'	   
@@ -137,10 +137,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						handleLoginFailure(currentU,'Get -> :'+data)
 						return
 					}
+					userData = data
 					await saveData('userData', data);
 					alert("Success! Welcome to MGY.");
-					await adddbListener(10)
 					switchPage("chatPage");
+					await adddbListener(10)
 					
 			    } catch (err) {
 			        console.error(err);
@@ -493,9 +494,10 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					onValue(chatPath, async (snapshot) =>{
 						init['mgyPosts'] = true
 						chat = Object.entries(snapshot.val()).reverse();
+						lastMsg = chat[chat.length - 1][1]
 						mgy['mgyPosts'] = chat
-						chatbox('mgyPosts')
-						
+						chatbox('mgyPosts',lastMsg)
+						await saveData('mgyUpdates',mgy)
 					})
 					
 				}
@@ -536,6 +538,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 								const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
 								createChatlist(value,lastMsg.prompt,proImg,key,onlineStatus[key])
 								chatbox(key,lastMsg)
+								await saveData('mgyUpdates',mgy)
 							}catch (e){
 								console.warn('No chat: ',e)
 							}
@@ -1111,6 +1114,7 @@ async function uploadToCloudinary(file, studentId, type,update) {
 
 function getOptimizedImageUrl(publicId,type,vid) {
 	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
+	if (publicId.startsWith('http')) return publicId
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,f_auto,q_auto";
 	if(type == 'L') transformations = 'ar_1:1,c_pad,f_auto,q_auto,b_auto,w_200';
