@@ -204,8 +204,8 @@ def ask_gemini():
                     return output(reply_text,chat)
                 
             def output(reply_text,chat):
-                print(type(reply_text))
-                print(reply_text)
+                #print(type(reply_text))
+                #print(reply_text)
                 obj = reply_text #parse_mgy_json(reply_text,chat)
                 if obj:
                     post = obj
