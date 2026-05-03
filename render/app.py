@@ -209,8 +209,8 @@ def ask_gemini():
                 obj = reply_text #parse_mgy_json(reply_text,chat)
                 if obj:
                     post = obj
-                    lustMsg = list(old_post.items())
-                    print(old_post)
+                    listMsg = list(old_post.items())
+                    print(listMsg)
                     lastMsg  = listMsg[-1]
                     print(listMsg)
                     mgyPostFormat = {
