@@ -3,26 +3,44 @@
 
     <url>
         <loc>https://mgy.web.app/</loc>
-        <lastmod>2026-04-21</lastmod> <changefreq>daily</changefreq> <priority>1.0</priority> </url>
+        <lastmod>2026-04-21</lastmod> 
+        <changefreq>daily</changefreq> 
+        <priority>1.0</priority> </url>
 
     <url>
+    <url>
+        
+        <loc>https://mgy-edu.onrender.com/update/home</loc>
+        <lastmod>2026-04-21</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+        
+    </url>
         <loc>https://mgy.web.app#room</loc>
         <lastmod>2026-04-21</lastmod>
-        <changefreq>always</changefreq> <priority>0.9</priority>
+        <changefreq>always</changefreq>
+        <priority>0.8</priority>
     </url>
 
     <url>
         <loc>https://mgy.web.app#courses</loc>
         <lastmod>2026-04-21</lastmod>
         <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
+        <priority>0.7</priority>
     </url>
 
     <url>
         <loc>https://mgy.web.app#profiles</loc>
         <lastmod>2026-04-21</lastmod>
         <changefreq>monthly</changefreq>
-        <priority>0.7</priority>
+        <priority>0.6</priority>
+    </url>
+
+    <url>
+        <loc>https://mgy.web.app?mode=install</loc>
+        <lastmod>2026-04-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
     </url>
 
 </urlset>
