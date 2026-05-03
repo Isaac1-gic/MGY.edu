@@ -254,7 +254,7 @@ def ask_gemini():
             time.sleep(3)
             #extract_chat = client.chats.create(model=model, config=extract_config)
             #final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
-            json_data = = {
+            json_data = {
   "title": "KNB Scholarship Results Update",
   "post": "# 📌 KNB Scholarship Results Imminent!\n---\n**What’s Happening:** Final results for the 2026 Kemitraan Negara Berkembang (KNB) Scholarships for Malawian students are expected by May 29, 2026. Administrative screening is underway, with tests and interviews to follow for shortlisted candidates.\n\n**Why It Matters for Geniuses:** This is a significant fully-funded scholarship opportunity for Malawians seeking higher education in Indonesia. Staying informed about the results allows for timely preparation for further steps.\n\n**🚀 Action Steps:**\n* 📅 **Deadline:** May 29, 2026\n* 📝 **Requirement:** Monitor official KNB Scholarship portal or registered email for selection lists.\n* 🔗 **Link:** Check official KNB Scholarship portal or Indonesian Embassy/Consulate in Malawi for announcements (https://knb.kemdikbud.go.id/)\n\n---\n_Source: Indonesian Embassy/Consulate in Malawi_",
   "category": "Scholarship",
