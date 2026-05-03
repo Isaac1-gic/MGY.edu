@@ -191,6 +191,46 @@ def ask_gemini():
         list = []
         text = ''
         def chatAi():
+            def parse_mgy_json(text,chat):
+                try:
+                    clean_text = text.replace("```json", "").replace("```", "").strip()
+                    data = json.loads(clean_text)
+                    return data['updates']
+                except Exception as e:
+                    print(f"Failed to parse JSON: {e}")
+                    time.sleep(3)
+                    resp = chat.send_message("Oooosh! you haven`t follow output system instructions which has result in code errors. Please read back with care and bring correct format and structure.")
+                    reply_text = resp.text
+                    return output(reply_text,chat)
+                
+            def output(reply_text,chat):
+                print(type(reply_text))
+                print(reply_text)
+                obj = reply_text #parse_mgy_json(reply_text,chat)
+                if obj:
+                    post = obj
+                    print(type(old_post))
+                    lastMsg = list(old_post.items())[-1]
+                    mgyPostFormat = {
+                        'imageUrl':post['imageUrl'],
+                        'prompt': post['post'],
+                        'title': post['title'],
+                        'imgUrl': 'img/mgy.jpg',
+                        'senderId': 'MGY',
+                        'userkey': 'mgy',
+                        'types': ['imageMsg','textMsg'],
+                        'chatId': int(time.time())*1000,
+                        "category": post["category"],
+                        "urgency": post["urgency"],
+                        "source": post["source"],
+                        "previous_chatId": lastMsg[0],
+                        "previous_title": lastMsg[1]["title"]
+                    }
+                    post_ref.push(mgyPostFormat)
+                    app_updates.push(mgyPostFormat)
+                    return obj
+            
+                return reply_text
             firebase_init()
             # 1. Get history from Firebase
             ref = db.reference('history')
@@ -203,61 +243,28 @@ def ask_gemini():
                 history_data = []
         
             # 2. Create the chat session
-            chat = client.chats.create(
+            #chat = client.chats.create(
                 model=model,
                 history=history_data, # Firebase dicts work directly here
                 config=config
             )
         
             # 3. Send the message
-            response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
+            #response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
             time.sleep(3)
-            extract_chat = client.chats.create(model=model, config=extract_config)
-            final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
-            json_data = json.loads(final_response.text)
-            print(type(json_data),json_data)
-            return output(json_data,extract_chat)
+            #extract_chat = client.chats.create(model=model, config=extract_config)
+            #final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+            json_data = = {
+  "title": "KNB Scholarship Results Update",
+  "post": "# 📌 KNB Scholarship Results Imminent!\n---\n**What’s Happening:** Final results for the 2026 Kemitraan Negara Berkembang (KNB) Scholarships for Malawian students are expected by May 29, 2026. Administrative screening is underway, with tests and interviews to follow for shortlisted candidates.\n\n**Why It Matters for Geniuses:** This is a significant fully-funded scholarship opportunity for Malawians seeking higher education in Indonesia. Staying informed about the results allows for timely preparation for further steps.\n\n**🚀 Action Steps:**\n* 📅 **Deadline:** May 29, 2026\n* 📝 **Requirement:** Monitor official KNB Scholarship portal or registered email for selection lists.\n* 🔗 **Link:** Check official KNB Scholarship portal or Indonesian Embassy/Consulate in Malawi for announcements (https://knb.kemdikbud.go.id/)\n\n---\n_Source: Indonesian Embassy/Consulate in Malawi_",
+  "category": "Scholarship",
+  "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coat_of_arms_of_Indonesia.svg/1200px-Coat_of_arms_of_Indonesia.svg.png",
+  "urgency": "High",
+  "source": "https://www.google.com/search?q=https://times.mw/category/education/"
+} #json.loads(final_response.text)
+            return output(json_data,'extract_chat')
 
-        def parse_mgy_json(text,chat):
-            try:
-                clean_text = text.replace("```json", "").replace("```", "").strip()
-                data = json.loads(clean_text)
-                return data['updates']
-            except Exception as e:
-                print(f"Failed to parse JSON: {e}")
-                time.sleep(3)
-                resp = chat.send_message("Oooosh! you haven`t follow output system instructions which has result in code errors. Please read back with care and bring correct format and structure.")
-                reply_text = resp.text
-                return output(reply_text,chat)
-            
-        def output(reply_text,chat):
-            print(type(reply_text))
-            print(reply_text)
-            obj = reply_text #parse_mgy_json(reply_text,chat)
-            if obj:
-                post = obj
-                print(type(old_post))
-                lastMsg = list(old_post.items())[-1]
-                mgyPostFormat = {
-                    'imageUrl':post['imageUrl'],
-                    'prompt': post['post'],
-                    'title': post['title'],
-                    'imgUrl': 'img/mgy.jpg',
-                    'senderId': 'MGY',
-                    'userkey': 'mgy',
-                    'types': ['imageMsg','textMsg'],
-                    'chatId': int(time.time())*1000,
-                    "category": post["category"],
-                    "urgency": post["urgency"],
-                    "source": post["source"],
-                    "previous_chatId": lastMsg[0],
-                    "previous_title": lastMsg[1]["title"]
-                }
-                post_ref.push(mgyPostFormat)
-                app_updates.push(mgyPostFormat)
-                return obj
         
-            return reply_text
           
         def generate():
             response = client.models.generate_content_stream(
