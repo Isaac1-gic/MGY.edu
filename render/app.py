@@ -231,9 +231,9 @@ def ask_gemini():
                 return output(reply_text,chat)
             
         def output(reply_text,chat):
-            print(chat.get_history())
+            print(type(reply_text))
             print(reply_text)
-            obj = parse_mgy_json(reply_text,chat)
+            obj = reply_text #parse_mgy_json(reply_text,chat)
             if obj:
                 post = obj[0]
                 print(type(old_post))
