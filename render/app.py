@@ -310,7 +310,11 @@ def show_update(id):
     html_content = markdown2.markdown(update['prompt'], extras=["fenced-code-blocks", "tables"])
     update['post'] = html_content
     return render_template('updates.html', update = update)
-
+    
+@app.route('/robots.txt')
+def robots():
+    return "User-agent: *\nAllow: /"
+    
 @app.route('/upload', methods=['POST'])
 def file_store_upload():
     try:
