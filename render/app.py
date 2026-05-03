@@ -209,8 +209,10 @@ def ask_gemini():
                 obj = reply_text #parse_mgy_json(reply_text,chat)
                 if obj:
                     post = obj
-                    print(type(old_post))
-                    lastMsg = list(old_post.items())[-1]
+                    print(old_post)
+                    lustMsg = list(old_post.items())
+                    lastMsg  = listMsg[-1]
+                    print(listMsg)
                     mgyPostFormat = {
                         'imageUrl':post['imageUrl'],
                         'prompt': post['post'],
