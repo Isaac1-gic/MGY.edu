@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mgy-v1-05-2026';
+const CACHE_NAME = 'mgy-v1-05-2026-11';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
@@ -110,8 +110,8 @@ function showLocalNotification(data) {
     {
       body: data.body,
       tag: data.id,
-      icon: './img/favicon-32x32.png',
-      badge: data.img,
+      badge: './img/favicon-32x32.png',
+      icon: data.img,
       image: data.cover,
       data: { url: './?'+data.quary }
     }
