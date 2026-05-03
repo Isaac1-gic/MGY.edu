@@ -235,7 +235,7 @@ def ask_gemini():
             print(reply_text)
             obj = reply_text #parse_mgy_json(reply_text,chat)
             if obj:
-                post = obj[0]
+                post = obj
                 print(type(old_post))
                 lastMsg = list(old_post.items())[-1]
                 mgyPostFormat = {
