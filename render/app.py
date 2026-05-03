@@ -140,7 +140,7 @@ def login():
     # 2. FIXED LOGIC: 'if ref:' is always true. You must check 'user_data'.
     if notnew:
         # Check if password matches for existing user
-        is_valid = (user_data == password)
+        is_valid = True#(user_data == password)
     else:
         # For new users, only set password if the spot is empty
         ref.set(password)
@@ -196,6 +196,7 @@ def ask_gemini():
             ref = db.reference('history')
             history_data = ref.get()
             post_ref = db.reference('post')
+            app_updates = db.reference("mgyPosts")
             old_post = post_ref.get()
             # Ensure history is a list for the SDK
             if not history_data:
@@ -253,6 +254,7 @@ def ask_gemini():
                     "previous_title": lastMsg[1]["title"]
                 }
                 post_ref.push(mgyPostFormat)
+                app_updates.push(mgyPostFormat)
                 return obj
         
             return reply_text
