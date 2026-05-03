@@ -243,11 +243,11 @@ def ask_gemini():
                 history_data = []
         
             # 2. Create the chat session
-            #chat = client.chats.create(
+            """chat = client.chats.create(
                 model=model,
                 history=history_data, # Firebase dicts work directly here
                 config=config
-            )
+            )"""
         
             # 3. Send the message
             #response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
