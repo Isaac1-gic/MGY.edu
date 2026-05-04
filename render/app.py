@@ -188,7 +188,7 @@ def ask_gemini():
         model = data.get("model", "gemini-2.5-flash-pro")
         img = data.get("img_url", False)
         contents = [user_message]
-        list = []
+        filledlist = []
         text = ''
         def chatAi():
             def parse_mgy_json(text,chat):
@@ -209,9 +209,12 @@ def ask_gemini():
                 obj = reply_text #parse_mgy_json(reply_text,chat)
                 if obj:
                     post = obj
-                    listMsg = list(old_post.items())
+                    if old_post:
+                        listMsg = list(old_post.items())
+                        lastMsg = listMsg[-1]
+                    else:
+                        lastMsg = ["none", {"title": "First Post"}]
                     print(listMsg)
-                    lastMsg  = listMsg[-1]
                     print(listMsg)
                     mgyPostFormat = {
                         'imageUrl':post['imageUrl'],
@@ -277,7 +280,7 @@ def ask_gemini():
             
             for chunk in response:
                 if chunk.text:
-                    list.append(chunk.text)
+                    filledlist.append(chunk.text)
                     text += chunk.text
 
         if img:
@@ -295,7 +298,7 @@ def ask_gemini():
         
         return jsonify({
             "status": "success",
-            "reply": chatAi()#list
+            "reply": chatAi()#filledlist
         })
 
     except Exception as e:
