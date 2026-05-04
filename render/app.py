@@ -52,10 +52,12 @@ SOURCES OF UPDATES:
 INPUT HANDLING:
 - You will be provided with raw text.
 
-
-Ignore advertisements, and old news (anything older than 150 days unless it is a major announcement and do not remake same post unless you will bring new things on same title).
-No matter what do not return None. Do everthing as educational news maker not like AI If no important updates are found, return an empty list.
-Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
+OUTPUT HANDLING:
+- Ignore advertisements, and old news (anything older than 48 hrs unless it is a major announcement and do not remake same post unless you will bring new things on same title).
+- Do everthing as educational news maker not like AI. 
+- If no important updates are found, return an string -> 'MGY'.
+- No matter what do not return None.
+- Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
 
 TONE: 
 Professional, empowering, and clear. Avoid "fluff" words. """
@@ -185,7 +187,7 @@ def ask_gemini():
         # Get the JSON data sent from your Netlify frontend
         data = request.json
         user_message = data.get("message", "Hello")
-        model = data.get("model", "gemini-2.5-flash-pro")
+        model = data.get("model", "gemini-2.5-flash-lite")
         img = data.get("img_url", False)
         contents = [user_message]
         filledlist = []
@@ -214,8 +216,8 @@ def ask_gemini():
                         lastMsg = listMsg[-1]
                     else:
                         lastMsg = ["none", {"title": "First Post"}]
-                    print(listMsg)
-                    print(listMsg)
+                    #print(listMsg)
+                    #print(listMsg)
                     mgyPostFormat = {
                         'imageUrl':post['imageUrl'],
                         'prompt': post['post'],
@@ -248,25 +250,19 @@ def ask_gemini():
                 history_data = []
         
             # 2. Create the chat session
-            """chat = client.chats.create(
+            chat = client.chats.create(
                 model=model,
                 history=history_data, # Firebase dicts work directly here
                 config=config
-            )"""
+            )
         
-            # 3. Send the message
-            #response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
+            response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
+            if responce.text == 'MGY':
+                return 'No update'
             time.sleep(3)
-            #extract_chat = client.chats.create(model=model, config=extract_config)
-            #final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
-            json_data = {
-  "title": "KNB Scholarship Results Update",
-  "post": "# 📌 KNB Scholarship Results Imminent!\n---\n**What’s Happening:** Final results for the 2026 Kemitraan Negara Berkembang (KNB) Scholarships for Malawian students are expected by May 29, 2026. Administrative screening is underway, with tests and interviews to follow for shortlisted candidates.\n\n**Why It Matters for Geniuses:** This is a significant fully-funded scholarship opportunity for Malawians seeking higher education in Indonesia. Staying informed about the results allows for timely preparation for further steps.\n\n**🚀 Action Steps:**\n* 📅 **Deadline:** May 29, 2026\n* 📝 **Requirement:** Monitor official KNB Scholarship portal or registered email for selection lists.\n* 🔗 **Link:** Check official KNB Scholarship portal or Indonesian Embassy/Consulate in Malawi for announcements (https://knb.kemdikbud.go.id/)\n\n---\n_Source: Indonesian Embassy/Consulate in Malawi_",
-  "category": "Scholarship",
-  "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Coat_of_arms_of_Indonesia.svg/1200px-Coat_of_arms_of_Indonesia.svg.png",
-  "urgency": "High",
-  "source": "https://www.google.com/search?q=https://times.mw/category/education/"
-} #json.loads(final_response.text)
+            extract_chat = client.chats.create(model=model, config=extract_config)
+            final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+            json_data = json.loads(final_response.text)
             return output(json_data,'extract_chat')
 
         
