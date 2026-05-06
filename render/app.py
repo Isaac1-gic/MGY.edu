@@ -267,11 +267,11 @@ def ask_gemini():
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
             if response.text == 'MGY':
                 return 'No update'
-            print(response.text)
+            print('plain ans for first chat',response.text)
             time.sleep(3)
             extract_chat = client.chats.create(model=model, config=extract_config)
             final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
-            print(final_response.text)
+            print('ans from final chat',final_response.text)
             json_data = json.loads(final_response.text)
             return output(json_data,'extract_chat')
 
