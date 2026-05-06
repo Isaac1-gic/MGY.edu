@@ -55,11 +55,21 @@ OUTPUT HANDLING:
 - Ignore advertisements, and old news (anything older than year unless it is a major announcement and do not remake same post unless you will bring new things on same title).
 - Do everthing as educational news maker not like AI. 
 - If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
 - No matter what do not return None.
 - Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
 
 TONE: 
-Professional, empowering, and clear. Avoid "fluff" words. """
+Professional, empowering, and clear. Avoid "fluff" words. 
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'.
+- If no important updates are found, return an string -> 'MGY'."""
 
 
 class MatchResult(BaseModel):
@@ -98,7 +108,7 @@ config = types.GenerateContentConfig(
 extract_config = types.GenerateContentConfig(
     response_mime_type="application/json",
     response_json_schema=MatchResult.model_json_schema(),
-    system_instruction="You are a JSON formatter. Turn the provided news summary into a valid JSON object matching the MatchResult schema. " + commands
+    system_instruction="You are a JSON formatter. Turn the provided news summary into a valid JSON object matching the MatchResult schema. If no important info in text, return an string -> 'MGY'." + commands
 )
 
 def firebase_init():
@@ -270,6 +280,8 @@ def ask_gemini():
             print('plain ans for first chat',response.text)
             time.sleep(3)
             extract_chat = client.chats.create(model=model, config=extract_config)
+            if extract_chat.text == 'MGY' or not extract_chat.text:
+                return 'No update'
             final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
             print('ans from final chat',final_response.text)
             json_data = json.loads(final_response.text)
