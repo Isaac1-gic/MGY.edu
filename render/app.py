@@ -151,7 +151,7 @@ def login():
     # 2. FIXED LOGIC: 'if ref:' is always true. You must check 'user_data'.
     if notnew:
         # Check if password matches for existing user
-        is_valid = True#(user_data == password)
+        is_valid = (user_data == password)
     else:
         # For new users, only set password if the spot is empty
         ref.set(password)
@@ -280,9 +280,9 @@ def ask_gemini():
             print('plain ans for first chat',response.text)
             time.sleep(3)
             extract_chat = client.chats.create(model=model, config=extract_config)
-            if extract_chat.text == 'MGY' or not extract_chat.text:
-                return 'No update'
             final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+            if final_response.text == 'MGY' or not final_response.text:
+                return 'No update'
             print('ans from final chat',final_response.text)
             json_data = json.loads(final_response.text)
             return output(json_data,'extract_chat')
