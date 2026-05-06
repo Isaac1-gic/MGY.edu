@@ -164,7 +164,7 @@ def login():
             return jsonify({"token": token_str}), 200
         except Exception as e:
             print("--- FULL ERROR START ---")
-            print(traceback.format_exc())
+            traceback.print_exc()
             print("--- FULL ERROR END ---")
             return jsonify({"error": str(e)}), 500
     else:
@@ -177,7 +177,7 @@ def getFile(url):
             return BytesIO(file.content)
     except Exception as e:
         print("--- FULL ERROR START ---")
-        print(traceback.format_exc())      
+        traceback.print_exc()      
         print("--- FULL ERROR END ---")
         return False
 
@@ -205,7 +205,7 @@ def ask_gemini():
                     return data['updates']
                 except Exception as e:
                     print("--- FULL ERROR START ---")
-                    print(traceback.format_exc())
+                    traceback.print_exc()
                     print("--- FULL ERROR END ---")
                     print(f"Failed to parse JSON: {e}")
                     time.sleep(3)
@@ -267,9 +267,11 @@ def ask_gemini():
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
             if response.text == 'MGY':
                 return 'No update'
+            print(response.text)
             time.sleep(3)
             extract_chat = client.chats.create(model=model, config=extract_config)
             final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+            print(final_response.text)
             json_data = json.loads(final_response.text)
             return output(json_data,'extract_chat')
 
@@ -308,7 +310,7 @@ def ask_gemini():
     except Exception as e:
         # If something breaks, Render will show this in the "Logs"
         print("--- FULL ERROR START ---")     
-        print(traceback.format_exc())
+        traceback.print_exc()
         print("--- FULL ERROR END ---")
         return jsonify({
             "status": "error",
@@ -380,7 +382,7 @@ def file_store_upload():
         # We print to the Render logs so you can see the full error, 
         # but send a clean message to the frontend.
         print("--- FULL ERROR START ---")
-        print(traceback.format_exc())
+        traceback.print_exc()
         print("--- FULL ERROR END ---")
         print(f"Upload Error: {str(e)}") 
         return jsonify({
