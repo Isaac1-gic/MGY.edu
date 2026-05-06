@@ -265,7 +265,7 @@ def ask_gemini():
             )
         
             response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
-            if response.text == 'MGY':
+            if response.text == 'MGY' or not response.text:
                 return 'No update'
             print('plain ans for first chat',response.text)
             time.sleep(3)
