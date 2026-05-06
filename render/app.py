@@ -8,9 +8,8 @@ import markdown2
 import requests
 from pydantic import BaseModel, Field
 from typing import List
-import time
 from io import BytesIO
-import json, time
+import json, time, fraceback
 import firebase_admin
 from firebase_admin import auth, credentials, db
 
@@ -164,6 +163,7 @@ def login():
             
             return jsonify({"token": token_str}), 200
         except Exception as e:
+            traceback.format_exc()
             return jsonify({"error": str(e)}), 500
     else:
         return jsonify({"error": "Invalid credentials"}), 401
@@ -174,6 +174,7 @@ def getFile(url):
         if file.status_code == 200:
             return BytesIO(file.content)
     except Exception as e:
+        traceback.format_exc()
         return False
 
 
@@ -199,6 +200,7 @@ def ask_gemini():
                     data = json.loads(clean_text)
                     return data['updates']
                 except Exception as e:
+                    traceback.format_exc()
                     print(f"Failed to parse JSON: {e}")
                     time.sleep(3)
                     resp = chat.send_message("Oooosh! you haven`t follow output system instructions which has result in code errors. Please read back with care and bring correct format and structure.")
@@ -299,6 +301,7 @@ def ask_gemini():
 
     except Exception as e:
         # If something breaks, Render will show this in the "Logs"
+        traceback.format_exc()
         return jsonify({
             "status": "error",
             "message": str(e)
@@ -368,6 +371,7 @@ def file_store_upload():
     except Exception as e:
         # We print to the Render logs so you can see the full error, 
         # but send a clean message to the frontend.
+        traceback.format_exc()
         print(f"Upload Error: {str(e)}") 
         return jsonify({
             "status": "error", 
