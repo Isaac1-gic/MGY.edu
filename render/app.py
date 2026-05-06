@@ -9,7 +9,7 @@ import requests
 from pydantic import BaseModel, Field
 from typing import List
 from io import BytesIO
-import json, time, fraceback
+import json, time, traceback
 import firebase_admin
 from firebase_admin import auth, credentials, db
 
