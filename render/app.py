@@ -362,7 +362,7 @@ def microsoft_office_lessons():
         print('ans from final chat',final_response.text)
         json_data = json.loads(final_response.text)
         return output(json_data,'extract_chat')
-     except Exception as e:
+    except Exception as e:
         # If something breaks, Render will show this in the "Logs"
         print("--- FULL ERROR START ---")     
         traceback.print_exc()
