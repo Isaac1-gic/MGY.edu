@@ -244,7 +244,7 @@ def getFile(url):
         return False
 
 @app.route('/lessons', methods=['POST'])
-def microsoft_office_lessons:
+def microsoft_office_lessons():
     if request.method == 'OPTIONS':
         return '', 204
         
