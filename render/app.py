@@ -536,12 +536,12 @@ def file_store_upload():
         data = request.json
         file_name = data.get('name',False)
         url = data.get('url',False)
-        #if not file_name:
-        #    return jsonify({"status": "error", "message": "No file uploaded"}), 400
+        if not file_name:
+            return jsonify({"status": "error", "message": "No file uploaded"}), 400
 
         # 1. Read the file into a BytesIO object
         # This makes the data look like a 'real' file to the SDK
-        file_content = "MS_office_world_powerpoint_excel.pdf"#getFile(url)
+        file_content = getFile(url)
         
         # 2. Create the store
         file_search_store = client.file_search_stores.create(
