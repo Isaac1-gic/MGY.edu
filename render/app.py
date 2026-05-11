@@ -62,6 +62,34 @@ OUTPUT HANDLING:
 - If no important updates are found, return an string -> 'MGY'.
 - No matter what do not return None.
 - Note: if you break structure/formart of output It will cause error which will keep system just looping requests to you.
+    You must return a list of only 1 very important update in the following JSON format so it can be pushed directly to Firebase and no matter what you must strictly follow this format:
+    {
+      "updates": [
+        { 
+          "title": "title-> Short, catchy headline",
+          "post": "The 'post' field must strictly follow this Markdown structure:
+                
+                # 📌 [CATCHY HEADLINE]
+                ---
+                **What’s Happening:** [Clear,  summary of the news.]
+                
+                **Why It Matters for Geniuses:** [Explain the impact on MGY users/students.]
+                
+                **🚀 Action Steps:** [What they must do]
+                * 📅 **Deadline:** [Date]
+                * 📝 **Requirement:** [What to bring/do]
+                * 🔗 **Link:** [Text](URL)
+                
+                ---
+                _Source: [Name of Institution]_",
+          "category": "Exams | Selection | Policy | Scholarship | etc",
+          "imageUrl": "URL where to find any related image to present on this update",
+          "urgency": "High | Medium | Low",
+          "source": "Which url from given sources"
+          
+        }
+      ]
+    }
 
 TONE: 
 Professional, empowering, and clear. Avoid "fluff" words. 
@@ -95,6 +123,29 @@ class MatchResult(BaseModel):
     urgency: str = Field(description="High | Medium | Low")
     source: str = Field(description="Exactly Which url from given list of sources above you get this update")
 
+
+class LessonStructure(BaseModel):
+    # Field Name : Type = Field(description="...")
+    title: str = Field(description="Short, catchy headline")
+    post: str = Field(description="""The 'post' field must strictly follow this Markdown structure:
+            
+            # 📌 [CATCHY HEADLINE]
+            ---
+            **Objective:** [Clear, summary of the lesson. What will the student achieve]
+        
+            **Why:** [The university relevance.]
+
+            **Lesson:** [The step-by-step walkthrough.]
+            
+            **Practice Challenge:** [A small task for the student to complete.]
+            
+            * 🔗 **Link:** [submit answer](https://mgy.web.app?msg=1029384756)
+            
+            ---
+            _Source: [MGY]_""")
+    imageUrl: str = Field(description="The exact URL where to find image to present on this update")
+
+
 config = types.GenerateContentConfig(
             tools=[
                     grounding_search,
@@ -108,8 +159,9 @@ config = types.GenerateContentConfig(
 extract_config = types.GenerateContentConfig(
     response_mime_type="application/json",
     response_json_schema=MatchResult.model_json_schema(),
-    system_instruction="You are a JSON formatter. Turn the provided news summary into a valid JSON object matching the MatchResult schema. If no important info in text, return an string -> 'MGY'." + commands
+    system_instruction="You are a JSON formatter. Turn the provided news summary into a valid JSON object matching the MatchResult schema. If no important info in text, return an string -> 'MGY'." 
 )
+
 
 def firebase_init():
     if not firebase_admin._apps:
@@ -191,8 +243,127 @@ def getFile(url):
         print("--- FULL ERROR END ---")
         return False
 
+@app.route('/lessons', methods=['POST'])
+def microsoft_office_lessons:
+    if request.method == 'OPTIONS':
+        return '', 204
+        
+    commands = '''
+        Role: You are the Lead Technical Educator for MGY (Malawian Genius Youth). Your mission is to transform technical documentation into high-impact, practical lessons on the Microsoft Office Suite.
+        
+        Task: Analyze the provided file, focusing strictly on the specified title. From this content, generate a comprehensive lesson tailored for incoming university students.
+        
+        Core Requirements:
+        
+        The "University Gap" Context: For every feature or skill taught, you must explicitly explain why it is essential for university success (e.g., "Formatting citations in Word is required for your first-year Research Methods paper").
+        
+        Step-by-Step Granularity: Provide "No-Skip" instructions. Assume the student has the software open but has never used this specific feature. Use numbered lists for actions.
+        
+        Relatable Examples: Use "Daily Life" examples relevant to a student in Malawi (e.g., "Creating a budget in Excel for your monthly groceries and transport" or "Designing a PowerPoint for a community youth project").
+        
+        Tone: Encouraging, professional, and clear. Avoid overly complex jargon without defining it first.
+        
+        Output Structure:
+        
+        Title: lesson title
+        
+        Objective: What will the student achieve?
+        
+        The "Why": The university relevance.
+        
+        The Lesson: The step-by-step walkthrough.
+        
+        Practice Challenge: A small task for the student to complete.
+        '''
+    data = request.json
+    user_message = data.get("message", "Hello")
+    model = data.get("model", "gemini-2.5-flash-lite")
+    img = data.get("img_url", False)
+    contents = [user_message]
+    filledlist = []
+    text = ''
+    def output(reply_text,chat):
+        #print(type(reply_text))
+        #print(reply_text)
+        obj = reply_text #parse_mgy_json(reply_text,chat)
+        if obj:
+            post = obj
+            if old_post:
+                listMsg = list(old_post.items())
+                lastMsg = listMsg[-1]
+            else:
+                lastMsg = ["none", {"title": "First Post"}]
+            #print(listMsg)
+            #print(listMsg)
+            mgyPostFormat = {
+                'vedioUrl':post['imageUrl'],
+                'prompt': post['post'],
+                'title': post['title'],
+                'imgUrl': 'img/mgy.jpg',
+                'senderId': 'MGY',
+                'userkey': 'mgy',
+                'types': ['vedio','textMsg'],
+                'chatId': int(time.time())*1000,
+                "previous_chatId": lastMsg[0],
+                "previous_title": lastMsg[1]["title"]
+            }
+            post_ref.push(mgyPostFormat)
+            app_updates.push(mgyPostFormat)
+            return obj
+            
+        return reply_text
+        
+    extract_config = types.GenerateContentConfig(
+        response_mime_type="application/json",
+        response_json_schema=LessonStructure.model_json_schema(),
+        system_instruction="You are a JSON formatter. Turn the provided lesson into a valid JSON object matching the LessonStructure schema. If no important info in text, return an string -> 'MGY'."
+    )
 
-
+    config = types.GenerateContentConfig(
+            tools=[
+                    types.Tool(
+                        file_search=types.FileSearch(
+                        file_search_store_names=['MGY Library']
+                        )
+                    ) 
+                ],
+            #response_mime_type = "application/json",
+            #response_json_schema = MatchResult.model_json_schema(),
+            system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
+    )
+    try:
+        firebase_init()
+        # 1. Get history from Firebase
+        ref = db.reference('history')
+        history_data = ref.get()
+        post_ref = db.reference('post')
+        app_updates = db.reference("mgyPosts")
+        old_post = post_ref.get()
+        # Ensure history is a list for the SDK
+        if not history_data:
+            history_data = []
+        
+        # 2. Create the chat session
+        chat = client.chats.create(
+            model=model,
+            history=history_data, # Firebase dicts work directly here
+            config=config
+        )
+        
+        response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
+        if response.text == 'MGY' or not response.text:
+            return 'No update'
+        print('plain ans for first chat',response.text)
+        time.sleep(3)
+        extract_chat = client.chats.create(model=model, config=extract_config)
+        final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+        if final_response.text == 'MGY' or not final_response.text:
+            return 'No update'
+        print('ans from final chat',final_response.text)
+        json_data = json.loads(final_response.text)
+        return output(json_data,'extract_chat')
+        
+        
         
 @app.route('/ask', methods=['POST'])
 def ask_gemini():
@@ -356,12 +527,12 @@ def file_store_upload():
         data = request.json
         file_name = data.get('name',False)
         url = data.get('url',False)
-        if not file_name:
-            return jsonify({"status": "error", "message": "No file uploaded"}), 400
+        #if not file_name:
+        #    return jsonify({"status": "error", "message": "No file uploaded"}), 400
 
         # 1. Read the file into a BytesIO object
         # This makes the data look like a 'real' file to the SDK
-        file_content = getFile(url)
+        file_content = "MS_office_world_powerpoint_excel.pdf"#getFile(url)
         
         # 2. Create the store
         file_search_store = client.file_search_stores.create(
