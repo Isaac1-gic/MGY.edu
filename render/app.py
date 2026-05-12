@@ -18,7 +18,7 @@ from firebase_admin import auth, credentials, db
 app = Flask(__name__)
 
 CORS(app, origins=[
-    "https://mgy265.netlify.app/",
+    "https://mgy265.netlify.app",
     "https://mgy265.netlify.app",
     'https://isaac1-gic.github.io',
     "https://mgy.web.app"
@@ -534,53 +534,47 @@ def robots():
 def file_store_upload():
     try:
         data = request.json
-        file_name = data.get('name',False)
-        url = data.get('url',False)
-        if not file_name:
-            return jsonify({"status": "error", "message": "No file uploaded"}), 400
-
-        # 1. Read the file into a BytesIO object
-        # This makes the data look like a 'real' file to the SDK
-        file_content = getFile(url)
+        file_name = data.get('name', "unnamed_file") # Use the correct variable name
+        url = data.get('url', False)
         
-        # 2. Create the store
+        if not url:
+            return jsonify({"status": "error", "message": "No URL provided"}), 400
+
+        # 1. Download the file
+        file_content = getFile(url)
+        if not file_content:
+            return jsonify({"status": "error", "message": "Failed to download file"}), 400
+        
+        # 2. Create/Get the store
         file_search_store = client.file_search_stores.create(
             config={'display_name': 'MGY Library'}
         )
 
-        # 3. FIX: Pass the BytesIO object and the original filename
-        # The SDK uses the extension (.pdf) to know how to parse it
+        # 3. Start the upload
+        # Use file_name (the variable you defined above)
         operation = client.file_search_stores.upload_to_file_search_store(
             file=file_content,
             file_search_store_name=file_search_store.name,
             config={
-                'display_name': filename,
+                'display_name': file_name, 
             }
         )
 
-        # 4. Correct Polling Logic
-        while not operation.done:
-            time.sleep(2)
-            # Use operation.name to refresh the status
-            operation = client.operations.get(name=operation.name)
+        # REMOVE the 'while not operation.done' loop. 
+        # It takes too long and kills your server worker.
+        # The file will process in the background on Google's side.
 
         return jsonify({
             "status": "success",
-            "reply": "file uploaded successfully",
+            "message": "File upload started. It will be available in the library shortly.",
             "store_name": file_search_store.name
         })
 
     except Exception as e:
-        # We print to the Render logs so you can see the full error, 
-        # but send a clean message to the frontend.
-        print("--- FULL ERROR START ---")
-        traceback.print_exc()
-        print("--- FULL ERROR END ---")
         print(f"Upload Error: {str(e)}") 
-        return jsonify({
-            "status": "error", 
-            "message": "Upload failed. Check server logs."
-        }), 500   
+        traceback.print_exc()
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
 if __name__ == "__main__":
