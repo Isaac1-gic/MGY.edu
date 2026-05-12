@@ -19,7 +19,6 @@ app = Flask(__name__)
 
 CORS(app, origins=[
     "https://mgy265.netlify.app",
-    "https://mgy265.netlify.app",
     'https://isaac1-gic.github.io',
     "https://mgy.web.app"
 ])
@@ -554,7 +553,6 @@ def file_store_upload():
         # Use file_name (the variable you defined above)
         operation = client.file_search_stores.upload_to_file_search_store(
             file=file_content['bytes'],
-            mime_type=file_content['content_type'],
             file_search_store_name=file_search_store.name,
             config={
                 'display_name': file_name, 
