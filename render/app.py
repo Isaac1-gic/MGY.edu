@@ -324,7 +324,7 @@ def microsoft_office_lessons():
                 tools=[
                         types.Tool(
                             file_search=types.FileSearch(
-                            file_search_store_names=['mgy-library-an8ksqv0p94l']
+                            file_search_store_names=["projects/msce-g-studies-tracker-baa6f/locations/us-central1/fileSearchStores/mgy-library-1nqnlcnpgnhl"]
                             )
                         ) 
                     ],
@@ -551,8 +551,9 @@ def file_store_upload():
         )
         stores = client.file_search_stores.list()
         for store in stores:
-            print(f"Name: {store.name}")
-            print(f"Display Name: {store.display_name}")
+            if store.name != "fileSearchStores/mgy-library-1nqnlcnpgnhl":
+                print(f"Deleting duplicate: {store.name}")
+                client.file_search_stores.delete(name=store.name)
         operation = client.file_search_stores.upload_to_file_search_store(
             file=file_content['bytes'],
             file_search_store_name=file_search_store.name,
