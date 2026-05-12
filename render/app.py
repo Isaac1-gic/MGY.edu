@@ -26,6 +26,7 @@ CORS(app, origins=[
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 grounding_search = types.Tool(google_search=types.GoogleSearch())
+firebase_init()
 commands = """ROLE: You are the MGY Intelligence Unit, a specialized educational analyst for the "Malawian Genius Youth" (MGY) platform. 
 
 OBJECTIVE: Your task is to analyze scraped text from Malawian educational websites and extract only high-impact, actionable updates for students.
@@ -174,7 +175,7 @@ def firebase_init():
 
 @app.route('/login', methods=['POST'])
 def login():
-    firebase_init()
+     
     data = request.json
     username = data.get('username')
     password = data.get('password')
@@ -312,26 +313,27 @@ def microsoft_office_lessons():
             
         return reply_text
         
-    extract_config = types.GenerateContentConfig(
-        response_mime_type="application/json",
-        response_json_schema=LessonStructure.model_json_schema(),
-        system_instruction="You are a JSON formatter. Turn the provided lesson into a valid JSON object matching the LessonStructure schema. If no important info in text, return an string -> 'MGY'."
-    )
-
-    config = types.GenerateContentConfig(
-            tools=[
-                    types.Tool(
-                        file_search=types.FileSearch(
-                        file_search_store_names=['mgy-library-an8ksqv0p94l']
-                        )
-                    ) 
-                ],
-            #response_mime_type = "application/json",
-            #response_json_schema = MatchResult.model_json_schema(),
-            system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
-    )
+    
     try:
-        firebase_init()
+        extract_config = types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_json_schema=LessonStructure.model_json_schema(),
+            system_instruction="You are a JSON formatter. Turn the provided lesson into a valid JSON object matching the LessonStructure schema. If no important info in text, return an string -> 'MGY'."
+        )
+    
+        config = types.GenerateContentConfig(
+                tools=[
+                        types.Tool(
+                            file_search=types.FileSearch(
+                            file_search_store_names=['mgy-library-an8ksqv0p94l']
+                            )
+                        ) 
+                    ],
+                #response_mime_type = "application/json",
+                #response_json_schema = MatchResult.model_json_schema(),
+                system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
+        )
+        
         # 1. Get history from Firebase
         ref = db.reference('history')
         history_data = ref.get()
@@ -435,7 +437,7 @@ def ask_gemini():
                     return obj
             
                 return reply_text
-            firebase_init()
+             
             # 1. Get history from Firebase
             ref = db.reference('history')
             history_data = ref.get()
@@ -510,7 +512,7 @@ def ask_gemini():
 
 @app.route('/update/<id>')
 def show_update(id):
-    firebase_init()
+     
     if not id:
         raise Exception('Post not found')
     if id == 'home':
@@ -548,9 +550,10 @@ def file_store_upload():
         file_search_store = client.file_search_stores.create(
             config={'display_name': 'MGY Library'}
         )
-
-        # 3. Start the upload
-        # Use file_name (the variable you defined above)
+        stores = client.file_search_stores.list()
+        for store in stores:
+            print(f"Name: {store.name}")
+            print(f"Display Name: {store.display_name}")
         operation = client.file_search_stores.upload_to_file_search_store(
             file=file_content['bytes'],
             file_search_store_name=file_search_store.name,
@@ -560,9 +563,8 @@ def file_store_upload():
             }
         )
 
-        # REMOVE the 'while not operation.done' loop. 
-        # It takes too long and kills your server worker.
-        # The file will process in the background on Google's side.
+        print(f"STORE FULL NAME: {operation.name}")
+        
 
         return jsonify({
             "status": "success",
