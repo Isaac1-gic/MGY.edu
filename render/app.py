@@ -126,6 +126,7 @@ class MatchResult(BaseModel):
 class LessonStructure(BaseModel):
     # Field Name : Type = Field(description="...")
     title: str = Field(description="Short, catchy headline")
+    videoId: str = Field(description="youtube video ID ")
     post: str = Field(description="""The 'post' field must strictly follow this Markdown structure:
             
             # 📌 [CATCHY HEADLINE]
@@ -138,11 +139,13 @@ class LessonStructure(BaseModel):
             
             **Practice Challenge:** [A small task for the student to complete.]
             
-            * 🔗 **Link:** [submit answer](https://mgy.web.app?msg=1029384756)
+            * 🔗 **Link:** 
+                [submit answer](https://mgy.web.app?msg=user_mocTODygmliamg@erimakastihccaasi)
+                [Whatch Youtube Video](URL)
             
             ---
             _Source: [MGY]_""")
-    imageUrl: str = Field(description="The exact URL where to find image to present on this update")
+
 
 
 config = types.GenerateContentConfig(
@@ -295,13 +298,13 @@ def microsoft_office_lessons():
             #print(listMsg)
             #print(listMsg)
             mgyPostFormat = {
-                'vedioUrl':post['imageUrl'],
+                'utubeId':post['videoId'],
                 'prompt': post['post'],
                 'title': post['title'],
                 'imgUrl': 'img/mgy.jpg',
                 'senderId': 'MGY',
                 'userkey': 'mgy',
-                'types': ['vedio','textMsg'],
+                'types': ['textMsg'],
                 'chatId': int(time.time())*1000,
                 "previous_chatId": lastMsg[0],
                 "previous_title": lastMsg[1]["title"]
@@ -317,7 +320,7 @@ def microsoft_office_lessons():
         extract_config = types.GenerateContentConfig(
             response_mime_type="application/json",
             response_json_schema=LessonStructure.model_json_schema(),
-            system_instruction="You are a JSON formatter. Turn the provided lesson into a valid JSON object matching the LessonStructure schema. If no important info in text, return an string -> 'MGY'."
+            system_instruction="You are a JSON formatter. Turn the provided lesson into a valid JSON object matching the LessonStructure schema. If no important info in text, return an string -> 'MGY'. Note: do not make summary of given data no matter what."
         )
     
         config = types.GenerateContentConfig(
@@ -330,7 +333,7 @@ def microsoft_office_lessons():
                     ],
                 #response_mime_type = "application/json",
                 #response_json_schema = MatchResult.model_json_schema(),
-                system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
+                system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. "+commands
         )
         firebase_init()
         # 1. Get history from Firebase
@@ -350,13 +353,22 @@ def microsoft_office_lessons():
             config=config
         )
         
-        response = chat.send_message(user_message + '. These are already posted old posts' +json.dumps(old_post))
+        response = chat.send_message(user_message )
         if response.text == 'MGY' or not response.text:
             return 'No update'
         print('plain ans for first chat',response.text)
-        time.sleep(3)
+        time.sleep(2)
+        configs = types.GenerateContentConfig(
+            tools=[grounding_tool]
+            )
+        resp = client.models.generate_content(
+            model=model,
+            contents=f"Give me best youtube video url that will help students cemment on this lesson: {response.text}",
+            config=configs,
+            )
+        time.sleep(2)
         extract_chat = client.chats.create(model=model, config=extract_config)
-        final_response = extract_chat.send_message(f"Format this news into JSON: {response.text}")
+        final_response = extract_chat.send_message(f"Format this lesson into JSON: {response.text} {resp.text}")
         if final_response.text == 'MGY' or not final_response.text:
             return 'No update'
         print('ans from final chat',final_response.text)
