@@ -194,7 +194,7 @@ def login():
     table = str.maketrans(mapping)
     sanitized_uid = username.translate(table)
     uid = f"user_{sanitized_uid[::-1]}" 
-    
+    firebase_init()
     # 1. Access the database reference
     ref = db.reference('lock/' + uid)
     user_data = ref.get() # Fetch the actual data at this path
@@ -332,7 +332,7 @@ def microsoft_office_lessons():
                 #response_json_schema = MatchResult.model_json_schema(),
                 system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. More infor about you on https://mgy.web.app/index.html. "+commands
         )
-        
+        firebase_init()
         # 1. Get history from Firebase
         ref = db.reference('history')
         history_data = ref.get()
@@ -436,7 +436,7 @@ def ask_gemini():
                     return obj
             
                 return reply_text
-             
+            firebase_init() 
             # 1. Get history from Firebase
             ref = db.reference('history')
             history_data = ref.get()
@@ -511,7 +511,7 @@ def ask_gemini():
 
 @app.route('/update/<id>')
 def show_update(id):
-     
+    firebase_init()
     if not id:
         raise Exception('Post not found')
     if id == 'home':
@@ -577,9 +577,10 @@ def file_store_upload():
         traceback.print_exc()
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
 # 4. The Entry Point
 # Render uses a "Port" to listen for requests
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-    firebase_init()
+    
