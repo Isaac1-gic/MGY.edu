@@ -236,7 +236,7 @@ def getFile(url):
     try:
         file = requests.get(url)
         if file.status_code == 200:
-            return BytesIO(file.content)
+            return {'bytes': BytesIO(file.content), 'content_type': file.headers['Content-Type'].split(';')[0]}
     except Exception as e:
         print("--- FULL ERROR START ---")
         traceback.print_exc()      
@@ -488,7 +488,7 @@ def ask_gemini():
                     "status": "error",
                     "message": img+' Not found.'
                 }), 500
-            img = Image.open(file)
+            img = Image.open(file['bytes'])
             contents.insert(0,img)
     
         
@@ -553,7 +553,8 @@ def file_store_upload():
         # 3. Start the upload
         # Use file_name (the variable you defined above)
         operation = client.file_search_stores.upload_to_file_search_store(
-            file=file_content,
+            file=file_content['bytes'],
+            mime_type=file_content['content_type'],
             file_search_store_name=file_search_store.name,
             config={
                 'display_name': file_name, 
