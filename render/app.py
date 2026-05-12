@@ -358,6 +358,9 @@ def microsoft_office_lessons():
             return 'No update'
         print('plain ans for first chat',response.text)
         time.sleep(2)
+        grounding_tool = types.Tool(
+            google_search=types.GoogleSearch()
+            )
         configs = types.GenerateContentConfig(
             tools=[grounding_tool]
             )
