@@ -322,7 +322,7 @@ def microsoft_office_lessons():
             tools=[
                     types.Tool(
                         file_search=types.FileSearch(
-                        file_search_store_names=['MGY Library']
+                        file_search_store_names=['mgy-library-an8ksqv0p94l']
                         )
                     ) 
                 ],
