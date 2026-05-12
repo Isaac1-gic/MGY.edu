@@ -26,7 +26,6 @@ CORS(app, origins=[
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 grounding_search = types.Tool(google_search=types.GoogleSearch())
-firebase_init()
 commands = """ROLE: You are the MGY Intelligence Unit, a specialized educational analyst for the "Malawian Genius Youth" (MGY) platform. 
 
 OBJECTIVE: Your task is to analyze scraped text from Malawian educational websites and extract only high-impact, actionable updates for students.
@@ -582,3 +581,4 @@ def file_store_upload():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+    firebase_init()
