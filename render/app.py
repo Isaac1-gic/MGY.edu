@@ -324,7 +324,7 @@ def microsoft_office_lessons():
                 tools=[
                         types.Tool(
                             file_search=types.FileSearch(
-                            file_search_store_names=["projects/msce-g-studies-tracker-baa6f/locations/us-central1/fileSearchStores/mgy-library-1nqnlcnpgnhl"]
+                            file_search_store_names=["fileSearchStores/mgy-library-1nqnlcnpgnhl"]
                             )
                         ) 
                     ],
