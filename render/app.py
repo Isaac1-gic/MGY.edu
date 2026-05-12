@@ -555,7 +555,8 @@ def file_store_upload():
             file=file_content['bytes'],
             file_search_store_name=file_search_store.name,
             config={
-                'display_name': file_name, 
+                'display_name': file_name,
+                'mime_type': file_content['content_type'],
             }
         )
 
