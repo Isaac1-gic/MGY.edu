@@ -126,7 +126,6 @@ class MatchResult(BaseModel):
 class LessonStructure(BaseModel):
     # Field Name : Type = Field(description="...")
     title: str = Field(description="Short, catchy headline")
-    videoId: str = Field(description="youtube video ID ")
     post: str = Field(description="""The 'post' field must strictly follow this Markdown structure:
             
             # 📌 [CATCHY HEADLINE]
@@ -249,6 +248,358 @@ def getFile(url):
 def microsoft_office_lessons():
     if request.method == 'OPTIONS':
         return '', 204
+
+    ms_office_course = [
+
+        # =========================
+        # MICROSOFT WORD
+        # =========================
+    
+        {
+            "module": "Introduction to MS Word",
+            "topics": "What is Word, interface, ribbon, toolbar, opening and saving documents",
+            "activity": "Create and save first document",
+            "objective": "Understand the Microsoft Word environment and basic document operations",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Typing and Editing Text",
+            "topics": "Cursor movement, selecting text, cut, copy, paste",
+            "activity": "Type a school letter",
+            "objective": "Learn how to enter and edit text efficiently",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Font Formatting",
+            "topics": "Font style, size, color, bold, italic, underline",
+            "activity": "Format a notice",
+            "objective": "Apply text formatting techniques",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Paragraph Formatting",
+            "topics": "Alignment, indentation, line spacing",
+            "activity": "Format an essay",
+            "objective": "Format paragraphs professionally",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Bullets and Numbering",
+            "topics": "Lists and multilevel lists",
+            "activity": "Create class rules list",
+            "objective": "Organize information using lists",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Page Layout",
+            "topics": "Margins, orientation, paper size, columns",
+            "activity": "Design newsletter layout",
+            "objective": "Customize document page setup",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Insert Features",
+            "topics": "Shapes, icons, symbols, text boxes",
+            "activity": "Create invitation card",
+            "objective": "Insert and manipulate objects in Word",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Tables in Word",
+            "topics": "Create tables, merge and split cells",
+            "activity": "Make student marks table",
+            "objective": "Present structured data using tables",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Images and WordArt",
+            "topics": "Insert images, WordArt, captions",
+            "activity": "Design event poster",
+            "objective": "Enhance documents visually",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Headers and Footers",
+            "topics": "Page numbers, date and time, headers",
+            "activity": "Create report pages",
+            "objective": "Add navigation and identification elements",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "References Tools",
+            "topics": "Table of contents, citations, footnotes",
+            "activity": "Create mini project report",
+            "objective": "Use academic and professional reference tools",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Mail Merge",
+            "topics": "Letters, labels, envelopes",
+            "activity": "Generate bulk letters",
+            "objective": "Automate repetitive document creation",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Review Tools",
+            "topics": "Spell check, comments, track changes",
+            "activity": "Peer editing exercise",
+            "objective": "Review and collaborate on documents",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        {
+            "module": "Printing and Final Project",
+            "topics": "Print settings, export PDF",
+            "activity": "Create complete formatted document",
+            "objective": "Prepare and finalize professional documents",
+            "youtubeVideo": "5tXqAWSXRdY"
+        },
+    
+        # =========================
+        # MICROSOFT EXCEL
+        # =========================
+    
+        {
+            "module": "Introduction to Excel",
+            "topics": "Workbook, worksheet, rows, columns, cells",
+            "activity": "Create first workbook",
+            "objective": "Understand Excel interface and spreadsheets",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Data Entry and Editing",
+            "topics": "Enter, edit, delete data, autofill",
+            "activity": "Build student record sheet",
+            "objective": "Manage spreadsheet data efficiently",
+            "youtubeVideo": "LgXzzu68j7M"
+        },
+    
+        {
+            "module": "Cell Formatting",
+            "topics": "Number formats, borders, colors",
+            "activity": "Format marksheet",
+            "objective": "Improve spreadsheet appearance and readability",
+            "youtubeVideo": "LgXzzu68j7M"
+        },
+    
+        {
+            "module": "Basic Formulas",
+            "topics": "Addition, subtraction, multiplication, division",
+            "activity": "Calculate totals",
+            "objective": "Perform mathematical calculations in Excel",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Functions",
+            "topics": "SUM, AVERAGE, MAX, MIN",
+            "activity": "Analyze student marks",
+            "objective": "Use built-in Excel functions",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Cell References",
+            "topics": "Relative and absolute references",
+            "activity": "Formula copying practice",
+            "objective": "Understand formula referencing",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Sorting and Filtering",
+            "topics": "Sort A-Z, filters",
+            "activity": "Organize class records",
+            "objective": "Organize and search spreadsheet data",
+            "youtubeVideo": "LgXzzu68j7M"
+        },
+    
+        {
+            "module": "Excel Tables",
+            "topics": "Create and manage tables",
+            "activity": "Build inventory list",
+            "objective": "Use structured tables for data management",
+            "youtubeVideo": "LgXzzu68j7M"
+        },
+    
+        {
+            "module": "IF Function",
+            "topics": "Logical conditions and IF statements",
+            "activity": "Grade calculation system",
+            "objective": "Apply logical decision-making formulas",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Lookup Functions",
+            "topics": "VLOOKUP and XLOOKUP basics",
+            "activity": "Search student data",
+            "objective": "Retrieve data dynamically",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Charts and Graphs",
+            "topics": "Bar charts, pie charts, line charts",
+            "activity": "Create performance charts",
+            "objective": "Visualize data graphically",
+            "youtubeVideo": "Vl0H-qTclOg"
+        },
+    
+        {
+            "module": "Conditional Formatting",
+            "topics": "Highlight rules, duplicate values",
+            "activity": "Highlight failed students",
+            "objective": "Automatically format cells based on conditions",
+            "youtubeVideo": "LgXzzu68j7M"
+        },
+    
+        {
+            "module": "Data Validation and Protection",
+            "topics": "Dropdown lists, sheet protection",
+            "activity": "Create controlled entry form",
+            "objective": "Secure and control spreadsheet input",
+            "youtubeVideo": "LgXzzu68j7M"
+        },
+    
+        {
+            "module": "Macros and Final Project",
+            "topics": "Record macros, print worksheets",
+            "activity": "Complete financial worksheet",
+            "objective": "Automate repetitive Excel tasks",
+            "youtubeVideo": "dvbLrwD2SpA"
+        },
+    
+        # =========================
+        # MICROSOFT POWERPOINT
+        # =========================
+    
+        {
+            "module": "Introduction to PowerPoint",
+            "topics": "Interface, slides, layouts",
+            "activity": "Create first presentation",
+            "objective": "Understand PowerPoint environment",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Creating Slides",
+            "topics": "Add, delete, rearrange slides",
+            "activity": "Build topic presentation",
+            "objective": "Manage presentation slides",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Text Formatting",
+            "topics": "Fonts, alignment, WordArt",
+            "activity": "Format presentation slides",
+            "objective": "Design readable slide text",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Themes and Templates",
+            "topics": "Themes and layouts",
+            "activity": "Apply professional themes",
+            "objective": "Create visually consistent presentations",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Images and Shapes",
+            "topics": "Insert pictures, shapes, icons",
+            "activity": "Create school advert",
+            "objective": "Add visual elements to slides",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "SmartArt Graphics",
+            "topics": "Process diagrams and hierarchy charts",
+            "activity": "Create organization chart",
+            "objective": "Represent information visually",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Tables and Charts",
+            "topics": "Insert tables and charts",
+            "activity": "Present exam statistics",
+            "objective": "Display data in presentations",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Audio and Video",
+            "topics": "Insert media and playback options",
+            "activity": "Add educational video",
+            "objective": "Use multimedia in presentations",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Animations",
+            "topics": "Entrance, emphasis, motion paths",
+            "activity": "Animate slide objects",
+            "objective": "Create engaging slide animations",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Transitions",
+            "topics": "Slide transitions and timing",
+            "activity": "Build smooth slide show",
+            "objective": "Apply professional slide transitions",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Hyperlinks and Action Buttons",
+            "topics": "Interactive navigation tools",
+            "activity": "Create interactive presentation",
+            "objective": "Add interactivity to slides",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Slide Master",
+            "topics": "Global slide customization",
+            "activity": "Customize presentation style",
+            "objective": "Maintain design consistency",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Presenter Tools",
+            "topics": "Presenter view, notes, rehearsal",
+            "activity": "Practice presentation",
+            "objective": "Deliver presentations effectively",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        },
+    
+        {
+            "module": "Final Presentation Project",
+            "topics": "Export PDF/video and final delivery",
+            "activity": "Student final presentation",
+            "objective": "Create and present a complete project",
+            "youtubeVideo": "l5Ij7nUy9UQ"
+        }
+    
+    ]
         
     commands = '''
         Role: You are the Lead Technical Educator for MGY (Malawian Genius Youth). Your mission is to transform technical documentation into high-impact, practical lessons on the Microsoft Office Suite.
@@ -278,7 +629,9 @@ def microsoft_office_lessons():
         Practice Challenge: A small task for the student to complete.
         '''
     data = request.json
-    user_message = data.get("message", "Hello")
+    user_message = data.get("message", 1)
+    if not isinstance(user_message,int):
+        return
     model = data.get("model", "gemini-2.5-flash-lite")
     img = data.get("img_url", False)
     contents = [user_message]
@@ -298,7 +651,7 @@ def microsoft_office_lessons():
             #print(listMsg)
             #print(listMsg)
             mgyPostFormat = {
-                'utubeId':post['videoId'],
+                'utubeId':ms_office_course[user_message]["youtubeVideo"],
                 'prompt': post['post'],
                 'title': post['title'],
                 'imgUrl': 'img/mgy.jpg',
@@ -353,22 +706,11 @@ def microsoft_office_lessons():
             config=config
         )
         
-        response = chat.send_message(user_message )
+        response = chat.send_message(f"Make today lesson on this module: {ms_office_course[user_message]["module"]}, it must cover: {ms_office_course[user_message]["topics"]}, the goal is: {ms_office_course[user_message]["objective"]} and challage from: {ms_office_course[user_message]["activity"]} .")
         if response.text == 'MGY' or not response.text:
             return 'No update'
         print('plain ans for first chat',response.text)
-        time.sleep(2)
-        grounding_tool = types.Tool(
-            google_search=types.GoogleSearch()
-            )
-        configs = types.GenerateContentConfig(
-            tools=[grounding_tool]
-            )
-        resp = client.models.generate_content(
-            model=model,
-            contents=f"Give me best youtube video url that will help students cemment on this lesson: {response.text}",
-            config=configs,
-            )
+      
         time.sleep(2)
         extract_chat = client.chats.create(model=model, config=extract_config)
         final_response = extract_chat.send_message(f"Format this lesson into JSON: {response.text} {resp.text}")
