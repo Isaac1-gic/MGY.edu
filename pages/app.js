@@ -180,6 +180,8 @@ window.addEventListener('beforeinstallprompt', (e) => {
                 profileUpdater(userData)
 			}else if (pageId == "homePage") {
 				activeKey = "mgyPosts";
+			}else if (pageId == "coursesPage") {
+				listCourses()
 			}
 		}
 
@@ -705,7 +707,7 @@ async function userStatus(chatKey){
 				return
 			}
 			const msg = mgy[activeKey]
-			const chatContainer = document.getElementById(msgKey == 'mgyPosts' ? "courses":'chatsList');
+			const chatContainer = document.getElementById(msgKey == 'mgyPosts' ? "updates":'chatsList');
 		    chatContainer.innerHTML = '';
 			if (!msg)return
 		    if (msg.length > 100) {
@@ -727,6 +729,54 @@ async function userStatus(chatKey){
 		    scrollToBottom(chatContainer);	
 		}
 
+async function showCourse(id){
+	const courseRef = ref(database,'courses/'+id)
+	const snapshot = await get(courseRef)
+	if (!snapshot.exists()) {
+		alert('Thank course does not exist.')
+		return
+	}
+	const courseContainer = document.getElementById('courses')
+	courseContainer.innerHTML = ''
+	const course = snapshot.val()
+	const module = Object.entries(course)
+	const len = module.length
+	for (let i=0; i < len; i++){
+		const chat = module[i][1]
+		const msgs = await createMsg(activeKey,chat,module,i)
+		courseContainer.appendChild(msgs);
+		
+	};
+
+}
+
+function list() {
+	const coursesRef = ref(database,'activeCourses')
+	const snapshot = get(courseRef)
+	if (! snapshot.exists()) {
+		alert('Sorry we have no active course now. Check back soon!!')
+		return
+	}
+	const courseContainer = document.getElementById('courses')
+	courseContainer.innerHTML = ''
+	const courses = snapshot.val()
+	Object.values(courses).reverse().forEach(course =>{
+		const courseItem = new Course(course.courseName,course.goal,course.img,course.id)
+		courseContainer.appendChild(courseItem.coursepreveiw())
+	})
+}
+
+function addYoutubeVid(id) {
+	const div = document.createElement('div')
+	div.style = "position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"
+	div.innerDiv = `<iframe
+				        src="https://www.youtube.com/embed/${id}"
+				        style="position:absolute;top:0;left:0;width:100%;height:100%;"
+				        frameborder="0"
+				        allowfullscreen>
+				    </iframe>`
+	return div
+}
 async function createMsg(activeKey,chat,msg,i) {
 	if (oldMsg[chat["chatId"]]) {
 		console.log('old')
@@ -788,6 +838,9 @@ async function createMsg(activeKey,chat,msg,i) {
 	for (let i=0; i < len; i++){
        await sessionDiv.appendChild(await Tswitch(chat.types[i],chat))
     }
+	if (chat["utubeId"]) {
+		sessionDiv.appendChild(addYoutubeVid(chat["utubeId"]))
+	}
 	oldMsg[chat["chatId"]] = sessionDiv;
 	console.log('new')
 	return sessionDiv;
@@ -943,19 +996,25 @@ window.onload = async function(){
 	if (sharedLink == 'install') {
 		alert('If you have not seen install button please go on menu and click download app then install that apk file. Make sure you are using uptodate chrome browser to install this app.')
 	}
-	await adddbListener(10)
+	await adddbListener(1)
 	
 	}
 
 function adddbListener(i) {
-	if (i == 0) {
+	loading = document.getElementById("startLoading")
+	loadingB = document.getElementById("startLoadingB")
+	if (i == 10) {
+		loadingB.style.display = 'none'
+		alert('Loading failed. Please login or create account.')
 		return
 	}
 	setTimeout(async(e) =>{
+		
 		try {
 			
 			userkey = userAuth.currentUser.uid
-			notification = new MGYNotification(await loadData('notifications') || {})
+			loadingB.style.display = 'none'
+			notification = new MGYNotification(await loadData('notifications') || {},userkey)
 			onAuthStateChanged(userAuth, (user) => {
 			  if (user) {
 			    profileUpdater(userkey)
@@ -986,19 +1045,19 @@ function adddbListener(i) {
 			const myStatusRef = ref(database, 'online/'+userkey);
 			set(myStatusRef, 'online');
 			onDisconnect(myStatusRef).set(Date.now());
-			document.addEventListener("visibilitychange", () => {
+			`document.addEventListener("visibilitychange", () => {
 			  if (document.visibilityState === "visible") {
 			    set(myStatusRef, 'online');
 			  } else {
 			    set(myStatusRef, 'away'); 
 			  }
-			});
+			});`
 		} catch (error) {
-			
+			loading.style.width = `${i*10}%`
 			console.warn(error)
-			await adddbListener(i-1)
+			await adddbListener(i+1)
 		}
-	},5000)
+	},2500)
 	
 }
 
@@ -1279,8 +1338,8 @@ function videoMsg(msg) {
     vid.name = getOptimizedImageUrl(msg.videoUrl,'L',true);
     vid.className = "media-file lazy-media"
 	vid.controls = true
-	vid.onclick = () => {
-		if(confirm('Do you want to download?')) mediaObserver.observe(vid)
+	div.onclick = () => {
+		mediaObserver.observe(vid)
 	}
     return vid;
     
@@ -1456,7 +1515,15 @@ function whereAppOpen() {
 
 async function cleanHTML(input) {
 	try {
-		const clean = DOMPurify.sanitize(input);
+		const clean = DOMPurify.sanitize(input, {
+		    ADD_TAGS: ['iframe'],
+		    ADD_ATTR: [
+		        'allow',
+		        'allowfullscreen',
+		        'frameborder',
+		        'scrolling'
+		    ]
+		});
 		const htmlOutput = await marked.parse(clean, { async: true });
 		return htmlOutput	
 	} catch (error) {
