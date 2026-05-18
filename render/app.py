@@ -140,10 +140,10 @@ class LessonStructure(BaseModel):
             
             * 🔗 **Link:** 
                 [submit answer](https://mgy.web.app?msg=user_mocTODygmliamg@erimakastihccaasi)
-                
+                [Whatch Youtube Video](URL)
             
             ---
-            _Source: [MGY](https://mgy.web.app?mode=install)""")
+            _Source: [MGY]_""")
 
 
 
@@ -693,8 +693,8 @@ def microsoft_office_lessons():
         ref = db.reference('history')
         history_data = ref.get()
         post_ref = db.reference('post')
-        app_updates = db.reference("courses/ms_office_course")
-        old_post = app_updates.get()
+        app_updates = db.reference("mgyPosts")
+        old_post = post_ref.get()
         # Ensure history is a list for the SDK
         if not history_data:
             history_data = []
@@ -713,7 +713,7 @@ def microsoft_office_lessons():
       
         time.sleep(2)
         extract_chat = client.chats.create(model=model, config=extract_config)
-        final_response = extract_chat.send_message(f"Format this lesson into JSON: {response.text}")
+        final_response = extract_chat.send_message(f"Format this lesson into JSON: {response.text} {resp.text}")
         if final_response.text == 'MGY' or not final_response.text:
             return 'No update'
         print('ans from final chat',final_response.text)
