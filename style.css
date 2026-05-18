@@ -491,13 +491,7 @@
                
             }
             
-            iframe {
-			  flex: 1;
-			  width: 100%;
-			  border: none;
-			  display: none; 
-			  height: 100%; 
-			}
+            
 
             /* Step 2: make table behave fluidly */
             .table-container table {
