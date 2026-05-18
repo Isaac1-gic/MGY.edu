@@ -750,9 +750,9 @@ async function showCourse(id){
 
 }
 
-function list() {
+async function listCourses() {
 	const coursesRef = ref(database,'activeCourses')
-	const snapshot = get(courseRef)
+	const snapshot = await get(coursesRef)
 	if (! snapshot.exists()) {
 		alert('Sorry we have no active course now. Check back soon!!')
 		return
@@ -769,12 +769,12 @@ function list() {
 function addYoutubeVid(id) {
 	const div = document.createElement('div')
 	div.style = "position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"
-	div.innerDiv = `<iframe
-				        src="https://www.youtube.com/embed/${id}"
-				        style="position:absolute;top:0;left:0;width:100%;height:100%;"
-				        frameborder="0"
-				        allowfullscreen>
-				    </iframe>`
+	const frame = document.createElement('frame')
+	frame.src=`https://www.youtube.com/embed/${id}`
+	frame.style="position:absolute;top:0;left:0;width:100%;height:100%;"
+	frame.frameborder="0"
+	frame.allowfullscreen = true
+	div.appendChild(frame)
 	return div
 }
 async function createMsg(activeKey,chat,msg,i) {
