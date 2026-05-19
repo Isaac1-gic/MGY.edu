@@ -50,11 +50,13 @@ class MGYNotification {
 		const notfctn = {
 			id:chatObject.chatId,
 			sender:chatObject.senderId,
-			img: urlFunc(chatObject.imgUrl,'S'),
+			cover: urlFunc(chatObject.imgUrl,'S'),
 			body:chatObject.prompt.length > 45 ? chatObject.prompt.slice(0,45)+'...':chatObject.prompt,
 			quary: `room=${chatObject.userkey}&${chatObject.chatId}`,
-			cover: urlFunc(chatObject['imageUrl'],'L') || './img/mgy.jpg'
+			img: urlFunc(chatObject['imageUrl'],'L') || './img/mgy.jpg'
 		}
+		console.log(notfctn.img)
+		console.log(notfctn.cover)
 	    await this.showNotificaton(notfctn)
 		this.seenMsgs[chatObject.chatId] = 1
 	}
