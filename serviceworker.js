@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mgy-v1-05-2026-19';
+const CACHE_NAME = 'mgy-v1-05-2026-19-01:00';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
@@ -106,13 +106,14 @@ self.addEventListener('message', event => {
 
 function showLocalNotification(data) {
   self.registration.showNotification(
-    data.sender,
+    data.title,
     {
       body: data.body,
-      tag: data.id,
-      badge: './img/favicon-32x32.png',
-      icon: data.img,
+      tag: 'mgy-chat-notification' + data.id,
+      badge: 'img/android-chrome-192x192.png',
+      icon: 'img/android-chrome-512x512.png',
       image: data.cover,
+      renotify: true,
       data: { url: './?'+data.quary }
     }
   );
@@ -121,8 +122,27 @@ function showLocalNotification(data) {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
+
+  // Define the target URL (passed from your notification payload)
+  const targetUrl = event.notification.data.url || 'https://mgy.web.app/';
+
   event.waitUntil(
-    clients.openWindow(event.notification.data.url)
+    clients.matchAll({
+      type: 'window',
+      includeUncontrolled: true
+    }).then(clientList => {
+      // 1. Check if the PWA is already open
+      for (let client of clientList) {
+        if (client.url === targetUrl && 'focus' in client) {
+          return client.focus(); // Focus the existing window
+        }
+      }
+      
+      // 2. If not open, open a new window (it will open as an app if installed)
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
   );
 });
 
@@ -134,10 +154,11 @@ self.addEventListener('periodicsync', event => {
         title: 'Daily Educational Updates',
         body: 'Check out whats new today',
         tag: 'Updates',
-        icon: './img/favicon-32x32.png',
-        badge: './img/favicon-32x32.png',
-        image: 'img/mwflag.png',
-        data: { url: './' }
+        badge: 'img/android-chrome-192x192.png',
+        icon: 'img/android-chrome-512x512.png',
+        image: 'img/poster.png',
+        data: { url: './' },
+        renotify: true
       })
     );
   }
