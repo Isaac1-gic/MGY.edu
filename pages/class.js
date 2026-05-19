@@ -35,21 +35,13 @@ class MGYNotification {
 		}
 	}
 
-	async showNotificaton(notificationObject,urlFunc) {
-		const response = await fetch(urlFunc(notificationObject.img,'S'));
-		const Blod = await response.blob();
-		const fileReader = new FileReader()
-		fileReader.onloadend = async () =>{
-			notificationObject.img = fileReader.result;
-			await navigator.serviceWorker.controller.postMessage(
-				{
-					type: "SHOW_NOTIFICATION",
-					payload: notificationObject
-				}
-			)
-				
-		};
-		fileReader.readAsDataURL(Blod)
+	async showNotificaton(notificationObject) {
+		await navigator.serviceWorker.controller.postMessage(
+			{
+				type: "SHOW_NOTIFICATION",
+				payload: notificationObject
+			}
+		)
 		
 	}
 
@@ -58,12 +50,12 @@ class MGYNotification {
 		const notfctn = {
 			id:chatObject.chatId,
 			sender:chatObject.senderId,
-			img:chatObject.imgUrl,
+			img: urlFunc(chatObject.imgUrl,'S'),
 			body:chatObject.prompt.length > 45 ? chatObject.prompt.slice(0,45)+'...':chatObject.prompt,
 			quary: `room=${chatObject.userkey}&${chatObject.chatId}`,
 			cover: urlFunc(chatObject['imageUrl'],'L') || './img/mgy.jpg'
 		}
-	    await this.showNotificaton(notfctn,urlFunc)
+	    await this.showNotificaton(notfctn)
 		this.seenMsgs[chatObject.chatId] = 1
 	}
 }
