@@ -3,26 +3,26 @@ const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
 const OFFLINE_URLS = [
-  './',
-  'index.html',
-  'pages/app.js',
-  'style.css',
-  'manifest.json',
-  'img/mwflag.png',
-  'img/mgy.jpg',
-  'img/apple-touch-icon.png',
-  'img/favicon-32x32.png',
-  'img/favicon-16x16.png',
-  'img/android-chrome-192x192.png',
-  'img/android-chrome-512x512.png',
-  'img/poster.png',
+  '/',
+  '/index.html',
+  '/pages/app.js',
+  '/style.css',
+  '/manifest.json',
+  '/img/mwflag.png',
+  '/img/mgy.jpg',
+  '/img/apple-touch-icon.png',
+  '/img/favicon-32x32.png',
+  '/img/favicon-16x16.png',
+  '/img/android-chrome-192x192.png',
+  '/img/android-chrome-512x512.png',
+  '/img/poster.png',
   "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js",
   "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js',
   'https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js',
-  'img/mgyG.jpg'
+  '/img/mgyG.jpg'
 ];
 
 const EXTERNAL_HOSTS = [
@@ -74,7 +74,7 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
        
         if (event.request.mode === 'navigate') {
-          return caches.match('index.html') || caches.match('./');
+          return caches.match('/index.html') || caches.match('/');
         }
       });
     })
@@ -110,11 +110,11 @@ function showLocalNotification(data) {
     {
       body: data.body,
       tag: 'mgy-chat-notification' + data.id,
-      badge: 'img/android-chrome-192x192.png',
-      icon: 'img/android-chrome-512x512.png',
+      badge: '/img/android-chrome-192x192.png',
+      icon: '/img/android-chrome-512x512.png',
       image: data.cover,
       renotify: true,
-      data: { url: './?'+data.quary }
+      data: { url: '/?'+data.quary }
     }
   );
 }
@@ -123,24 +123,25 @@ function showLocalNotification(data) {
 self.addEventListener('notificationclick', event => {
   event.notification.close();
 
-  // Define the target URL (passed from your notification payload)
-  const targetUrl = event.notification.data.url || 'https://mgy.web.app/';
+  // Use the path from the data
+  const targetPath = event.notification.data.url; 
 
   event.waitUntil(
     clients.matchAll({
       type: 'window',
       includeUncontrolled: true
     }).then(clientList => {
-      // 1. Check if the PWA is already open
       for (let client of clientList) {
-        if (client.url === targetUrl && 'focus' in client) {
-          return client.focus(); // Focus the existing window
+        // Check if the client's URL path ends with your target path
+        // This is much safer than matching the full string
+        if (client.url.includes(targetPath) && 'focus' in client) {
+          return client.focus();
         }
       }
       
-      // 2. If not open, open a new window (it will open as an app if installed)
+      // Open the window using the path
       if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
+        return clients.openWindow(targetPath);
       }
     })
   );
@@ -154,10 +155,10 @@ self.addEventListener('periodicsync', event => {
         title: 'Daily Educational Updates',
         body: 'Check out whats new today',
         tag: 'Updates',
-        badge: 'img/android-chrome-192x192.png',
-        icon: 'img/android-chrome-512x512.png',
-        image: 'img/poster.png',
-        data: { url: './' },
+        badge: '/img/android-chrome-192x192.png',
+        icon: '/img/android-chrome-512x512.png',
+        image: '/img/poster.png',
+        data: { url: '/' },
         renotify: true
       })
     );
