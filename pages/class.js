@@ -35,8 +35,8 @@ class MGYNotification {
 		}
 	}
 
-	async showNotificaton(notificationObject) {
-		const response = await fetch(notificationObject.img);
+	async showNotificaton(notificationObject,urlFunc) {
+		const response = await fetch(urlFunc(notificationObject.img,'S'));
 		const Blod = await response.blob();
 		const fileReader = new FileReader()
 		fileReader.onloadend = async () =>{
@@ -63,7 +63,7 @@ class MGYNotification {
 			quary: `room=${chatObject.userkey}&${chatObject.chatId}`,
 			cover: urlFunc(chatObject['imageUrl'],'L') || './img/mgy.jpg'
 		}
-	    await this.showNotificaton(notfctn)
+	    await this.showNotificaton(notfctn,urlFunc)
 		this.seenMsgs[chatObject.chatId] = 1
 	}
 }
