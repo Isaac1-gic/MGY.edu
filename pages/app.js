@@ -305,12 +305,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				document.getElementById('pro-img').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'])
 				document.getElementById('profile-img-preview').src = getOptimizedImageUrl(user["userInfo"]['profile-img-preview'],'M')
 			}else{
-				document.getElementById('profile-img-preview').src = 'img/mwflag.png'
+				document.getElementById('profile-img-preview').src = '/img/mwflag.png'
 			}
 			if(user["userInfo"]['cover-img-preview']){
 				document.getElementById('cover-img-preview').src = getOptimizedImageUrl(user["userInfo"]['cover-img-preview'],'L')
 			}else {
-				document.getElementById('cover-img-preview').src = 'img/mgyG.jpg'
+				document.getElementById('cover-img-preview').src = '/img/mgyG.jpg'
 			}
 			document.getElementById('email').textContent = user["userInfo"]['Email']
 			document.getElementById('phone-number').textContent = user["userInfo"]['Country code'] + user["userInfo"]['Phone number']
@@ -514,7 +514,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						chat = Object.entries(snapshot.val());
 						lastMsg = chat[chat.length - 1][1]
 						mgy['mgyforum'] = chat
-						createChatlist('MGY Forum',lastMsg.prompt,'img/mgy.jpg','mgyforum')
+						createChatlist('MGY Forum',lastMsg.prompt,'/img/mgy.jpg','mgyforum')
 						chatbox('mgyforum',lastMsg)
 						await saveData('mgyUpdates',mgy)
 					})
@@ -537,7 +537,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 								
 								lastMsg = chat[chat.length - 1][1]
 								mgy[key] = chat
-								const proImg = lastMsg['imgUrl'] == 'img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
+								const proImg = lastMsg['imgUrl'] == '/img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
 								createChatlist(value,lastMsg.prompt,proImg,key,onlineStatus[key])
 								chatbox(key,lastMsg)
 								await saveData('mgyUpdates',mgy)
@@ -663,7 +663,7 @@ async function userStatus(chatKey){
 				        tempPost['chatId'] = Date.now()
 			            tempPost['senderId'] = userData.userInfo.username
 						tempPost['userkey'] = userkey
-						tempPost['imgUrl'] = userData.userInfo['profile-img-preview'] || 'img/mgyG.jpg'
+						tempPost['imgUrl'] = userData.userInfo['profile-img-preview'] || '/img/mgyG.jpg'
 			            tempPost['prompt'] = text
 						tempPost.types.push('textMsg')
 						console.log(tempPost)
@@ -911,8 +911,8 @@ async function createMsg(activeKey,chat,msg,i) {
 			} catch (error) {
 		console.warn(error)
 			}
-			imgP['img-'+userKey] = 'img/mwflag.png'
-			return 'img/mwflag.png'	
+			imgP['img-'+userKey] = '/img/mwflag.png'
+			return '/img/mwflag.png'	
 		}
 
 		           
@@ -1175,7 +1175,7 @@ async function uploadToCloudinary(file, studentId, type,update) {
 }
 
 function getOptimizedImageUrl(publicId,type,vid) {
-	if('img/mgyG.jpg' == publicId || ! publicId) return 'img/mgyG.jpg'
+	if('/img/mgyG.jpg' == publicId || ! publicId) return '/img/mgyG.jpg'
 	if (publicId.startsWith('http')) return publicId
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "c_fill,f_auto,q_auto";
@@ -1488,7 +1488,7 @@ function makePost(post,preview){
 	img = document.createElement('img');
 	img.className = "small_profile_img lazy-media";
 	img.style = "border-radius: 50%";
-	img.name = getOptimizedImageUrl(post['imgUrl'],'S') || getOptimizedImageUrl(userData.userInfo['profile-img-preview'] || 'img/mgyG.jpg','S');
+	img.name = getOptimizedImageUrl(post['imgUrl'],'S') || getOptimizedImageUrl(userData.userInfo['profile-img-preview'] || '/img/mgyG.jpg','S');
 	img.onclick = () =>{switchPage('profilePage',post['userkey'])};
 	mediaObserver.observe(img)
 	cont = document.createElement('div');
