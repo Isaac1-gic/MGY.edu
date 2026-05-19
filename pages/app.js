@@ -702,7 +702,7 @@ async function userStatus(chatKey){
 		async function chatbox(msgKey,lastMsg) {
 			console.log(msgKey)
 			if (msgKey != activeKey){
-				await notification.createNotification(lastMsg)
+				await notification.createNotification(lastMsg,getOptimizedImageUrl)
 				await saveData('notifications',notification.seenMsgs)
 				return
 			}
@@ -769,13 +769,16 @@ async function listCourses() {
 function addYoutubeVid(id) {
 	const div = document.createElement('div')
 	div.style = "position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"
-	const frame = document.createElement('frame')
+	const frame = document.createElement('iframe')
 	frame.src=`https://www.youtube.com/embed/${id}`
-	frame.style="position:absolute;top:0;left:0;width:100%;height:100%;"
+	frame.style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"
 	frame.frameborder="0"
 	frame.allowfullscreen = true
+	console.log("embeding vid")
 	div.appendChild(frame)
+	
 	return div
+	
 }
 async function createMsg(activeKey,chat,msg,i) {
 	if (oldMsg[chat["chatId"]]) {
