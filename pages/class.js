@@ -1,4 +1,3 @@
-
 class MGYNotification {
 	constructor(seenMsgs,userkey) {
 		this.seenMsgs = seenMsgs
@@ -63,7 +62,7 @@ class MGYNotification {
 }
 
 
-class course {
+class Course {
 	constructor(courseName,goal,img,id) {
 		this.name = courseName
 		this.goal = goal
@@ -72,20 +71,85 @@ class course {
 	}
 
 	coursepreveiw() {
-		section = document.createElement('section')
-		section.style = `max-height: 30vh; background-image: url(${this.img});`
-		h1 = document.createElement('h1')
-		h1.textContent = this.name
-		button = document.createElement('button')
-		button.className = 'btn'
-		button.textContent = 'Get Started'
-		button.onclick = () => {
-			showCourse(this.id)
-		}
-		p = document.createElement('p')
-		p.textContent = this.goal
+		const section = document.createElement("section");
 
-		section.append(h1,button,p)
+		section.style = `
+		min-height:100vh;
+		width:100%;
+		display:flex;
+		flex-direction:column;
+		justify-content:center;
+		align-items:center;
+		padding:25px;
+		box-sizing:border-box;
+		background:
+		linear-gradient(
+		rgba(0,0,0,0.65),
+		rgba(0,0,0,0.65)
+		),
+		url("https://www.sourcesplash.com/i/random?q=${this.name}");
+		background-size:cover;
+		background-position:center;
+		background-repeat:no-repeat;
+		font-family:Arial,sans-serif;
+		text-align:center;
+		color:white;
+		gap:18px;
+		`;
+		
+		section.innerHTML = `
+		<h1 style="
+		font-size:clamp(2rem,8vw,4rem);
+		margin:0;
+		font-weight:800;
+		line-height:1.1;
+		letter-spacing:1px;
+		">
+		${this.name}
+		</h1>
+		
+		<img 
+		src="https://www.sourcesplash.com/i/random?q=${this.name} logo"
+		style="
+		width:120px;
+		height:120px;
+		object-fit:cover;
+		border-radius:24px;
+		box-shadow:0 10px 30px rgba(0,0,0,0.4);
+		background:white;
+		padding:10px;
+		"
+		/>
+		
+		<p style="
+		max-width:700px;
+		font-size:1rem;
+		line-height:1.7;
+		margin:0;
+		color:rgba(255,255,255,0.9);
+		">
+		${this.goal}
+		</p>
+		
+		<button style="
+		padding:14px 28px;
+		border:none;
+		border-radius:14px;
+		background:white;
+		color:#111;
+		font-size:1rem;
+		font-weight:700;
+		cursor:pointer;
+		box-shadow:0 8px 20px rgba(0,0,0,0.25);
+		transition:0.3s;
+		"
+		onclick="showCourse('${this.id}')"
+		>
+		Get Started
+		</button>
+		`;
+
+		
 		return section
 	}
 
