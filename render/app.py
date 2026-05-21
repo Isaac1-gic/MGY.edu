@@ -693,7 +693,7 @@ def microsoft_office_lessons():
         ref = db.reference('history')
         history_data = ref.get()
         post_ref = db.reference('post')
-        app_updates = db.reference("mgyPosts")
+        app_updates = db.reference("courses/212d976ac9663306c70651")
         old_post = post_ref.get()
         # Ensure history is a list for the SDK
         if not history_data:
