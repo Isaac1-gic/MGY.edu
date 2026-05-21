@@ -773,6 +773,8 @@ def ask_gemini():
                         lastMsg = ["none", {"title": "First Post"}]
                     #print(listMsg)
                     #print(listMsg)
+                    if post["urgency"] == 'Low' or post['title'] == 'MGY' or post["source"] == 'MGY':
+                        return 'No update'
                     mgyPostFormat = {
                         'imageUrl':post['imageUrl'],
                         'prompt': post['post'],
