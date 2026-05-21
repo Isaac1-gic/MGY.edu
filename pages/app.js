@@ -733,7 +733,7 @@ async function showCourse(id){
 	const courseRef = ref(database,'courses/'+id)
 	const snapshot = await get(courseRef)
 	if (!snapshot.exists()) {
-		alert('Thank course does not exist.')
+		alert('Thanks, course does not exist.')
 		return
 	}
 	const courseContainer = document.getElementById('courses')
@@ -1055,6 +1055,7 @@ function adddbListener(i) {
 			    set(myStatusRef, 'away'); 
 			  }
 			});`
+			checksNews()
 		} catch (error) {
 			loading.style.width = `${i*10}%`
 			console.warn(error)
@@ -1062,6 +1063,36 @@ function adddbListener(i) {
 		}
 	},2500)
 	
+}
+
+async function checksNews() {
+	const updatePath = ref(database,'online/lastupdate')
+	const snapshot = await get(updatePath)
+	const updatePathC = ref(database,'online/lastupdateC')
+	const snapshotC = await get(updatePath)
+	const lastTime = snapshotC.val()
+	const now = Date.now()
+	
+	if (now - lastTime.time >= 1000*60*60*24) {
+		resp = await fetch('https://mgy-edu.onrender.com/lessons', {
+		      method: 'POST',
+		      headers: { 'Content-Type': 'application/json' },
+		      body: JSON.stringify({ message:lastTime.point })
+		    });
+		if (resp.ok) {
+		        await set(updatePathC,{time: now, point: lastTime.point+1})
+		}
+		
+	}
+
+	if (now - snapshot.val() >= 1000*60*60*4) {
+		await fetch('https://mgy-edu.onrender.com/ask', {
+		      method: 'POST',
+		      headers: { 'Content-Type': 'application/json' },
+		      body: JSON.stringify({ message: 'find update'})
+		    });
+		await set(updatePath,now)
+	}
 }
 
 function isStandalone() {
