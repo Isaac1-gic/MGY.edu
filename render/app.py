@@ -713,7 +713,7 @@ def microsoft_office_lessons():
       
         time.sleep(2)
         extract_chat = client.chats.create(model=model, config=extract_config)
-        final_response = extract_chat.send_message(f"Format this lesson into JSON: {response.text} {resp.text}")
+        final_response = extract_chat.send_message(f"Format this lesson into JSON: {response.text}")
         if final_response.text == 'MGY' or not final_response.text:
             return 'No update'
         print('ans from final chat',final_response.text)
