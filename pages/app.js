@@ -1069,7 +1069,7 @@ async function checksNews() {
 	const updatePath = ref(database,'online/lastupdate')
 	const snapshot = await get(updatePath)
 	const updatePathC = ref(database,'online/lastupdateC')
-	const snapshotC = await get(updatePath)
+	const snapshotC = await get(updatePathC)
 	const lastTime = snapshotC.val()
 	const now = Date.now()
 	
