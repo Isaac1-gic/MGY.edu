@@ -145,7 +145,6 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         }
         header {
             background: white;
-            padding: 1rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -248,7 +247,10 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
                 display: block;
             }
             .menu-btn {
-                display: block;
+                right: 10px;
+		        display: block;
+		        position: fixed;
+		        padding: 2% 1%;
             }
         }
 
@@ -262,7 +264,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         
 		.profile-header { position: relative; }
 		.cover-area {
-            height: 350px;
+            height: 250px;
             background: linear-gradient(to bottom, #ddd, #bbb);
             position: relative;
             overflow: hidden;
@@ -276,7 +278,7 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         
 		.btn-edit-cover {
             position: absolute; bottom: 15px; right: 15px;
-            background: white; padding: 8px 12px; border-radius: 6px;
+            background: white; padding: 2% 1%; border-radius: 6px;
             font-weight: 600; cursor: pointer; border: none;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             align-items: center; gap: 5px;
@@ -285,13 +287,13 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
         /* Profile Pic Positioning */
         .btn-edit-profile {
             position: absolute; bottom: 10px; right: 10px;
-            background: #e4e6eb; padding: 8px; border-radius: 50%;
+            background: #e4e6eb; padding: 2%; border-radius: 50%;
             cursor: pointer; border: 2px solid white;
         }
 		
 		.profile-pic-box {
             position: absolute; bottom: -30px; left: 30px;
-            width: 168px; height: 168px;
+            width: 100px; height: 100px;
         }
         
 		.profile-img {
@@ -835,9 +837,10 @@ Join the Movement. Inspire Excellence. Transform Tomorrow.",
 </head>
 <body>
     <header>
-        <div class="logo">Malawian Genius Youths</div>
-		
+        
         <nav id="main-nav">
+			<div class="logo" style="padding: 1rem 5%;">Malawian Genius Youths</div>
+		
             <a href="#home" onclick="closeMenuOnMobile('homePage')">Home</a>
             <a href="#courses" onclick="closeMenuOnMobile('coursesPage')">Courses</a>
             <a href="#chatPage" onclick="closeMenuOnMobile('chatPage')">MGY Room</a>
