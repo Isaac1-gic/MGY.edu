@@ -260,7 +260,7 @@ def microsoft_office_lessons():
             "topics": "What is Word, interface, ribbon, toolbar, opening and saving documents",
             "activity": "Create and save first document",
             "objective": "Understand the Microsoft Word environment and basic document operations",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "j-ZAVHk5SaU"
         },
     
         {
@@ -268,7 +268,7 @@ def microsoft_office_lessons():
             "topics": "Cursor movement, selecting text, cut, copy, paste",
             "activity": "Type a school letter",
             "objective": "Learn how to enter and edit text efficiently",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "Uriqg5T8Uzo"
         },
     
         {
@@ -276,7 +276,7 @@ def microsoft_office_lessons():
             "topics": "Font style, size, color, bold, italic, underline",
             "activity": "Format a notice",
             "objective": "Apply text formatting techniques",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "Uriqg5T8Uzo"
         },
     
         {
@@ -284,7 +284,7 @@ def microsoft_office_lessons():
             "topics": "Alignment, indentation, line spacing",
             "activity": "Format an essay",
             "objective": "Format paragraphs professionally",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "Uriqg5T8Uzo"
         },
     
         {
@@ -292,7 +292,7 @@ def microsoft_office_lessons():
             "topics": "Lists and multilevel lists",
             "activity": "Create class rules list",
             "objective": "Organize information using lists",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "Uriqg5T8Uzo"
         },
     
         {
@@ -300,7 +300,7 @@ def microsoft_office_lessons():
             "topics": "Margins, orientation, paper size, columns",
             "activity": "Design newsletter layout",
             "objective": "Customize document page setup",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "YJjYHRIiDzQ"
         },
     
         {
@@ -308,7 +308,7 @@ def microsoft_office_lessons():
             "topics": "Shapes, icons, symbols, text boxes",
             "activity": "Create invitation card",
             "objective": "Insert and manipulate objects in Word",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "0Y5ai_u5etI"
         },
     
         {
@@ -316,7 +316,7 @@ def microsoft_office_lessons():
             "topics": "Create tables, merge and split cells",
             "activity": "Make student marks table",
             "objective": "Present structured data using tables",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "0Y5ai_u5etI"
         },
     
         {
@@ -324,7 +324,7 @@ def microsoft_office_lessons():
             "topics": "Insert images, WordArt, captions",
             "activity": "Design event poster",
             "objective": "Enhance documents visually",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "0Y5ai_u5etI"
         },
     
         {
@@ -332,7 +332,7 @@ def microsoft_office_lessons():
             "topics": "Page numbers, date and time, headers",
             "activity": "Create report pages",
             "objective": "Add navigation and identification elements",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "0Y5ai_u5etI"
         },
     
         {
@@ -340,7 +340,7 @@ def microsoft_office_lessons():
             "topics": "Table of contents, citations, footnotes",
             "activity": "Create mini project report",
             "objective": "Use academic and professional reference tools",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "uELfu0qaIJQ"
         },
     
         {
@@ -348,7 +348,7 @@ def microsoft_office_lessons():
             "topics": "Letters, labels, envelopes",
             "activity": "Generate bulk letters",
             "objective": "Automate repetitive document creation",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "mFqCvTOpOL0"
         },
     
         {
@@ -356,7 +356,7 @@ def microsoft_office_lessons():
             "topics": "Spell check, comments, track changes",
             "activity": "Peer editing exercise",
             "objective": "Review and collaborate on documents",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "vAHYchBIak"
         },
     
         {
@@ -364,7 +364,7 @@ def microsoft_office_lessons():
             "topics": "Print settings, export PDF",
             "activity": "Create complete formatted document",
             "objective": "Prepare and finalize professional documents",
-            "youtubeVideo": "5tXqAWSXRdY"
+            "youtubeVideo": "2MCmnr2L50o"
         },
     
         # =========================
