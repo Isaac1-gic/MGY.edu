@@ -992,6 +992,7 @@ window.onload = async function(){
 	}catch{}
 	if (!isStandalone()) {
 			maybeShowInstall();
+			alert('If you have not seen install button please go on menu and click download app then install that apk file. Make sure you are using uptodate chrome browser to install this app.')
 		}
 	registerSw()
 	const params = new URLSearchParams(window.location.search);
@@ -1106,6 +1107,8 @@ function maybeShowInstall() {
     if (installAsked) return;                    
 
     installAsked = true;
+	loadingB = document.getElementById("startLoadingB")
+	loadingB.style.display = 'none'
     document.getElementById('install-banner').style.display = 'block';
     setTimeout(() =>{
 		 document.getElementById('install-banner').style.display = 'none'; }
