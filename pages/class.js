@@ -1,3 +1,4 @@
+
 class MGYNotification {
 	constructor(seenMsgs,userkey) {
 		this.seenMsgs = seenMsgs
@@ -49,9 +50,9 @@ class MGYNotification {
 		if (chatObject.userkey == this.userkey || !chatObject || !this.ready || this.seenMsgs[chatObject.chatId]) return
 		const notfctn = {
 			id:chatObject.chatId,
-			title : "New MGY Message",
+			title : `New Message From ${chatObject.senderId}`,
 			cover:  urlFunc(chatObject['imageUrl'] || chatObject.imgUrl,'L'),
-			body:chatObject.senderId +': '+chatObject.prompt.length > 100 ? chatObject.prompt.slice(0,100)+'...':chatObject.prompt,
+			body:`${chatObject.senderId}: ${chatObject.prompt.length > 100 ? chatObject.prompt.slice(0,100)+'...':chatObject.prompt}`,
 			quary: `room=${chatObject.userkey}&${chatObject.chatId}`
 		}
 
