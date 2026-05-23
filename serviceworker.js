@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mgy-v1-05-2026-22-12';
+const CACHE_NAME = 'mgy-v1-05-2026-23';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
