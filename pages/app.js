@@ -11,6 +11,7 @@
 		let profileImg;
 		let img;
 		let userkey;
+		const lastSeenMsg = {}
 		let activeScreen;
 		let chatPath;
 		let notification;
@@ -182,6 +183,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				activeKey = "mgyPosts";
 			}else if (pageId == "coursesPage") {
 				listCourses()
+				activeKey = "courses"
 			}
 		}
 
@@ -486,7 +488,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				chat = mgy[chatKey]
 				lastMsg = chat[chat.length - 1][1]
 				const proImg = img || getOptimizedImageUrl(lastMsg['imgUrl'])
-				createChatlist(chatTitle,lastMsg.prompt,proImg,chatKey)
+				createChatlist(chatTitle,{name:lastMsg.senderId,txt:lastMsg.prompt,time:lastMsg.chatId},proImg,chatKey)
 				chatbox(chatKey,lastMsg)
 			}
 			try{
@@ -514,7 +516,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 						chat = Object.entries(snapshot.val());
 						lastMsg = chat[chat.length - 1][1]
 						mgy['mgyforum'] = chat
-						createChatlist('MGY Forum',lastMsg.prompt,'/img/mgy.jpg','mgyforum')
+						createChatlist('MGY Forum',{name:lastMsg.senderId,txt:lastMsg.prompt,time:lastMsg.chatId},'/img/mgy.jpg','mgyforum')
 						chatbox('mgyforum',lastMsg)
 						await saveData('mgyUpdates',mgy)
 					})
@@ -538,7 +540,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 								lastMsg = chat[chat.length - 1][1]
 								mgy[key] = chat
 								const proImg = lastMsg['imgUrl'] == '/img/mgyG.jpg'? lastMsg['imgUrl'] : getOptimizedImageUrl(lastMsg['imgUrl'])
-								createChatlist(value,lastMsg.prompt,proImg,key,onlineStatus[key])
+								createChatlist(value,{name:lastMsg.senderId,txt:lastMsg.prompt,time:lastMsg.chatId},proImg,key,onlineStatus[key])
 								chatbox(key,lastMsg)
 								await saveData('mgyUpdates',mgy)
 							}catch (e){
@@ -555,6 +557,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					console.warn('manageChat: ',e)
 				}
 			}
+			
 			oldmgy = await loadData('mgyUpdates')
 			if (!mgy['mgyPosts'] && oldmgy){
 				init['mgyPosts'] = true
@@ -562,6 +565,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				mgy = oldmgy
 				chatbox('mgyPosts')
 			}
+			chatListSort()
 		}
 
 async function userStatus(chatKey){
@@ -692,8 +696,8 @@ async function userStatus(chatKey){
 		        }
 		    }
 		}
-		function scrollToBottom(divElement){
-				if(!scrolled){
+		function scrollToBottom(divElement,mine){
+				if(!scrolled || mine){
 					scrolled = true;
 					divElement.scrollTop = divElement.scrollHeight;
 				}
@@ -717,16 +721,19 @@ async function userStatus(chatKey){
 					await remove(chatPath)
 				} catch (error) {console.warn(error)}
 			}
+			let mine = false
 			const len = msg.length
 		    for (let i=0; i < len; i++){
 				const chat = msg[i][1]
+				mine = chat.userkey === userkey
 				const msgs = await createMsg(activeKey,chat,msg,i)
 		        chatContainer.appendChild(msgs);
-				if (i == len - 2) {
-					await saveData('lastseen',chat.chatId)
+				if (i == len - 1) {
+					lastSeenMsg[msgKey] = chat.chatId
+					await saveData('lastseen',lastSeenMsg)
 				}
 		    };
-		    scrollToBottom(chatContainer);	
+		    scrollToBottom(chatContainer,mine);	
 		}
 
 async function showCourse(id){
@@ -743,6 +750,10 @@ async function showCourse(id){
 	const len = module.length
 	for (let i=0; i < len; i++){
 		const chat = module[i][1]
+		if (i == len - 1) {
+			lastSeenMsg[activeKey] = chat.chatId
+			await saveData('lastseen',lastSeenMsg)
+		}
 		const msgs = await createMsg(activeKey,chat,module,i)
 		courseContainer.appendChild(msgs);
 		
@@ -869,6 +880,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			const chatPresention = document.createElement('div')
 			chatPresention.className = 'msg-bubble sent'
 			chatPresention.style = 'max-width: 100%;'
+			chatPresention.id = msg.time
 			const chatHeader = document.createElement('div')
 			chatHeader.className = 'post-box'
 			const chatImg = document.createElement('img')
@@ -878,7 +890,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			chatName.textContent = name 
 			const chatMsg = document.createElement('div')
 			const chatCode = document.createElement('code')
-			chatCode.innerHTML = await cleanHTML(msg.length > 45 ? msg.slice(0,45)+'...':msg)
+			chatCode.innerHTML = await cleanHTML(`${msg.name}: ${msg.txt.length > 45 ? msg.txt.slice(0,45)+'...':msg.txt}`)
 			chatMsg.appendChild(chatCode)
 			chatHeader.appendChild(chatImg)
 			chatHeader.appendChild(chatName)
@@ -890,11 +902,19 @@ async function createMsg(activeKey,chat,msg,i) {
 				if (state) activeStatusElm.textContent = state;
 				await chatbox(activeKey)
 				await switchPage('chatHome')
-				document.getElementById(await loadData('lastseen')).scrollIntoView({ behavior: 'smooth' });
+				document.getElementById(await loadData('lastseen')[msgKey]).scrollIntoView({ behavior: 'smooth' });
 				
 			}
 			document.getElementById('chatList').appendChild(chatPresention)
 		}
+
+function chatListSort() {
+	const chatListToSort = document.getElementById("chatList");
+	const chats = Array.from(chatListToSort.children);
+	chats.sort((a, b) => Number(b.id) - Number(a.id));
+	chatListToSort.innerHTML = ''; 
+	chats.forEach(chat => chatListToSort.appendChild(chat));
+}
 
 		async function getPhoto(userKey,imgP={}){
 			if (imgP['img-'+userKey]){
