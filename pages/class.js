@@ -121,17 +121,7 @@ class Course {
 		padding:10px;
 		"
 		/>
-		
-		<p style="
-		max-width:700px;
-		font-size:1rem;
-		line-height:1.7;
-		margin:0;
-		color:rgba(255,255,255,0.9);
-		">
-		${this.goal}
-		</p>
-		
+
 		<button style="
 		padding:14px 28px;
 		border:none;
@@ -144,10 +134,23 @@ class Course {
 		box-shadow:0 8px 20px rgba(0,0,0,0.25);
 		transition:0.3s;
 		"
-		onclick="showCourse('${this.id}')"
+		onclick="showCourse('${this.id}');
+		document.getElementById(lastSeenMsg[activeKey]).scrollIntoView({ behavior: 'smooth' });"
 		>
 		Get Started
 		</button>
+		
+		<p style="
+		max-width:700px;
+		font-size:1rem;
+		line-height:1.7;
+		margin:0;
+		color:rgba(255,255,255,0.9);
+		">
+		${this.goal}
+		</p>
+		
+		
 		`;
 
 		
