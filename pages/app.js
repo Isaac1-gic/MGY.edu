@@ -750,7 +750,7 @@ async function showCourse(id){
 	const len = module.length
 	for (let i=0; i < len; i++){
 		const chat = module[i][1]
-		if (i == len - 1) {
+		if (i == len - 2) {
 			lastSeenMsg[activeKey] = chat.chatId
 			await saveData('lastseen',lastSeenMsg)
 		}
@@ -884,7 +884,7 @@ async function createMsg(activeKey,chat,msg,i) {
 			const chatPresention = document.createElement('div')
 			chatPresention.className = 'msg-bubble sent'
 			chatPresention.style = 'max-width: 100%;'
-			chatPresention.id = msg.time
+			chatPresention.id = msg.time * 1000
 			const chatHeader = document.createElement('div')
 			chatHeader.className = 'post-box'
 			const chatImg = document.createElement('img')
