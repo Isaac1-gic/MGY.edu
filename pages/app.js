@@ -11,7 +11,7 @@
 		let profileImg;
 		let img;
 		let userkey;
-		const lastSeenMsg = {}
+		let lastSeenMsg = {}
 		let activeScreen;
 		let chatPath;
 		let notification;
@@ -780,17 +780,21 @@ async function listCourses() {
 function addYoutubeVid(id) {
 	const div = document.createElement('div')
 	div.style = "position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"
+	
 	const frame = document.createElement('iframe')
-	frame.src=`https://www.youtube.com/embed/${id}`
-	frame.style="position:absolute;top:0;left:0;width:100%;height:100%;display:block;"
-	frame.frameborder="0"
-	frame.allowfullscreen = true
-	console.log("embeding vid")
+	frame.src = `https://www.youtube.com/embed/${id}`
+	frame.style = "position:absolute;top:0;left:0;width:100%;height:100%;display:block;"
+	
+	frame.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen')
+	
+	frame.setAttribute('allowfullscreen', '')
+	
+	console.log("embedding vid")
 	div.appendChild(frame)
 	
 	return div
-	
 }
+
 async function createMsg(activeKey,chat,msg,i) {
 	if (oldMsg[chat["chatId"]]) {
 		console.log('old')
@@ -902,7 +906,7 @@ async function createMsg(activeKey,chat,msg,i) {
 				if (state) activeStatusElm.textContent = state;
 				await chatbox(activeKey)
 				await switchPage('chatHome')
-				document.getElementById(await loadData('lastseen')[msgKey]).scrollIntoView({ behavior: 'smooth' });
+				document.getElementById(lastSeenMsg[msgKey]).scrollIntoView({ behavior: 'smooth' });
 				
 			}
 			document.getElementById('chatList').appendChild(chatPresention)
@@ -1001,6 +1005,7 @@ function chatListSort() {
 				
                 // Load User Data
                 await loadData('userData', 'onload');
+				lastSeenMsg = await loadData('lastseen')
 				profileUpdater(userkey)
             } catch (e) {
             }
@@ -1106,7 +1111,7 @@ async function checksNews() {
 		
 	}
 
-	if (now - snapshot.val() >= 1000*60*60*4) {
+	if (now - snapshot.val() >= 1000*60*60*12) {
 		await fetch('https://mgy-edu.onrender.com/ask', {
 		      method: 'POST',
 		      headers: { 'Content-Type': 'application/json' },
@@ -1232,14 +1237,14 @@ function getOptimizedImageUrl(publicId,type,vid) {
 	if('/img/mgyG.jpg' == publicId || ! publicId) return '/img/mgyG.jpg'
 	if (publicId.startsWith('http')) return publicId
     const CLOUD_NAME = "dlnnjv1ca";
-    let transformations = "c_fill,f_auto,q_auto";
-	if(type == 'L') transformations = 'ar_1:1,c_pad,f_auto,q_auto,b_auto,w_200';
+    let transformations = "/c_fill,f_auto,q_auto";
+	if(type == 'L') transformations = '';
 	if(type == 'M') transformations += ',w_200,h_200,r_max';
 	if(type == 's') transformations += ',w_100,h_100,r_max';
 	if (vid) {
 		return `https://res.cloudinary.com/${CLOUD_NAME}/video/upload/ar_12:6,c_pad,q_auto,b_auto,w_480/${publicId}`;
 	}
-    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transformations}/${publicId}`;
+    return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformations}/${publicId}`;
 }
 
 let mediaRecorder;
