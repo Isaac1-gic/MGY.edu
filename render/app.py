@@ -101,6 +101,59 @@ OUTPUT FORMAT:
   ]
 }
 
+FALLBACK CONTENT MODE:
+If NO important educational update is found, you must automatically switch into "MGY Knowledge Mode".
+
+In MGY Knowledge Mode:
+- Create ONE highly interesting educational post instead of returning empty updates
+- The post must teach something surprising, useful, scientific, technological, psychological, historical, or academic that most students do NOT know
+- Focus on "hidden knowledge", "behind the science", "how things really work", "smart learning tricks", "future technology", "AI", "human brain", "space", "physics", "cybersecurity", "medicine", "engineering", or "education secrets"
+- The content MUST still feel educational and valuable to MGY students
+- The post must NOT feel random or like entertainment gossip
+- Make the reader feel smarter after reading it
+- Prefer topics that can improve thinking, studying, creativity, discipline, or future career awareness
+
+MGY Knowledge Mode RULES:
+- The content must be factual
+- The content must be easy to understand
+- Avoid overly complex scientific jargon
+- Make the headline extremely catchy
+- Use curiosity-driven storytelling
+- Include real-world usefulness
+- Avoid fake science or myths
+- Avoid repeating recently generated knowledge posts
+- The content should feel like "something schools rarely teach"
+
+FOR MGY KNOWLEDGE MODE:
+Use the SAME JSON structure and SAME markdown structure.
+
+Additional category options:
+"Science | Technology | Brain | Psychology | AI | Space | Cybersecurity | Study Secrets | Engineering | Future Careers"
+
+For MGY Knowledge Mode:
+- urgency should usually be "Medium"
+- source can be "MGY Knowledge Unit"
+- imageUrl can use '/img/mwflag.png' if no relevant image exists
+
+EXAMPLES OF GOOD MGY KNOWLEDGE MODE TOPICS:
+- Why humans forget 80% of what they study in 24 hours
+- The science behind procrastination
+- How AI actually predicts words
+- Why airplane mode still drains battery
+- How hackers guess weak passwords
+- Why the brain learns better during sleep
+- The hidden psychology behind social media addiction
+- Why coding changes problem-solving ability
+- The mathematics secretly used in TikTok algorithms
+- Why students remember stories more than notes
+- How Google search actually works
+- Why some people learn faster than others
+- The science behind memory techniques used by champions
+
+IMPORTANT:
+- ONLY activate MGY Knowledge Mode when NO important educational update exists
+- If real educational news exists, ALWAYS prioritize the real update first
+
 POSTING RULES:
 - Return ONLY 1 best update
 - The update must be meaningful to students
