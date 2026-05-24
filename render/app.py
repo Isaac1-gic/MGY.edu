@@ -698,6 +698,7 @@ def microsoft_office_lessons():
         '''
     data = request.json
     user_message = data.get("message", 1)
+    syt_inst = data.get("instructions", '\n')
     if not isinstance(user_message,int):
         return
     model = data.get("model", "gemini-2.5-flash-lite")
@@ -754,7 +755,7 @@ def microsoft_office_lessons():
                     ],
                 #response_mime_type = "application/json",
                 #response_json_schema = MatchResult.model_json_schema(),
-                system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. "+commands
+                system_instruction="You are a Malawian Genius Youths[MGY] AI. Your name is GIC. "+commands+syt_inst
         )
         firebase_init()
         # 1. Get history from Firebase
