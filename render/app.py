@@ -207,8 +207,7 @@ class LessonStructure(BaseModel):
             **Practice Challenge:** [A small task for the student to complete.]
             
             * 🔗 **Link:** 
-                [submit answer](https://mgy.web.app?msg=user_mocTODygmliamg@erimakastihccaasi)
-                [Whatch Youtube Video](URL)
+                [submit answer](https://wa.me/265980617390)
             
             ---
             _Source: [MGY]_""")
