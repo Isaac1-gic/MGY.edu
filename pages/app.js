@@ -758,7 +758,13 @@ async function showCourse(id){
 		courseContainer.appendChild(msgs);
 		
 	};
+	document.getElementById(lastSeenMsg['courses']).scrollIntoView({ behavior: 'smooth' });
 
+}
+async function courseShortcut(id,lesson){
+	await switchPage('coursesPage')
+	await showCourse(id)
+	document.getElementById(lesson).scrollIntoView({ behavior: 'smooth' })
 }
 
 async function listCourses() {
@@ -1010,7 +1016,14 @@ function chatListSort() {
             } catch (e) {
             }
         },10);
-        
+function linkshortcut(params) {
+	const params = new URLSearchParams(window.location.search);
+	const courseId = params.get('crs')
+	const courselessonId = params.get('lssn')
+	if (courseId && courselessonId) {
+		courseShortcut(courseId, courselessonId)
+	}
+}      
 window.onload = async function(){
 	try{
 		userkey = await getAuth().currentUser.uid
@@ -1048,7 +1061,8 @@ function adddbListener(i) {
 			  if (user) {
 			    profileUpdater(userkey)
 				manageChat()
-			    console.log("Welcome back, " + user.uid);
+				linkshortcut()
+			    
 				alert('Welcome back, '+userData.userInfo['First name'])
 			  } else {
 			    // No user found, show login screen
