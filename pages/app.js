@@ -1011,7 +1011,7 @@ function chatListSort() {
 				
                 // Load User Data
                 await loadData('userData', 'onload');
-				lastSeenMsg = await loadData('lastseen')
+				lastSeenMsg = await loadData('lastseen') || {}
 				profileUpdater(userkey)
             } catch (e) {
             }
