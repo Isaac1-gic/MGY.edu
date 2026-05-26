@@ -1019,7 +1019,7 @@ function chatListSort() {
 function linkshortcut() {
 	const urlparams = new URLSearchParams(window.location.search);
 	const courseId = urlparams.get('crs')
-	const courselessonId = params.get('lssn')
+	const courselessonId = urlparams.get('lssn')
 	if (courseId && courselessonId) {
 		courseShortcut(courseId, courselessonId)
 	}
