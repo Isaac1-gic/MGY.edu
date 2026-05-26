@@ -1016,9 +1016,9 @@ function chatListSort() {
             } catch (e) {
             }
         },10);
-function linkshortcut(params) {
-	const params = new URLSearchParams(window.location.search);
-	const courseId = params.get('crs')
+function linkshortcut() {
+	const urlparams = new URLSearchParams(window.location.search);
+	const courseId = urlparams.get('crs')
 	const courselessonId = params.get('lssn')
 	if (courseId && courselessonId) {
 		courseShortcut(courseId, courselessonId)
