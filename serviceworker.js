@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mgy-v1-05-2026-26-8';
+const CACHE_NAME = 'mgy-v1-05-2026-31';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
@@ -18,13 +18,16 @@ const OFFLINE_URLS = [
   '/img/android-chrome-512x512.png',
   '/img/poster.png',
  
-  '/img/mgyG.jpg'
+  '/img/mgyG.jpg',
+  "https://www.gstatic.com/firebasejs/12.11.0/firebase-database.js",
+  "https://www.gstatic.com/firebasejs/12.11.0/firebase-analytics.js",
+  "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js",
+  "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js",
+  "https://cdn.jsdelivr.net/npm/marked/marked.min.js"
 ];
 
 const EXTERNAL_HOSTS = [
-  "cdn.jsdelivr.net",
-  "gstatic.com",
-  "cdnjs.cloudflare.com",
   'cdn.tailwindcss.com',
   'fonts.googleapis.com',
   'fonts.gstatic.com',
