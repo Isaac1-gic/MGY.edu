@@ -164,7 +164,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			else if ((userkey == "user_mocTODygmygm@GtseuG" || !userkey || !userData.userInfo['username']) && pageId != "signPage"){
 				switchPage("signPage")
 				fetch('https://mgy-edu.onrender.com/login')
-				alert('Use email if you did not include email on your account creation.')
+				alert('Use your email, if you include it on your account creation or full name if you didn't include email.')
 				return
 			}
 			const page = document.getElementById(pageId)
