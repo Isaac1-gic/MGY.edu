@@ -140,8 +140,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 					}
 					userData = data
 					await saveData('userData', data);
-					alert("Success! Welcome to MGY.");
-					switchPage("chatPage");
+					switchPage("homePage")
 					await adddbListener(10)
 					
 			    } catch (err) {
@@ -165,6 +164,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			else if ((userkey == "user_mocTODygmygm@GtseuG" || !userkey || !userData.userInfo['username']) && pageId != "signPage"){
 				switchPage("signPage")
 				fetch('https://mgy-edu.onrender.com/login')
+				alert('Use email if you did not include email on your account creation.')
 				return
 			}
 			const page = document.getElementById(pageId)
@@ -244,7 +244,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 				
 				const WelcomeMsg = {
 									    "chatId": Date.now(),
-									    "imgUrl": "img/KQDQM27wZwaO7U6LLDjGjjOplYf1profile-img-preview.jpg",
+									    "imgUrl": "android-chrome-192x192.png1776856358198",
 									    "prompt": intro,
 									    "senderId": "IGC",
 									    "types": [
@@ -703,6 +703,20 @@ async function userStatus(chatKey){
 				}
 			}
 
+function getFriendImg(chat){
+	let newFriend = chat.userkey ==  "user_m978987978i"
+	if (newFriend) return
+	if (activeKey == 'mgyforum') {
+		activeChat.textContent = 'MGY Forrum';
+		document.getElementById("active-user-img").src = '/img/mwflag.png'
+		return
+	}
+	activeChat.textContent = userData.messageBox[activeKey] || 'New Friend';
+	activeStatusElm.textContent = onlineStatus[activeKey] || 'Offline';
+	document.getElementById("active-user-img").src = chat.imgUrl
+		
+}
+
 		async function chatbox(msgKey,lastMsg) {
 			console.log(msgKey)
 			if (msgKey != activeKey){
@@ -714,6 +728,7 @@ async function userStatus(chatKey){
 			const chatContainer = document.getElementById(msgKey == 'mgyPosts' ? "updates":'chatsList');
 		    chatContainer.innerHTML = '';
 			if (!msg)return
+			
 		    if (msg.length > 100) {
 				const refpath = activeKey == 'mgy' ? 'group_chats/':`message/${activeKey}/`
 				try{
@@ -728,6 +743,9 @@ async function userStatus(chatKey){
 				mine = chat.userkey === userkey
 				const msgs = await createMsg(activeKey,chat,msg,i)
 		        chatContainer.appendChild(msgs);
+				if (!mine) {
+					getFriendImg(chat)
+				}
 				if (i == len - 1) {
 					lastSeenMsg[msgKey] = chat.chatId
 					await saveData('lastseen',lastSeenMsg)
@@ -813,7 +831,7 @@ async function createMsg(activeKey,chat,msg,i) {
 		console.log("MAKEPOST")
 		sessionDiv = makePost(chat)
 	} else {
-		const time =  new Date(parseInt(chat["chatId"] || Date.now())).toGMTString().slice(5,22);
+		const time =  new Date(parseInt(chat["chatId"] || Date.now())).toString().slice(4,21);
 	    const me = (chat['userkey'] === userkey);
 		sessionDiv = document.createElement('div');
 		const img = document.createElement("img");
@@ -1088,13 +1106,13 @@ function adddbListener(i) {
 			const myStatusRef = ref(database, 'online/'+userkey);
 			set(myStatusRef, 'online');
 			onDisconnect(myStatusRef).set(Date.now());
-			`document.addEventListener("visibilitychange", () => {
+			document.addEventListener("visibilitychange", () => {
 			  if (document.visibilityState === "visible") {
 			    set(myStatusRef, 'online');
 			  } else {
-			    set(myStatusRef, 'away'); 
+			    set(myStatusRef, Date.now()); 
 			  }
-			});`
+			});
 			checksNews()
 		} catch (error) {
 			loading.style.width = `${i*10}%`
@@ -1188,6 +1206,7 @@ function registerSw() {
         
 }
 
+
 async function uploadToCloudinary(file, studentId, type,update) {
     const formData = new FormData();
     const CLOUD_NAME = "dlnnjv1ca"; 
@@ -1248,7 +1267,7 @@ async function uploadToCloudinary(file, studentId, type,update) {
 }
 
 function getOptimizedImageUrl(publicId,type,vid) {
-	if('/img/mgyG.jpg' == publicId || ! publicId) return '/img/mgyG.jpg'
+	if('/img/mgyG.jpg' == publicId || 'img/mgyG.jpg' == publicId || ! publicId) return '/img/mgyG.jpg'
 	if (publicId.startsWith('http')) return publicId
     const CLOUD_NAME = "dlnnjv1ca";
     let transformations = "/c_fill,f_auto,q_auto";
