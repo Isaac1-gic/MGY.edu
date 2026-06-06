@@ -7,6 +7,7 @@
         const successMessage = document.getElementById('successMessage');
 		const textarea = document.getElementById('textprompt-chat');
 		const activeChat = document.getElementById("active-user");
+		const activeUserImg = document.getElementById("active-user-img")
 		const activeStatusElm = document.getElementById("activeStatusElm");
 		let profileImg;
 		let img;
@@ -164,7 +165,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			else if ((userkey == "user_mocTODygmygm@GtseuG" || !userkey || !userData.userInfo['username']) && pageId != "signPage"){
 				switchPage("signPage")
 				fetch('https://mgy-edu.onrender.com/login')
-				alert('Use your email, if you include it on your account creation or full name if you didn't include email.')
+				alert('Use email if you did not include email on your account creation.')
 				return
 			}
 			const page = document.getElementById(pageId)
@@ -253,6 +254,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
 									    "userkey": "user_m978987978i"
 									}
 				try{
+					setTimeout(() =>{
+						activeUserImg.src = getOptimizedImageUrl(user.userInfo["profile-img-preview"] || '/img/mgyG.jpg','S')	
+					},500)
 					chatPath = ref(database,'messages/'+chatKey)
 					await push(chatPath,WelcomeMsg)
 					user_ref = ref(database,`users/${userkey}/messageBox/${chatKey}`)
@@ -265,6 +269,11 @@ window.addEventListener('beforeinstallprompt', (e) => {
 			}
 			chatbox(userData['messageBox'][chatKey] || userData['messageBox'][freindKey])
 			switchPage('chatHome')
+			activeChat.textContent = user.userInfo.username;
+			setTimeout(() =>{
+				activeUserImg.src = getOptimizedImageUrl(user.userInfo["profile-img-preview"] || '/img/mgyG.jpg','S')	
+			},100)
+			
 			
 		}
 
@@ -713,16 +722,20 @@ function getFriendImg(chat){
 	}
 	activeChat.textContent = userData.messageBox[activeKey] || 'New Friend';
 	activeStatusElm.textContent = onlineStatus[activeKey] || 'Offline';
-	document.getElementById("active-user-img").src = chat.imgUrl
+	activeUserImg.src = getOptimizedImageUrl(chat.imgUrl,'S')
 		
 }
 
 		async function chatbox(msgKey,lastMsg) {
 			console.log(msgKey)
 			if (msgKey != activeKey){
-				await notification.createNotification(lastMsg,getOptimizedImageUrl)
-				await saveData('notifications',notification.seenMsgs)
-				return
+				try {
+					await notification.createNotification(lastMsg,getOptimizedImageUrl)
+					await saveData('notifications',notification.seenMsgs)
+					return
+				} catch (error) {
+					console.log(error)
+				}
 			}
 			const msg = mgy[activeKey]
 			const chatContainer = document.getElementById(msgKey == 'mgyPosts' ? "updates":'chatsList');
