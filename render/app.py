@@ -11,7 +11,7 @@ from typing import List
 from io import BytesIO
 import json, time, traceback
 import firebase_admin
-from firebase_admin import auth, credentials, db
+from firebase_admin import auth, credentials, db, messaging
 
 
 # 1. Initialize the Flask app
@@ -330,6 +330,26 @@ def firebase_init():
                 'databaseURL': "https://msce-g-studies-tracker-baa6f-default-rtdb.europe-west1.firebasedatabase.app"
             })
 
+def send_push_notification(title, body, url="/"):
+    try:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title=title,
+                body=body
+            ),
+            data={
+                "url": url
+            },
+            topic="all_users"
+        )
+
+        response = messaging.send(message)
+
+        print("Push sent:", response)
+
+    except Exception as e:
+        print("Push failed:", e)
+        
 @app.route('/login', methods=['POST'])
 def login():
      
@@ -821,6 +841,11 @@ def microsoft_office_lessons():
             }
             post_ref.push(mgyPostFormat)
             app_updates.push(mgyPostFormat)
+            send_push_notification(
+                        post["title"],
+                        "Tap to read the latest MGY update",
+                        f"/?post={mgyPostFormat['chatId']}"
+                    )
             return obj
             
         return reply_text
@@ -949,6 +974,11 @@ def ask_gemini():
                     }
                     post_ref.push(mgyPostFormat)
                     app_updates.push(mgyPostFormat)
+                    send_push_notification(
+                        post["title"],
+                        "Tap to read the latest MGY update",
+                        f"/?post={mgyPostFormat['chatId']}"
+                    )
                     return obj
             
                 return reply_text
