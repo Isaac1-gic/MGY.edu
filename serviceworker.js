@@ -190,21 +190,22 @@ try {
 
   messaging.onBackgroundMessage((payload) => {
 
-      self.registration.showNotification(
-          payload.notification?.title || 'MGY',
-          {
-              body: payload.notification?.body || '',
-              badge: '/img/android-chrome-192x192.png',
-              icon: '/img/android-chrome-512x512.png',
-              image: '/img/poster.png',
-              data: {
-                  url: payload.data.url
-                }
-            }
-      );
+	  const title = payload.data?.title || 'MGY';
+	  const body = payload.data?.body || '';
+	
+	  self.registration.showNotification(title, {
+	    body,
+	    icon: '/img/android-chrome-512x512.png',
+	    data: {
+	      url: payload.data?.url || '/'
+	    }
+	  });
+	
+	});
 
   });
 
 } catch (err) {
-  console.log('FCM unavailable', err);
+    console.log('FCM unavailable', err);
+	Notification.requestPermission();
 }
