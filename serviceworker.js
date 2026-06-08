@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mgy-v1-06-2026-6';
+const CACHE_NAME = 'mgy-v1-06-2026-8';
 const CACHE_EXTERNAL_NAME = 'external-assets-cache-v5';
 const STUDY_TAG = 'Daily-edu-updates';
 
@@ -24,7 +24,9 @@ const OFFLINE_URLS = [
   "https://www.gstatic.com/firebasejs/12.11.0/firebase-auth.js",
   "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js",
   "https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js",
-  "https://cdn.jsdelivr.net/npm/marked/marked.min.js"
+  "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
+  'https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js',
+  'https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging-compat.js'
 ];
 
 const EXTERNAL_HOSTS = [
@@ -166,3 +168,43 @@ self.addEventListener('periodicsync', event => {
     );
   }
 });
+
+
+try {
+  importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-messaging-compat.js');
+
+  const firebaseConfig = {
+		  apiKey: "AIzaSyC7nmIZQO78vUvOmQshCfLfL03xQGIZRoA",
+		  authDomain: "msce-g-studies-tracker-baa6f.firebaseapp.com",
+		  databaseURL: "https://msce-g-studies-tracker-baa6f-default-rtdb.europe-west1.firebasedatabase.app",
+		  projectId: "msce-g-studies-tracker-baa6f",
+		  storageBucket: "msce-g-studies-tracker-baa6f.firebasestorage.app",
+		  messagingSenderId: "1082032866052",
+		  appId: "1:1082032866052:web:8b8f1041f696a10ec70651",
+		  measurementId: "G-2DBK08C244"
+		};
+  firebase.initializeApp(firebaseConfig);
+
+  const messaging = firebase.messaging();
+
+  messaging.onBackgroundMessage((payload) => {
+
+      self.registration.showNotification(
+          payload.notification?.title || 'MGY',
+          {
+              body: payload.notification?.body || '',
+              badge: '/img/android-chrome-192x192.png',
+              icon: '/img/android-chrome-512x512.png',
+              image: '/img/poster.png',
+              data: {
+                  url: payload.data.url
+                }
+            }
+      );
+
+  });
+
+} catch (err) {
+  console.log('FCM unavailable', err);
+}
