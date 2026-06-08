@@ -333,11 +333,9 @@ def firebase_init():
 def send_push_notification(title, body, url="/"):
     try:
         message = messaging.Message(
-            notification=messaging.Notification(
-                title=title,
-                body=body
-            ),
             data={
+                "title": title,
+                "body": body,
                 "url": url
             },
             topic="all_users"
