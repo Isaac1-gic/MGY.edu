@@ -171,8 +171,8 @@ self.addEventListener('periodicsync', event => {
 
 
 try {
-  importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-app-compat.js');
-  importScripts('https://www.gstatic.com/firebasejs/11.9.1/firebase-messaging-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/12.11.0/firebase-app-compat.js');
+  importScripts('https://www.gstatic.com/firebasejs/12.11.0/firebase-messaging-compat.js');
 
   const firebaseConfig = {
 		  apiKey: "AIzaSyC7nmIZQO78vUvOmQshCfLfL03xQGIZRoA",
