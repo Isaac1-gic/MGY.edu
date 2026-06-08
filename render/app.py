@@ -45,12 +45,101 @@ IMPORTANT UPDATE TYPES:
 9. Academic policy changes
 10. Internship or training opportunities for students
 
-SOURCE PRIORITY:
-- education.gov.mw
-- maneb.edu.mw
-- nche.ac.mw
-- university websites
-- trusted Malawi education news websites
+SOURCE News:
+### Government & Education Authorities
+* education.gov.mw
+* maneb.edu.mw
+* nche.ac.mw
+* gov.mw
+* malawi.gov.mw
+
+### Universities
+
+* unima.ac.mw
+* mubas.ac.mw
+* luanar.ac.mw
+* mzuni.ac.mw
+* must.ac.mw
+* cu.ac.mw
+* catholicuniversity.mw
+* malawiadventistuniversity.ac.mw
+
+### Technical & Vocational
+
+* teveta.org.mw
+
+### Malawi Education News
+
+* times.mw/category/education/
+* mwnation.com/category/education/
+* maravipost.com/category/education/
+* nyasatimes.com
+* malawi24.com
+* faceofmalawi.com
+
+### Scholarships & Opportunities
+
+* mastercardfoundation.org
+* commonwealthscholarships.org
+* chevening.org
+* daad.de
+* fulbrightonline.org
+* britishcouncil.org
+* opportunitiesforafricans.com
+* opportunitydesk.org
+* youthop.com
+* afterschoolafrica.com
+
+### International Education
+
+* unesco.org
+* unicef.org
+* worldbank.org/en/topic/education
+* globalpartnership.org
+
+### Facebook Pages
+
+* Ministry of Education Malawi
+* MANEB
+* NCHE Malawi
+* University of Malawi
+* MUBAS
+* LUANAR
+* Mzuzu University
+* MUST
+* Catholic University of Malawi
+* TEVETA Malawi
+* British Council Malawi
+* US Embassy Malawi
+* EU in Malawi
+* Mastercard Foundation
+* Malawi Universities Students Association (MUSA)
+* University student unions and associations
+
+### Additional High-Value Sources
+
+* University notice boards
+* University admissions portals
+* University registrar announcements
+* Scholarship announcements
+* Internship announcements
+* STEM competitions
+* Science fairs
+* Robotics competitions
+* Coding competitions
+* Essay competitions
+* Debate competitions
+* Research grants
+* Innovation challenges
+* Hackathons
+* Student exchange programs
+* Fellowship programs
+* Graduate trainee programs
+* Government bursary announcements
+* NGO education programs
+* Education-related press releases
+* Official institution social media accounts (Facebook, X, LinkedIn, YouTube)
+
 
 FILTERING RULES:
 - Ignore advertisements
@@ -58,7 +147,7 @@ FILTERING RULES:
 - Ignore sports unless educational
 - Ignore duplicate old news
 - Prefer updates newer than 7 days
-- If same story exists, only post if there is NEW information
+- If same story exists, only post if there is NEW VERY IMPORTANT information
 - Ignore broken website 
 
 CONTENT RULES:
@@ -88,7 +177,7 @@ OUTPUT FORMAT:
     {
       "title": "Short catchy educational headline",
 
-      "post": "# 📌 [HEADLINE]\n---\n\n**What’s Happening:** [Clear explanation of the update]\n\n**Why It Matters for Geniuses:** [Explain impact for students]\n\n**🚀 Action Steps:**\n* 📅 **Deadline:** [Date or 'Not specified']\n* 📝 **Requirement:** [Required action]\n* 🔗 **Link:** [Text](URL)\n\n---\n_Source: [Institution Name]_",
+      "post": "# 📌 [CATCHY HEADLINE]\n\n---\n[Clear, 1-2 sentence summary of the news.]\n\n[Explain the news and its impact on  users/students.]\n\n[ActionSteps. include this paragraph if needed]\n[Date . include this paragraph if needed]\n[Requirement/What to bring/do. include this paragraph if needed]\n* 🔗 **Link:** [Text](URL to get more information.)\n\n---\n_Source: [Name of Institution]_",
 
       "category": "Exams | Admissions | Scholarship | Policy | Opportunity | Selection",
 
@@ -174,14 +263,14 @@ class MatchResult(BaseModel):
             
             # 📌 [CATCHY HEADLINE]
             ---
-            **What’s Happening:** [Clear, 1-2 sentence summary of the news.]
+            [Clear, 1-2 sentence summary of the news.]
             
-            **Why It Matters for Geniuses:** [Explain the impact on MGY users/students.]
+            [Explain the news and its impact on  users/students.]
             
-            **🚀 Action Steps:**
-            * 📅 **Deadline:** [Date]
-            * 📝 **Requirement:** [What to bring/do]
-            * 🔗 **Link:** [Text](URL)
+            [ActionSteps. include this paragraph if needed]
+            [Date . include this paragraph if needed]
+            [Requirement/What to bring/do. include this paragraph if needed]
+            * 🔗 **Link:** [Text](URL to get more information.)
             
             ---
             _Source: [Name of Institution]_""")
